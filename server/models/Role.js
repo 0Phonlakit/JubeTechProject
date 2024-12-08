@@ -1,30 +1,23 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-// สร้าง schema สำหรับ Role
 const roleSchema = new Schema(
   {
-    _id: {
-      type: String,
-      required: true, // ให้ _id เป็น string ที่จำเป็น
-    },
-    role_name: {
-      type: String,
-      required: true,
-    },
+    _id: {type: String, required: true,},
+    role_name: { type: String, required: true,},
   },
 );
 
 const Role = mongoose.model('Role', roleSchema);
 
-// ฟังก์ชันเพิ่ม Role อัตโนมัติ
+// Automatic role addition function
 const addDefaultRoles = async () => {
   try {
-    const existingRolesCount = await Role.countDocuments(); // นับจำนวน role ในฐานข้อมูล
+    const existingRolesCount = await Role.countDocuments();
 
     if (existingRolesCount > 0) {
       //console.log("Roles already exist. Skipping seed process.");
-      return; // ถ้ามี role แล้ว ให้หยุดทำงาน
+      return;
     }
 
     const roles = [
@@ -33,15 +26,13 @@ const addDefaultRoles = async () => {
       { _id: '3', role_name: 'Tutor' },
     ];
 
-    await Role.insertMany(roles); // เพิ่ม role ทีเดียวหลายตัว
+    await Role.insertMany(roles);
     console.log("Default roles added successfully.");
   } catch (error) {
     console.error("Error adding roles:", error);
   }
 };
 
-
-// เรียกใช้ฟังก์ชันเพิ่ม Role อัตโนมัติเมื่อไฟล์นี้ถูกโหลด
 addDefaultRoles();
 
 module.exports = Role;

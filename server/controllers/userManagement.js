@@ -38,9 +38,8 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: `Role "${role_name}" not found` });
     }
 
-    // คำนวณ ID ใหม่ที่สูงสุดจากฐานข้อมูล
     const lastUser = await User.findOne().sort({ _id: -1 });
-    const newId = lastUser ? lastUser._id + 1 : 1; // ถ้าไม่มีผู้ใช้ในฐานข้อมูลเริ่มต้นที่ 1
+    const newId = lastUser ? lastUser._id + 1 : 1;
 
     const newUser = new User({
       _id: newId,
@@ -72,25 +71,21 @@ const updateUser = async (req, res) => {
   try {
     const { firstname, lastname, email, password, role_name, currentPassword } = req.body; // รับ currentPassword จาก frontend
 
-    // หา user ด้วย userId
     const user = await User.findById(req.params.id);
 
-    // ตรวจสอบรหัสผ่านปัจจุบันด้วย bcrypt
     const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
-    // ค้นหาบทบาทที่เกี่ยวข้อง
     const validRole = await Role.findOne({ role_name });
     if (!validRole) {
       return res.status(400).json({ message: "Role not found" });
     }
 
-    // หากมีการเปลี่ยนแปลงรหัสผ่าน, ให้แฮชใหม่
-    let hashedPassword = user.password; // รักษารหัสผ่านเดิม
+    let hashedPassword = user.password;
     if (password) {
-      hashedPassword = await bcrypt.hash(password, 10); // แฮชรหัสผ่านใหม่
+      hashedPassword = await bcrypt.hash(password, 10);
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -99,7 +94,7 @@ const updateUser = async (req, res) => {
         firstname,
         lastname,
         email,
-        password: hashedPassword, // ใช้รหัสผ่านที่แฮชแล้ว
+        password: hashedPassword,
         role: validRole._id,
       },
       { new: true }
