@@ -1,0 +1,196 @@
+.user-table {
+  font-family: Arial, sans-serif;
+  margin: 0px;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.breadcrumb-item {
+  color: black;
+  font-weight: bold;
+}
+
+.breadcrumb-item.active {
+  color: gray;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search-input, .role-select, .search-button, .add-user-button {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.role-select {
+  width: 150px;
+}
+
+.search-button {
+  background-color: #67C361;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-user-button {
+  background-color: #FCD14D;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.entries-pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.entries-display, .entries-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 5px;
+}
+
+.entries-display input {
+  width: 50px;
+  text-align: center;
+}
+
+.entries-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.user-table th, .user-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.user-table th {
+  background-color: #f4f4f4;
+}
+
+.role-badge {
+  padding: 5px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.admin {
+  background-color: #87A8F1;
+  color: #004EFB;
+}
+
+.student {
+  background-color: #D2D0CB;
+  color: #857D7D;
+}
+
+.tutor {
+  background-color: #FCD14D;
+  color: #F68B00;
+}
+
+.edit-button, .delete-button {
+  width: 30px; /* ขนาดของปุ่ม */
+  height: 30px; /* ขนาดของปุ่ม */
+  border-radius: 50%; /* ให้เป็นวงกลม */
+  border: none;
+  display: inline-flex; /* ใช้ flex เพื่อจัดตำแหน่ง */
+  justify-content: center; /* จัดกลางแนวนอน */
+  align-items: center; /* จัดกลางแนวตั้ง */
+  padding: 0;
+  gap: 10px;
+  cursor: pointer;
+  background-color: transparent; /* ให้พื้นหลังโปร่งแสง */
+  transition: background-color 0.3s ease;
+}
+
+/* ปรับขนาดไอคอนในปุ่ม */
+.edit-button img, .delete-button img {
+  width: 20px; /* ขนาดไอคอน */
+  height: 20px; /* ขนาดไอคอน */
+}
+
+/* สีพื้นหลังของปุ่มเมื่อ hover */
+.edit-button:hover {
+  background-color: #FFD700; /* สีพื้นหลังเมื่อ hover */
+}
+
+.delete-button:hover {
+  background-color: #FF6F61; /* สีพื้นหลังเมื่อ hover */
+}
+
+/* ปรับให้ปุ่มทั้งสองมีสีพื้นหลังต่างกัน */
+.edit-button {
+  background-color: #FCD14D; /* สีเหลืองสำหรับ Edit */
+  margin-right: 5px;
+}
+
+.delete-button {
+  background-color: #FF5733; /* สีแดงสำหรับ Delete */
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end; /* Right-align pagination */
+  align-items: center;
+  gap: 10px;
+}
+
+.page-buttons {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.page-buttons button {
+  background-color: white;
+  border: none;
+  padding: 10px 20px;
+  color: #888;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.page-buttons button:hover {
+  background-color: #f2f2f2;
+  color: #000;
+}
+
+.page-buttons .current-page {
+  background-color: #9b42f5;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+}

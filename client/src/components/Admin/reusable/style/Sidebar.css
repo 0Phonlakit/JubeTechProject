@@ -1,0 +1,93 @@
+/* Sidebar Layout */
+.sidebar {
+    width: 300px;
+    height: 100vh;
+    background: #D1B3FC;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px 20px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* กำหนดการจัดการลิงก์ใน Sidebar */
+.sidebar a {
+    text-decoration: none; 
+    color: inherit;
+}
+
+/* เมื่อ hover บนเมนู */
+.sidebar a:hover {
+    color: inherit;
+}
+
+/* Logo */
+.logo {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: row; 
+    justify-content: center;
+    align-items: center;
+}
+
+/* Logo colors */
+.logo .jubetech {
+    color: #BB2AFF;
+    font-size: 40px;
+}
+
+.logo .tech {
+    color: #000;
+    font-size: 40px;
+}
+
+/* Menu Styles */
+.menu {
+    list-style: none;
+    padding: 0; 
+    margin: 0;
+    flex-grow: 1; 
+}
+
+.menu li {
+    margin: 10px 0;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    border-top-right-radius: 30px; 
+    border-bottom-right-radius: 30px; 
+    border-top-left-radius: 0; 
+    border-bottom-left-radius: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* hover manu */
+.menu li:hover {
+    background-color: #DD95FF;
+    padding: 15px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0; 
+}
+
+/* Active State */
+.menu li.active {
+    background: linear-gradient(135deg, #DD95FF, #B423F8);
+    color: #fff; 
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    border-top-left-radius: 0; 
+    border-bottom-left-radius: 0; 
+}
+
+.menu li.active a {
+    color: #fff;
+}
