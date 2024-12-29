@@ -18,8 +18,8 @@ const Sidebar = () => {
         <li className={isActive("/usermanagement") ? "active" : ""}>
           <Link to="/usermanagement">User Management</Link>
         </li>
-        <li className={isActive("/promotion") ? "active" : ""}>
-          <Link to="/promotion">Promotion Management</Link>
+        <li className={isActive("/promotionmanagement") ? "active" : ""}>
+          <Link to="/promotionmanagement">Promotion Management</Link>
         </li>
         <li className={isActive("/settings") ? "active" : ""}>
           <Link to="/settings">Settings</Link>

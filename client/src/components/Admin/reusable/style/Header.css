@@ -38,7 +38,7 @@
     cursor: pointer;
   }
   
-  .dropdown {
+  /* .dropdown {
     position: absolute;
     top: 40px;
     right: 0;
@@ -48,14 +48,14 @@
     width: 200px;
     border-radius: 5px;
     z-index: 100;
-  }
+  } */
   
-  /* รูป Profile */
+  /* รูป Profile
   .dropdown-profile {
     display: flex;
     align-items: center;
     padding: 10px;
-  }
+  } */
   
   .profile-pic {
     width: 40px;
@@ -76,7 +76,7 @@
   }
   
   /* เมนูใน Dropdown */
-  .dropdown-menu {
+  /* .dropdown-menu {
     list-style: none;
     padding: 10px;
     margin: 0;
@@ -91,7 +91,7 @@
   
   .dropdown-menu li:hover {
     background-color: #f0f0f0;
-  }
+  } */
   
   .logout {
     color: red;

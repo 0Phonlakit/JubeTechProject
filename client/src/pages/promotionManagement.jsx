@@ -1,8 +1,8 @@
-// import React from "react";
-// import promotionManagementLayout from "../components/Admin/promotionManagementLayout";
+import React from "react";
+import PromotionManagementLayout from "../components/Admin/promotionManagementLayout"
 
-// function promotionManagementPage() {
-//     return <promotionManagementLayout />;
-//   }
+function promotionManagementPage() {
+    return <PromotionManagementLayout />;
+  }
   
-//   export default promotionManagementPage;
+  export default promotionManagementPage;

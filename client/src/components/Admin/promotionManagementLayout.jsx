@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "./reusable/Sidebar";
 import Header from "./reusable/Header"; 
-//import promotionTable from "./promotionManagement/PromotionTable"
+import PromotionTable from "./promotionManagement/PromotionTable";
 import "./Layout.css";
 
 function promotionManagementLayout() {
@@ -11,7 +11,7 @@ function promotionManagementLayout() {
       <div className="layout-main">
         <Header />
         <div className="layout-content">
-          <promotionTable />
+          <PromotionTable />
         </div>
       </div>
     </div>

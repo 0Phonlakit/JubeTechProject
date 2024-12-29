@@ -1,149 +1,253 @@
 import React, { useState, useEffect } from 'react';
-import '../reusable/style/Modal.css'; 
+import { Modal, Button, Form, Row, Col, Stack } from 'react-bootstrap';
+import Select from 'react-select';
+import Swal from 'sweetalert2';
 
-const EditUser = ({ onClose, onUpdateUser, userId }) => {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
-  const [roleName, setRoleName] = useState('');
-  const [currentPassword, setCurrentPassword] = useState(''); 
-  const [password, setPassword] = useState(''); 
+function EditUser({ userId, onClose }) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    role: [], // เปลี่ยนจาก string เป็น array เพื่อเก็บหลาย role
+    currentPassword: '', 
+    newPassword: '', 
+  });
+  const [roles, setRoles] = useState([]);
+  const [errorMessage] = useState('');
+  const requiredFields = ['firstName', 'lastName', 'email', 'role'];
+  const emptyFields = requiredFields.filter((field) => !formData[field]);
 
-  // Load user data from API
+  // Fetch user data and roles
   useEffect(() => {
-    const fetchUser = async () => {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/getUser/${userId}`);
-      const data = await response.json();
-      setFirstname(data.firstname);
-      setLastname(data.lastname);
-      setEmail(data.email);
-      setRoleName(data.role[0]?.role_name || '');
-    };
-    fetchUser();
+    // Fetch user data by ID
+    fetch(`${process.env.REACT_APP_API_URL}/getUser/${userId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setFormData({
+          firstName: data.firstname,
+          lastName: data.lastname,
+          email: data.email,
+          currentPassword: '',
+          newPassword: '',
+          role: data.role_ids ? data.role_ids.map(role => role._id) : [], // เก็บ role เป็น array ของ _id
+        });
+      })
+      .catch((error) => console.error('Error fetching user data:', error));
+
+    // Fetch available roles
+    fetch(`${process.env.REACT_APP_API_URL}/roles`)
+      .then((response) => response.json())
+      .then((data) => setRoles(data))
+      .catch((error) => console.error('Error fetching roles:', error));
   }, [userId]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const updatedUser = {
-      firstname,
-      lastname,
-      email,
-      role_name: roleName,
-      password: password, 
-      currentPassword, 
-    };
-
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/updateUser/${userId}` , {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUser),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        onUpdateUser(data); 
-        onClose();  
-      } else {
-        alert('Failed to update user');
-      }
-    } catch (error) {
-      console.error('Error updating user:', error);
-      alert('Error updating user');
+  const handleChange = (input, action) => {
+    if (action?.name === 'role') {
+      setFormData((prevState) => ({
+        ...prevState,
+        role: input ? input.map((option) => option.value) : [], // เก็บ role หลายๆ ตัวใน array
+      }));
+    } else if (input.target) {
+      const { name, value } = input.target;
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (emptyFields.length > 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Incomplete Form',
+        text: 'Please fill in all required fields.',
+        confirmButtonText: 'OK',
+      });
+      return;
+      
+    }
+
+    if (!formData.email) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (formData.newPassword && formData.newPassword.length < 8) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Password Too Short',
+        text: 'New password must be at least 8 characters long.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (formData.newPassword && !formData.currentPassword) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Current Password Required',
+        text: 'Please enter your current password to change the password.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    const dataToSubmit = {
+      firstname: formData.firstName,
+      lastname: formData.lastName,
+      email: formData.email,
+      role_ids: formData.role, // ส่ง role_ids เป็น array ของ _id
+      currentPassword: formData.currentPassword,
+      ...(formData.newPassword && { password: formData.newPassword }),
+    };
+
+    // Send PUT request to update user data
+    fetch(`${process.env.REACT_APP_API_URL}/updateUser/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSubmit),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === "Current password is incorrect") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Current Password Error',
+            text: 'The current password you entered is incorrect. Please try again.',
+            confirmButtonText: 'OK',
+          });
+          return;
+        }
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'User Updated',
+          text: 'User information updated successfully!',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          onClose();
+          window.location.reload();
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error updating user. Please try again later.',
+          confirmButtonText: 'OK',
+        });
+        console.error('Error updating user:', error);
+      });
+  };
+
   return (
-    <div className="create-user-popup">
-      <div className="create-user-popup-content">
-        <div className="popup-header">
-          <h2>Edit User</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group double-input">
-            <div className="input-container">
-              <label>First Name</label>
-              <input
+    <div>
+      <Modal.Header closeButton>
+        <Modal.Title>Edit User</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Row className="mb-3">
+            <Form.Group as={Col} controlId="firstName">
+              <Form.Label>First Name</Form.Label>
+              <Form.Control
                 type="text"
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
                 placeholder="Enter First Name"
-                required
               />
-            </div>
-            <div className="input-container">
-              <label>Last Name</label>
-              <input
+            </Form.Group>
+            <Form.Group as={Col} controlId="lastName">
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control
                 type="text"
-                value={lastname}
-                onChange={(e) => setLastname(e.target.value)}
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
                 placeholder="Enter Last Name"
-                required
               />
-            </div>
-          </div>
+            </Form.Group>
+          </Row>
 
-          {/* Email */}
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter Email"
-              required
-            />
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter Email"
+              />
+            </Form.Group>
+          </Row>
 
-          {/* Role */}
-          <div className="form-group">
-            <label>Role</label>
-            <select
-              value={roleName}
-              onChange={(e) => setRoleName(e.target.value)}
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="Admin">Admin</option>
-              <option value="Student">Student</option>
-              <option value="Tutor">Tutor</option>
-            </select>
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="role">
+              <Form.Label>Role</Form.Label>
+              <Select
+                isMulti
+                name="role"
+                options={roles.map((role) => ({
+                  value: role._id,
+                  label: role.role_name,
+                }))}
+                value={roles.filter((role) => formData.role.includes(role._id)).map((role) => ({
+                  value: role._id,
+                  label: role.role_name,
+                }))}
+                onChange={handleChange}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          </Row>
 
-          {/* Current Password */}
-          <div className="form-group">
-            <label>Current Password</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Enter Current Password"
-              required
-            />
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="currentPassword">
+              <Form.Label>Current Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="currentPassword"
+                value={formData.currentPassword}
+                onChange={handleChange}
+                placeholder="Enter Current Password"
+              />
+            </Form.Group>
+          </Row>
 
-          {/* New Password (optional) */}
-          <div className="form-group">
-            <label>New Password (optional)</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter New Password"
-            />
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="newPassword">
+              <Form.Label>New Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+                placeholder="Enter New Password (Leave blank to keep current)"
+              />
+            </Form.Group>
+          </Row>
 
-          <div className="form-actions">
-            <button type="submit">Save</button>
-          </div>
-        </form>
-      </div>
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+          <Stack>
+            <Button variant="success" type="submit">
+              Save Changes
+            </Button>
+          </Stack>
+        </Form>
+      </Modal.Body>
     </div>
   );
-};
+}
 
 export default EditUser;
