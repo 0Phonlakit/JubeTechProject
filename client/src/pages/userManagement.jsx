@@ -1,8 +1,19 @@
-import React from "react";
-import UserManagementLayout from "../components/Admin/userManagementLayout";
+import { Helmet } from 'react-helmet-async';
+
+import { CONFIG } from 'src/config-global';
+
+import { UserView } from "src/sections/user-management";
 
 function UserManagementPage() {
-    return <UserManagementLayout />;
+    return (
+      <>
+        <Helmet>
+          <title> {`User Management - ${CONFIG.appName}`}</title>
+        </Helmet>
+        
+        <UserView />
+      </>
+    );
   }
   
   export default UserManagementPage;
