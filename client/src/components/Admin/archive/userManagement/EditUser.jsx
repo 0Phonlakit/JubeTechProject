@@ -12,7 +12,7 @@ const EditUser = ({ onClose, onUpdateUser, userId }) => {
   // Load user data from API
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/getUser/${userId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/getUser/${userId}`);
       const data = await response.json();
       setFirstname(data.firstname);
       setLastname(data.lastname);
@@ -35,7 +35,7 @@ const EditUser = ({ onClose, onUpdateUser, userId }) => {
     };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/updateUser/${userId}` , {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/updateUser/${userId}` , {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

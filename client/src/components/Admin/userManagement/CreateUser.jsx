@@ -20,7 +20,7 @@ function CreateUser({ onClose }) {
 
   // Static roles for selection
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/roles`)
+    fetch(`${import.meta.env.VITE_API_URL}/roles`)
       .then((response) => response.json())
       .then((data) => {
         setRoles(
@@ -108,7 +108,7 @@ function CreateUser({ onClose }) {
     console.log(formData.role);
 
     // Send data to API
-    fetch(`${process.env.REACT_APP_API_URL}/createUser`, {
+    fetch(`${import.meta.env.VITE_API_URL}/createUser`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataToSubmit),

@@ -6,7 +6,7 @@ import CreateUser from './CreateUser';
 import EditUser from './EditUser';
 import DeleteUser from './DeleteUser';
 import EditIcon from "../assets/editIcon.png";
-import BinIcon from "../assets/binIcon.png"
+import BinIcon from "../assets/binIcon.png";
 
 DataTable.use(DT);
 
@@ -19,7 +19,7 @@ function UserTable() {
 
   // Fetch data from API
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/getAllUsers`)
+    fetch(`${import.meta.env.VITE_API_URL}/getAllUsers`)
       .then(response => response.json())
       .then(data => setUsers(data))
       .catch(error => console.error('Error fetching user data:', error));

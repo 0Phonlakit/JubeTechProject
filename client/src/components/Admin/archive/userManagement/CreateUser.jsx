@@ -26,7 +26,7 @@ const CreateUser = ({ onClose, onCreateUser }) => {
     };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/createUser`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/createUser`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

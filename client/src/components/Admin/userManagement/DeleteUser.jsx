@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 
 function DeleteUser({ userId, onClose }) {
   const handleDelete = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/deleteUser/${userId}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/deleteUser/${userId}`, {
       method: 'DELETE',
     })
       .then((response) => response.json())

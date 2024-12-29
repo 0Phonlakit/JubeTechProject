@@ -19,7 +19,7 @@ function PromotionTable() {
 
     // Fetch data from API
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/getAllPromotion`)
+        fetch(`${import.meta.env.VITE_API_URL}/getAllPromotion`)
         .then(response => response.json())
         .then(data => setPromotion(data))
         .catch(error => console.error('Error fetching promotion data:', error));

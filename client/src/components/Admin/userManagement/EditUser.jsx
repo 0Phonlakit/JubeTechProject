@@ -20,7 +20,7 @@ function EditUser({ userId, onClose }) {
   // Fetch user data and roles
   useEffect(() => {
     // Fetch user data by ID
-    fetch(`${process.env.REACT_APP_API_URL}/getUser/${userId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/getUser/${userId}`)
       .then((response) => response.json())
       .then((data) => {
         setFormData({
@@ -35,7 +35,7 @@ function EditUser({ userId, onClose }) {
       .catch((error) => console.error('Error fetching user data:', error));
 
     // Fetch available roles
-    fetch(`${process.env.REACT_APP_API_URL}/roles`)
+    fetch(`${import.meta.env.VITE_API_URL}/roles`)
       .then((response) => response.json())
       .then((data) => setRoles(data))
       .catch((error) => console.error('Error fetching roles:', error));
@@ -109,7 +109,7 @@ function EditUser({ userId, onClose }) {
     };
 
     // Send PUT request to update user data
-    fetch(`${process.env.REACT_APP_API_URL}/updateUser/${userId}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/updateUser/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataToSubmit),

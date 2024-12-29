@@ -20,7 +20,7 @@ const UserTable = () => {
   const [userToDelete, setUserToDelete] = useState(null);
 
   const fetchUsers = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/getAllUsers`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/getAllUsers`);
     const data = await response.json();
     setUsers(data);
     setFilteredUsers(data);  // Set initial state to show all users
@@ -131,7 +131,7 @@ const UserTable = () => {
 
   const handleDeleteUser = async () => {
     if (userToDelete) {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/deleteUser/${userToDelete}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/deleteUser/${userToDelete}`, {
         method: "DELETE",
       });
 
