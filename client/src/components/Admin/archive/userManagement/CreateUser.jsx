@@ -1,145 +1,246 @@
-import React, { useState } from 'react';
-import '../reusable/style/Modal.css'; 
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form, Row, Col, Stack } from 'react-bootstrap';
+import Select from 'react-select';
+import Swal from 'sweetalert2';
 
-const CreateUser = ({ onClose, onCreateUser }) => {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [roleName, setRoleName] = useState('');
+function CreateUser({ onClose }) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    status: false,
+    password: '',
+    confirmPassword: '',
+    role: [],
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [errorMessage] = useState('');
+  const [roles, setRoles] = useState([]);
+  const requiredFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'role'];
+  const emptyFields = requiredFields.filter((field) => !formData[field]);
 
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
-
-    const newUser = {
-      firstname,
-      lastname,
-      email,
-      password,
-      role_name: roleName,
-    };
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/createUser`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
+  // Static roles for selection
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/getAllRoles`)
+      .then((response) => response.json())
+      .then((data) => {
+        setRoles(
+          data.map((role) => ({
+            value: role._id,
+            label: role.role_name,
+          }))
+        );
+      })
+      .catch((error) => {
+        console.error('Error fetching roles:', error);
       });
+  }, []);
 
-      if (response.ok) {
-        const data = await response.json();
-        onCreateUser(data); 
-        onClose(); 
-      } else {
-        alert('Failed to create user');
-      }
-    } catch (error) {
-      console.error('Error creating user:', error);
-      alert('Error creating user');
+  const handleChange = (input, action) => {
+    if (action?.name === 'role') {
+      // สำหรับ react-select แบบ Multiple
+      setFormData((prevState) => ({
+        ...prevState,
+        role: input ? input.map((option) => option.value) : [], // เก็บค่าหลายค่าใน array
+      }));
+    } else if (input.target) {
+      // สำหรับ Form.Control
+      const { name, value } = input.target;
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (emptyFields.length > 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Incomplete Form',
+        text: 'Please fill in all required fields.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+     // Validate email format
+     if (!formData.email) {
+       Swal.fire({
+         icon: "error",
+         title: "Invalid Email",
+         text: "Please enter a valid email address.",
+         confirmButtonText: "OK",
+       });
+       return;
+     }
+
+    if (formData.password.length < 8 || formData.password.length > 30) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Password",
+        text: "Password must be between 8 and 20 characters.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    // Validate password and confirmPassword
+    if (formData.password !== formData.confirmPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Password Mismatch',
+        text: "Passwords don't match.",
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    // Make sure formData.role is an array of role IDs
+    const dataToSubmit = {
+      firstname: formData.firstName,
+      lastname: formData.lastName,
+      email: formData.email,
+      status: formData.status,
+      password: formData.password,
+      role_ids: formData.role,
+    };
+    console.log(formData.role);
+
+    // Send data to API
+    fetch(`${import.meta.env.VITE_API_URL}/createUser`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSubmit),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.message === 'Email is already in use') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Email Already Exists',
+          text: 'The email address you entered is already in use. Please try another one.',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'User Created',
+          text: 'User created successfully!',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          onClose();
+          window.location.reload();
+        });
+      }
+    })
+    .catch((error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error creating user. Please try again later.',
+        confirmButtonText: 'OK',
+      });
+      console.error('Error creating user:', error);
+    });
+};
+
   return (
-    <div className="create-user-popup">
-      <div className="create-user-popup-content">
-        <div className="popup-header">
-          <h2>Add User</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group double-input">
-
-            {/* First Name */}
-            <div className="input-container">
-              <label>First Name</label>
-              <input
+    <div>
+      <Modal.Header closeButton>
+        <Modal.Title>Add User</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Row className="mb-3">
+            <Form.Group as={Col} controlId="firstName">
+              <Form.Label>First Name</Form.Label>
+              <Form.Control
                 type="text"
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
                 placeholder="Enter First Name"
-                required
               />
-            </div>
-
-            {/* Last Name */}
-            <div className="input-container">
-              <label>Last Name</label>
-              <input
+            </Form.Group>
+            <Form.Group as={Col} controlId="lastName">
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control
                 type="text"
-                value={lastname}
-                onChange={(e) => setLastname(e.target.value)}
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
                 placeholder="Enter Last Name"
-                required
               />
-            </div>
-          </div>
+            </Form.Group>
+          </Row>
 
-          {/* Email */}
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter Email"
-              required
-            />
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter Email"
+              />
+            </Form.Group>
+          </Row>
 
-          {/* Role */}
-          <div className="form-group">
-            <label>Role</label>
-            <select
-              value={roleName}
-              onChange={(e) => setRoleName(e.target.value)}
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="Admin">Admin</option>
-              <option value="Student">Student</option>
-              <option value="Tutor">Tutor</option>
-            </select>
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="role">
+              <Form.Label>Role</Form.Label>
+              <Select
+                isMulti
+                name="roles"
+                options={roles}
+                value={roles.filter((role) => formData.role.includes(role.value))}
+                onChange={(selectedOptions) => handleChange(selectedOptions, { name: 'role' })}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          </Row>
 
-          {/* Password */}
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter Password"
-              required
-            />
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter Password"
+              />
+            </Form.Group>
+          </Row>
 
-          {/* Confirm Password */}
-          <div className="form-group">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm Password"
-              required
-            />
-          </div>
+          <Row className="mb-3">
+            <Form.Group controlId="confirmPassword">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Enter Confirm Password"
+              />
+            </Form.Group>
+          </Row>
 
-          <div className="form-actions">
-            <button type="submit">Save</button>
-          </div>
-        </form>
-      </div>
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+          <Stack>
+            <Button variant="success" type="submit">
+              Save
+            </Button>
+          </Stack>
+        </Form>
+      </Modal.Body>
     </div>
   );
-};
+}
 
 export default CreateUser;

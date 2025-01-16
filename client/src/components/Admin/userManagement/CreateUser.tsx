@@ -1,30 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Modal, Button, Form, Row, Col, Stack } from 'react-bootstrap';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 
-function CreateUser({ onClose }) {
-  const [formData, setFormData] = useState({
+// Define the props for the component
+interface CreateUserProps {
+  onClose: () => void;
+}
+
+// Define the role type
+interface Role {
+  value: string;
+  label: string;
+}
+
+// Define the form data type
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  status: boolean;
+  password: string;
+  confirmPassword: string;
+  role: string[]; // Array of role IDs
+}
+
+export default function CreateUser({ onClose }: CreateUserProps) {
+  const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
+    status: false,
     password: '',
     confirmPassword: '',
     role: [],
   });
 
-  const [errorMessage] = useState('');
-  const [roles, setRoles] = useState([]);
-  const requiredFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'role'];
+  const [roles, setRoles] = useState<Role[]>([]);
+  const requiredFields: (keyof FormData)[] = [
+    'firstName',
+    'lastName',
+    'email',
+    'password',
+    'confirmPassword',
+    'role',
+  ];
   const emptyFields = requiredFields.filter((field) => !formData[field]);
 
-  // Static roles for selection
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/roles`)
+    fetch(`${import.meta.env.VITE_API_URL}/getAllRoles`)
       .then((response) => response.json())
       .then((data) => {
         setRoles(
-          data.map((role) => ({
+          data.map((role: any) => ({
             value: role._id,
             label: role.role_name,
           }))
@@ -35,16 +63,17 @@ function CreateUser({ onClose }) {
       });
   }, []);
 
-  const handleChange = (input, action) => {
+  const handleChange = (
+    input: ChangeEvent<HTMLInputElement> | Role[] | null,
+    action?: { name?: string }
+  ) => {
     if (action?.name === 'role') {
-      // สำหรับ react-select แบบ Multiple
       setFormData((prevState) => ({
         ...prevState,
-        role: input ? input.map((option) => option.value) : [], // เก็บค่าหลายค่าใน array
+        role: input ? (input as Role[]).map((option) => option.value) : [],
       }));
-    } else if (input.target) {
-      // สำหรับ Form.Control
-      const { name, value } = input.target;
+    } else if ((input as ChangeEvent<HTMLInputElement>).target) {
+      const { name, value } = (input as ChangeEvent<HTMLInputElement>).target;
       setFormData((prevState) => ({
         ...prevState,
         [name]: value,
@@ -52,7 +81,7 @@ function CreateUser({ onClose }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (emptyFields.length > 0) {
@@ -65,28 +94,16 @@ function CreateUser({ onClose }) {
       return;
     }
 
-     // Validate email format
-     if (!formData.email) {
-       Swal.fire({
-         icon: "error",
-         title: "Invalid Email",
-         text: "Please enter a valid email address.",
-         confirmButtonText: "OK",
-       });
-       return;
-     }
-
     if (formData.password.length < 8 || formData.password.length > 30) {
       Swal.fire({
-        icon: "error",
-        title: "Invalid Password",
-        text: "Password must be between 8 and 20 characters.",
-        confirmButtonText: "OK",
+        icon: 'error',
+        title: 'Invalid Password',
+        text: 'Password must be between 8 and 30 characters.',
+        confirmButtonText: 'OK',
       });
       return;
     }
 
-    // Validate password and confirmPassword
     if (formData.password !== formData.confirmPassword) {
       Swal.fire({
         icon: 'error',
@@ -97,53 +114,51 @@ function CreateUser({ onClose }) {
       return;
     }
 
-    // Make sure formData.role is an array of role IDs
     const dataToSubmit = {
       firstname: formData.firstName,
       lastname: formData.lastName,
       email: formData.email,
+      status: formData.status,
       password: formData.password,
       role_ids: formData.role,
     };
-    console.log(formData.role);
 
-    // Send data to API
     fetch(`${import.meta.env.VITE_API_URL}/createUser`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataToSubmit),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.message === 'Email is already in use') {
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'Email is already in use') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Email Already Exists',
+            text: 'The email address you entered is already in use. Please try another one.',
+            confirmButtonText: 'OK',
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'User Created',
+            text: 'User created successfully!',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            onClose();
+            window.location.reload();
+          });
+        }
+      })
+      .catch((error) => {
         Swal.fire({
           icon: 'error',
-          title: 'Email Already Exists',
-          text: 'The email address you entered is already in use. Please try another one.',
+          title: 'Error',
+          text: 'Error creating user. Please try again later.',
           confirmButtonText: 'OK',
         });
-      } else {
-        Swal.fire({
-          icon: 'success',
-          title: 'User Created',
-          text: 'User created successfully!',
-          confirmButtonText: 'OK',
-        }).then(() => {
-          onClose();
-          window.location.reload();
-        });
-      }
-    })
-    .catch((error) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Error creating user. Please try again later.',
-        confirmButtonText: 'OK',
+        console.error('Error creating user:', error);
       });
-      console.error('Error creating user:', error);
-    });
-};
+  };
 
   return (
     <div>
@@ -193,7 +208,7 @@ function CreateUser({ onClose }) {
               <Form.Label>Role</Form.Label>
               <Select
                 isMulti
-                name="roles"
+                name="role"
                 options={roles}
                 value={roles.filter((role) => formData.role.includes(role.value))}
                 onChange={(selectedOptions) => handleChange(selectedOptions, { name: 'role' })}
@@ -229,7 +244,6 @@ function CreateUser({ onClose }) {
             </Form.Group>
           </Row>
 
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           <Stack>
             <Button variant="success" type="submit">
               Save
@@ -240,5 +254,3 @@ function CreateUser({ onClose }) {
     </div>
   );
 }
-
-export default CreateUser;

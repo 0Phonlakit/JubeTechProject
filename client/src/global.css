@@ -54,3 +54,9 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0;
   -webkit-appearance: none;
 }
+header{
+  --layout-header-zIndex: 999;
+}
+.css-1h78fa4{
+  --layout-nav-zIndex: 999;
+}

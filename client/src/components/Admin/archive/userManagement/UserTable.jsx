@@ -1,271 +1,126 @@
-import React, { useState, useEffect } from "react";
-import CreateUser from "./CreateUser"; 
-import EditUser from "./EditUser"; 
-import DeleteUser from "./DeleteUser"; 
-import "./style/UserTable.css";
-import EditIcon from "../assets/editIcon.png";
-import BinIcon from "../assets/binIcon.png";
+import React, { useState, useEffect } from 'react';
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+import { Modal, Button, Breadcrumb} from 'react-bootstrap';
+import CreateUser from './CreateUser';
+import EditUser from './EditUser';
+import DeleteUser from './DeleteUser';
+import EditIcon from "../../../assets/img/icon/editIcon.png";
+import BinIcon from "../../../assets/img/icon/binIcon.png";
 
-const UserTable = () => {
+DataTable.use(DT);
+
+function UserTable() {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
-  const [page, setPage] = useState(1);
-  const [entriesPerPage, setEntriesPerPage] = useState(25);
-  const [showCreateUserPopup, setShowCreateUserPopup] = useState(false);
-  const [showEditUserPopup, setShowEditUserPopup] = useState(false);
-  const [editUserId, setEditUserId] = useState(null);
-  const [showDeleteUser, setShowDeleteUser] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const fetchUsers = async () => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/getAllUsers`);
-    const data = await response.json();
-    setUsers(data);
-    setFilteredUsers(data);  // Set initial state to show all users
-  };
-
+  // Fetch data from API
   useEffect(() => {
-    fetchUsers();
+    fetch(`${import.meta.env.VITE_API_URL}/getAllUsers`)
+      .then(response => response.json())
+      .then(data => setUsers(data))
+      .catch(error => console.error('Error fetching user data:', error));
   }, []);
 
-  const handleSearchChange = (e) => setSearchQuery(e.target.value);
-  const handleRoleChange = (e) => setSelectedRole(e.target.value);
-  const handleEntriesChange = (e) => setEntriesPerPage(Number(e.target.value));
-
-  const getRoleClass = (roleName) => {
-    switch (roleName) {
-      case "Admin":
-        return "admin";
-      case "Student":
-        return "student";
-      case "Tutor":
-        return "tutor";
-      default:
-        return "";
-    }
-  };
-
-  // Trigger search only when button is clicked
-  const handleSearchClick = () => {
-    let filtered = users;
-
-    if (searchQuery) {
-      filtered = filtered.filter((user) =>
-        user.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user._id.toString().includes(searchQuery)
-      );
-    }
-
-    if (selectedRole) {
-      filtered = filtered.filter((user) =>
-        user.role.some(role => role.role_name === selectedRole)
-      );
-    }
-
-    setFilteredUsers(filtered); // Update filteredUsers after search
-    setPage(1);  // Reset to the first page after searching
-  };
-
-  const handleNextPage = () => {
-    const totalPages = Math.ceil(filteredUsers.length / entriesPerPage);
-    if (page < totalPages) {
-      setPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage((prev) => Math.max(prev - 1, 1));
-    }
-  };
-
-  const handleAddUser = () => {
-    setShowCreateUserPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowCreateUserPopup(false);
-    setShowEditUserPopup(false);
-    setShowDeleteUser(false);
-    setEditUserId(null);
-    setUserToDelete(null);
-  };
-
-  const handleCreateUser = (newUser) => {
-    setUsers((prevUsers) => [...prevUsers, newUser]);
-    setFilteredUsers((prevFilteredUsers) => [...prevFilteredUsers, newUser]); 
-  };
-
+  // Handle Modal Toggle
+  const handleCreateUser = () => setShowCreateModal(true);
   const handleEditUser = (userId) => {
-    setEditUserId(userId);
-    setShowEditUserPopup(true);
+    const user = users.find((user) => user._id === userId);
+    setSelectedUser(user); 
+    setShowEditModal(true);
   };
 
-  const handleUpdateUser = (response) => {
-    const updatedUser = response.user;
+  const handleDeleteUser = (userId) => {
+    const user = users.find((user) => user._id === userId);
+    setSelectedUser(user);
+    setShowDeleteModal(true);
+  };
 
-    if (!updatedUser || !updatedUser._id) {
-      console.error("Invalid updated user data", updatedUser);
-      return;
+  window.MyFunction = (id, action) => {
+    if (action === 'edit') {
+      //console.log(id);
+      handleEditUser(id);
+    } else if (action === 'delete') {
+      //console.log(id)
+      handleDeleteUser(id);
     }
-
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user._id === updatedUser._id ? updatedUser : user
-      )
-    );
-    setFilteredUsers((prevFilteredUsers) =>
-      prevFilteredUsers.map((user) =>
-        user._id === updatedUser._id ? updatedUser : user
-      )
-    ); 
   };
 
-  const handleDeleteClick = (userId) => {
-    setUserToDelete(userId);
-    setShowDeleteUser(true);
-  };
-
-  const handleDeleteUser = async () => {
-    if (userToDelete) {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/deleteUser/${userToDelete}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userToDelete));
-        setFilteredUsers((prevFilteredUsers) => prevFilteredUsers.filter((user) => user._id !== userToDelete));
-        setShowDeleteUser(false);
-      } else {
-        alert("Failed to delete user.");
+  const columns = [
+    { title: 'No', data: null, render: (data, type, row, meta) => meta.row + 1 },
+    { title: 'First Name', data: 'firstname' },
+    { title: 'Last Name', data: 'lastname' },
+    { title: 'Email', data: 'email' },
+    { title: 'Role', data: 'role_ids', render: (data) => {
+      if (data && data.length > 0) {
+        return data.map((role) => {
+          const textcolor = role.role_name === 'Admin' ? '#004EFB' : role.role_name === 'Student' ? '#857D7D' : '#F68B00';
+          return `<span style="color: ${textcolor}; margin-right: 5px; font-weight: bold;">${role.role_name}</span>`;
+        }).join(', ');
       }
+      return '';
     }
-  };
+  },
+    {
+      title: 'Action', data: '_id', render: (data, type, row) => (`
+        <div>
+          <button onclick="MyFunction('${data}', 'edit')" class="btn btn-warning"> 
+          <img src= ${EditIcon} alt="Edit" width="20" /> </button>
+          <button onclick="MyFunction('${data}', 'delete')" class="btn btn-danger"> 
+          <img src= ${BinIcon} alt="Delete" width="20" /> </button>
+        </div>`
+      ),
+    },
+  ];
 
   return (
-    <div className="user-table">
-      <div className="breadcrumb">
-        <span className="breadcrumb-item">User Management</span>
-        <span className="breadcrumb-item active">User List</span>
+    <div>
+      <Breadcrumb>
+        <Breadcrumb.Item href={`${import.meta.env.VITE_API_PAGE}/usermanagement`}> User Management </Breadcrumb.Item>
+        <Breadcrumb.Item active>User List</Breadcrumb.Item>
+      </Breadcrumb>
+      <div className="d-flex align-items-center gap-2 mb-3 justify-content-end">
+        <Button variant="warning" onClick={handleCreateUser}><strong>+ Add User</strong></Button>
       </div>
 
-      <div className="filters">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search by User Name or User ID"
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
-        <select className="role-select" value={selectedRole} onChange={handleRoleChange}>
-          <option value="">Select Role</option>
-          <option value="Admin">Admin</option>
-          <option value="Student">Student</option>
-          <option value="Tutor">Tutor</option>
-        </select>
-        <button className="search-button" onClick={handleSearchClick}>Search</button>
-        <button className="add-user-button" onClick={handleAddUser}>+ Add User</button>
-      </div>
 
-      <div className="entries-pagination-container">
-        <div className="entries-display">
-          <span>Show </span>
-          <input
-            type="number"
-            value={entriesPerPage}
-            onChange={handleEntriesChange}
-            min="1"
-          />
-          <span> entries</span>
-        </div>
-      </div>
+      <DataTable
+        data={users}
+        columns={columns}
+        className="display"
+        options={{
+          paging: true,
+          searching: true,
+          ordering: true,
+          info: true,
+          buttons: true,
+          searchbuilder: true
+        }}
+      />
 
-      <table className="user-table">
-        <thead>
-          <tr>
-            <th><input type="checkbox" /></th>
-            <th>No</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.slice((page - 1) * entriesPerPage, page * entriesPerPage).map((user, index) => (
-            <tr key={user._id}>
-              <td><input type="checkbox" /></td>
-              <td>{(page - 1) * entriesPerPage + index + 1}</td>
-              <td>{user.firstname}</td>
-              <td>{user.lastname}</td>
-              <td>{user.email}</td>
-              <td>
-                <span className={`role-badge ${getRoleClass(user.role[0].role_name)}`}>
-                  {user.role[0].role_name}
-                </span>
-              </td>
-              <td>
-                <button 
-                  onClick={() => handleEditUser(user._id)} 
-                  className="edit-button">
-                  <img src={EditIcon} alt="Edit" />
-                </button>
-                <button 
-                  onClick={() => handleDeleteClick(user._id)} 
-                  className="delete-button">
-                  <img src={BinIcon} alt="Delete" />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Modal for Create User */}
+      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
+        <CreateUser onClose={() => setShowCreateModal(false)} />
+      </Modal>
 
-      <div className="entries-pagination-container">
-        <div className="entries-range">
-          <span>
-            Show {((page - 1) * entriesPerPage) + 1} to {Math.min(page * entriesPerPage, filteredUsers.length)} of {filteredUsers.length} entries
-          </span>
-        </div>
-
-        <div className="pagination">
-          <div className="page-buttons">
-            <button onClick={handlePreviousPage}>Previous</button>
-            <span className="current-page">{page}</span>
-            <button 
-              onClick={handleNextPage}
-              disabled={page === Math.ceil(filteredUsers.length / entriesPerPage)}>
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {showCreateUserPopup && (
-        <CreateUser
-          onClose={handleClosePopup}
-          onCreateUser={handleCreateUser}
-        />
+      {/* Modal for Edit User */}
+      {selectedUser && (
+        <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+          <EditUser userId={selectedUser._id} onClose={() => setShowEditModal(false)} />
+        </Modal>
       )}
-      {showEditUserPopup && (
-        <EditUser
-          userId={editUserId}
-          onClose={handleClosePopup}
-          onUpdateUser={handleUpdateUser}
-        />
-      )}
-      {showDeleteUser && (
-        <DeleteUser
-          onClose={handleClosePopup}
-          onDeleteUser={handleDeleteUser}
-        />
+
+      {/* Modal for Delete User */}
+      {selectedUser && (
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+          <DeleteUser userId={selectedUser._id} onClose={() => setShowDeleteModal(false)} />
+        </Modal>
       )}
     </div>
   );
-};
+}
 
 export default UserTable;

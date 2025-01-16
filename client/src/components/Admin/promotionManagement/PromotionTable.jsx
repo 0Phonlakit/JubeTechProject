@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import { Modal, Button, Breadcrumb} from 'react-bootstrap';
 import CreatePromotion from './CreatePromotion';
 import EditPromotion from './EditPromotion';
 import DeletePromotion from './DeletePromotion'
-import EditIcon from "../assets/editIcon.png";
-import BinIcon from "../assets/binIcon.png"
+import EditIcon from "../../../assets/img/icon/editIcon.png";
+import BinIcon from "../../../assets/img/icon/binIcon.png";
 
 DataTable.use(DT);
 
@@ -70,7 +69,7 @@ function PromotionTable() {
     return (
         <div>
             <Breadcrumb>
-                <Breadcrumb.Item href="http://localhost:3000/promotionmanagement"> Promotion Management </Breadcrumb.Item>
+                <Breadcrumb.Item href={`${import.meta.env.VITE_API_PAGE}/promotionmanagement`}> Promotion Management </Breadcrumb.Item>
                 <Breadcrumb.Item active>Promotion List</Breadcrumb.Item>
             </Breadcrumb>
             <div className="d-flex align-items-center gap-2 mb-3 justify-content-end">
