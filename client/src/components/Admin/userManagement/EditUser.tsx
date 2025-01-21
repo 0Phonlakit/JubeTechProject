@@ -3,23 +3,42 @@ import { Modal, Button, Form, Row, Col, Stack } from 'react-bootstrap';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 
-function EditUser({ userId, onClose }) {
-  const [formData, setFormData] = useState({
+type Role = {
+  _id: string;
+  role_name: string;
+};
+
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string[];
+  currentPassword: string;
+  newPassword: string;
+  status: boolean;
+};
+
+type EditUserProps = {
+  userId: string;
+  onClose: () => void;
+};
+
+export default function EditUser({ userId, onClose }: EditUserProps) {
+  const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
-    role: [], // เปลี่ยนจาก string เป็น array เพื่อเก็บหลาย role
-    currentPassword: '', 
-    newPassword: '', 
+    role: [],
+    currentPassword: '',
+    newPassword: '',
+    status: false,
   });
-  const [roles, setRoles] = useState([]);
-  const [errorMessage] = useState('');
-  const requiredFields = ['firstName', 'lastName', 'email', 'role'];
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [errorMessage] = useState<string>('');
+  const requiredFields = ['firstName', 'lastName', 'email', 'role'] as const;
   const emptyFields = requiredFields.filter((field) => !formData[field]);
 
-  // Fetch user data and roles
   useEffect(() => {
-    // Fetch user data by ID
     fetch(`${import.meta.env.VITE_API_URL}/getUser/${userId}`)
       .then((response) => response.json())
       .then((data) => {
@@ -29,34 +48,37 @@ function EditUser({ userId, onClose }) {
           email: data.email,
           currentPassword: '',
           newPassword: '',
-          role: data.role_ids ? data.role_ids.map(role => role._id) : [], // เก็บ role เป็น array ของ _id
+          role: data.role_ids ? data.role_ids.map((role: { _id: string }) => role._id) : [],
+          status: data.status,
         });
       })
       .catch((error) => console.error('Error fetching user data:', error));
 
-    // Fetch available roles
-    fetch(`${import.meta.env.VITE_API_URL}/roles`)
+    fetch(`${import.meta.env.VITE_API_URL}/getAllRoles`)
       .then((response) => response.json())
       .then((data) => setRoles(data))
       .catch((error) => console.error('Error fetching roles:', error));
   }, [userId]);
 
-  const handleChange = (input, action) => {
+  const handleChange = (
+    input: React.ChangeEvent<HTMLInputElement> | any,
+    action?: { name: string }
+  ) => {
     if (action?.name === 'role') {
       setFormData((prevState) => ({
         ...prevState,
-        role: input ? input.map((option) => option.value) : [], // เก็บ role หลายๆ ตัวใน array
+        role: input ? input.map((option: { value: string }) => option.value) : [],
       }));
     } else if (input.target) {
-      const { name, value } = input.target;
+      const { name, value, type, checked } = input.target;
       setFormData((prevState) => ({
         ...prevState,
-        [name]: value,
+        [name]: type === 'checkbox' ? checked : value,
       }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (emptyFields.length > 0) {
       Swal.fire({
@@ -66,7 +88,6 @@ function EditUser({ userId, onClose }) {
         confirmButtonText: 'OK',
       });
       return;
-      
     }
 
     if (!formData.email) {
@@ -103,12 +124,12 @@ function EditUser({ userId, onClose }) {
       firstname: formData.firstName,
       lastname: formData.lastName,
       email: formData.email,
-      role_ids: formData.role, // ส่ง role_ids เป็น array ของ _id
+      status: formData.status,
+      role_ids: formData.role,
       currentPassword: formData.currentPassword,
       ...(formData.newPassword && { password: formData.newPassword }),
     };
 
-    // Send PUT request to update user data
     fetch(`${import.meta.env.VITE_API_URL}/updateUser/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -116,7 +137,7 @@ function EditUser({ userId, onClose }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.message === "Current password is incorrect") {
+        if (data.message === 'Current password is incorrect') {
           Swal.fire({
             icon: 'error',
             title: 'Current Password Error',
@@ -125,7 +146,6 @@ function EditUser({ userId, onClose }) {
           });
           return;
         }
-        
         Swal.fire({
           icon: 'success',
           title: 'User Updated',
@@ -200,10 +220,12 @@ function EditUser({ userId, onClose }) {
                   value: role._id,
                   label: role.role_name,
                 }))}
-                value={roles.filter((role) => formData.role.includes(role._id)).map((role) => ({
-                  value: role._id,
-                  label: role.role_name,
-                }))}
+                value={roles
+                  .filter((role) => formData.role.includes(role._id))
+                  .map((role) => ({
+                    value: role._id,
+                    label: role.role_name,
+                  }))}
                 onChange={handleChange}
                 className="basic-multi-select"
                 classNamePrefix="select"
@@ -237,6 +259,23 @@ function EditUser({ userId, onClose }) {
             </Form.Group>
           </Row>
 
+          <Row className="mb-3">
+            <Form.Group controlId="status">
+              <Form.Check
+                type="checkbox"
+                label="Activate User"
+                name="status"
+                checked={formData.status}
+                onChange={(e) => {
+                  setFormData((prevState) => ({
+                    ...prevState,
+                    status: e.target.checked,
+                  }));
+                }}
+              />
+            </Form.Group>
+          </Row>
+
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
           <Stack>
@@ -249,5 +288,3 @@ function EditUser({ userId, onClose }) {
     </div>
   );
 }
-
-export default EditUser;

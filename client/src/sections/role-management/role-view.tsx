@@ -1,11 +1,11 @@
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import UserManagementPage from 'src/components/Admin/userManagement/UserTable';
+import RoleManagementPage from 'src/components/Admin/roleManagement/RoleTable';
 
 export function UserView() {
     return (
         <DashboardContent>
-            <UserManagementPage />
+            <RoleManagementPage />
         </DashboardContent>
     );
 }

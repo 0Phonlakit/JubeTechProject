@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const Role = require("../models/Role");
+const Role = require('../models/Role');
 const bcrypt = require("bcryptjs");
 const {
   validateEmail,
@@ -55,14 +55,19 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: "Email is already in use" });
     }
 
-    // Create user
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Fetch roles to determine if "Admin" role is included
+    const roles = await Role.find({ _id: { $in: role_ids } });
+    const isAdmin = roles.some(role => role.role_name === "Admin");
+
     const newUser = new User({
       firstname,
       lastname,
       email,
       password: hashedPassword,
       role_ids: role_ids.map(id => new mongoose.Types.ObjectId(id)),
+      status: isAdmin,
     });
 
     await newUser.save();
@@ -75,7 +80,7 @@ const createUser = async (req, res) => {
 // Update User
 const updateUser = async (req, res) => {
   try {
-    const { firstname, lastname, email, password, role_ids, currentPassword } = req.body;
+    const { firstname, lastname, email, password, role_ids, currentPassword, status } = req.body;
 
     // Validate inputs
     if (email && !validateEmail(email)) {
@@ -105,6 +110,7 @@ const updateUser = async (req, res) => {
     // Update other fields
     user.firstname = firstname || user.firstname;
     user.lastname = lastname || user.lastname;
+    user.status = (status || status === false) ? status : user.status;
     user.email = email || user.email;
     user.role_ids = role_ids.map(id => new mongoose.Types.ObjectId(id)) || user.role_ids;
 
@@ -126,22 +132,11 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// getAllRoles
-const getAllRoles = async (req, res) => {
-  try {
-    const roles = await Role.find();
-    res.status(200).json(roles);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching roles", error: err.message });
-  }
-};
-
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
-  getAllRoles,
   getApiMessage
 };
