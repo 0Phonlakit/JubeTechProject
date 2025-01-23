@@ -19,6 +19,7 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const UserManagement = lazy(() => import('src/pages/userManagement'));
 export const RoleManagement = lazy(() => import('src/pages/RoleManagement'));
 export const PromotinManagement = lazy(() => import('src/pages/promotionManagement'));
+export const LandingPage = lazy(() => import('src/pages/landing'));
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ export function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <HomePage />, index: true },
+        { element: <HomePage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
@@ -54,6 +55,10 @@ export function Router() {
         { path: 'rolemanagement', element: <RoleManagement /> },
         { path: 'promotionmanagement', element: <PromotinManagement /> },
       ],
+    },
+    {
+      path: "/",
+      element: <LandingPage />
     },
     {
       path: 'sign-in',

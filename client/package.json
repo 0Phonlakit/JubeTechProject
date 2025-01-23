@@ -25,13 +25,13 @@
   "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@emotion/cache": "^11.13.1",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fontsource-variable/dm-sans": "^5.0.7",
     "@fontsource/barlow": "^5.0.14",
     "@iconify/react": "^5.0.2",
     "@mui/lab": "^5.0.0-alpha.173",
-    "@mui/material": "^5.16.7",
+    "@mui/material": "^5.16.14",
     "apexcharts": "^4.3.0",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
@@ -54,6 +54,7 @@
     "react-select": "^5.8.3",
     "simplebar-react": "^3.2.6",
     "sweetalert2": "^11.14.5",
+    "swiper": "^11.2.1",
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {

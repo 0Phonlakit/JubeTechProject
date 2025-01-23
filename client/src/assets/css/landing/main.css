@@ -1,0 +1,314 @@
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --main-purple: #BB2AFF;
+    --main-pink: #FF24F6;
+    --normal-text: #20272C;
+    --btn-color: #7001A4
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.landing-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 375px;
+}
+
+.landing-page *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Mitr", sans-serif;
+}
+
+nav {
+    width: 100vw;
+    height: 75px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0px 5px 7px 0px #00000010;
+    flex-wrap: wrap;
+}
+
+div.logo span {
+    color: var(--normal-text);
+    font-family: "Poppins", sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+div.logo span > span {
+    background: -webkit-linear-gradient(45deg, var(--main-purple) 0%, var(--main-pink) 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+div.responsive-container {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+div.responsive-container > svg {
+    display: none;
+}
+
+div.search-container {
+    padding: 5px;
+    width: clamp(120px, 45vw, 380px);
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #000000;
+    border-radius: 30px;
+    gap: 10px;
+}
+
+div.search-container input {
+    height: 100%;
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-weight: 300;
+    background-color: transparent;
+}
+
+div.search-container input::placeholder {
+    font-weight: 300;
+}
+
+ul.page-container {
+    display: flex;
+    gap: 15px;
+}
+
+ul.page-container a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #010101;
+}
+
+ul.page-container a i {
+    font-size: 20px;
+}
+
+div.button-container {
+    display: flex;
+    gap: 15px;
+}
+
+div.button-container button {
+    padding: 5px 30px;
+    border-radius: 35px;
+    height: clamp(37px, 10vh, 37px);
+}
+
+button.signin-btn {
+    color: var(--btn-color);
+    border: 2px solid var(--btn-color);
+    background-color: transparent;
+}
+
+button.signup-btn {
+    color: #FFFFFF;
+    border: none;
+    background-color: var(--btn-color);
+}
+
+header {
+    width: 95%;
+    margin-top: 80px !important;
+    padding: 0px 40px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    overflow: hidden;
+}
+
+header div.slogan {
+    width: 65%;
+}
+
+header h1 {
+    margin-bottom: 30px !important;
+}
+
+header p {
+    margin-bottom: 35px !important;
+}
+
+header button {
+    color: #FFFFFF;
+    border: none;
+    background-color: #8B12EB;
+    padding: 7px 30px !important;
+    border-radius: 12px;
+}
+
+header img {
+    position: relative;
+    width: clamp(300px, 30vw, 350px);
+    filter: drop-shadow(5px 10px 2px #00000060);
+    animation-name: factory-move;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes factory-move {
+    0% { top: 0px; }
+    25% { top: 10px }
+    50% { top: -15px }
+    75% { top: 10px; }
+    100% { top: 0px; }
+}
+
+div.card-container {
+    width: clamp(350px, 97%, 1600px);
+    margin: 0 auto;
+    margin-top: 50px;
+    padding: 0 60px !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 15px;
+    box-shadow: -2px -2px 4px 0px #00000010, 5px 4px 4px 0px #00000015;
+    margin-bottom: 100px !important;
+}
+
+div.card-content {
+    width: clamp(300px, 30%, 300px);
+    display: flex;
+    margin: 50px 30px !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+div.card-content img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+div.card-content p {
+    font-size: 1.1rem;
+}
+
+div.course-slide h2 {
+    font-size: 1.5rem;
+    margin-left: 20px !important;
+    margin-bottom: 80px !important;
+}
+
+div.swiper-slide {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    overflow-y: hidden;
+    cursor: grab;
+    padding: 0 40px !important;
+}
+
+div.swiper-button-prev::after, div.swiper-button-next::after {
+    color: #1c1c1c;
+}
+
+div.course-card {
+    display: flex;
+    flex-direction: column;
+    width: clamp(250px, 45vw, 255px);
+    height: 350px;
+    box-shadow: -2px -2px 4px 0px #00000005, 3px 3px 2px 0px #00000010;
+    margin-bottom: 20px !important;
+    border-radius: 15px;
+}
+
+div.course-card img {
+    width: 255px;
+    height: 205px;
+    object-fit: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+div.course-card p, div.option-container{
+    margin: 0 10px !important;
+}
+
+p.text-muted {
+    font-size: 0.7rem;
+}
+
+div.option-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px !important;
+}
+
+div.option-container button {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    border: none;
+    color: #FFFFFF;
+    width: 80px;
+    height: 25px;
+    font-size: 0.65rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    background-color: #A000C8;
+}
+
+div.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 5;
+}
+
+div.rating-container p{
+    font-size: 0.8rem;
+    margin-top: 2px !important;
+    font-family: "Poppins", sans-serif;
+}
+
+@media only screen and (max-width: 1494px) {
+    nav {
+        justify-content: space-around;
+    }
+
+    div.responsive-container > svg {
+        display: block;
+        cursor: pointer;
+    }
+
+    div.responsive-container div, div.responsive-container ul {
+        display: none;
+    }
+    
+    header {
+        text-align: center;
+        justify-content: center;
+    }
+
+    div.card-container {
+        width: clamp(350px, 90%, 1600px);
+    }
+}
