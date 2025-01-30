@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import { Modal, Button, Breadcrumb } from 'react-bootstrap';
@@ -7,7 +7,6 @@ import EditRole from './EditRole';
 import DeleteRole from './DeleteRole';
 import EditIcon from '../../../assets/img/icon/editIcon.png';
 import BinIcon from '../../../assets/img/icon/binIcon.png';
-import { render } from 'react-dom';
 
 DataTable.use(DT);
 

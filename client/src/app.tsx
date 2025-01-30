@@ -1,18 +1,29 @@
-import 'src/global.css';
+import './App.css';
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import { Router } from 'src/routes/sections';
+// Pages
+const UserTable = lazy(() => import("./pages/UserTable"));
+const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
+const Landing = lazy(() => import("./pages/Landing"));
 
-import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 
-import { ThemeProvider } from 'src/theme/theme-provider';
+function App() {
 
-// ----------------------------------------------------------------------
-
-export default function App() {
-  useScrollToTop();
   return (
-    <ThemeProvider>
-      <Router />
-    </ThemeProvider>
+    <BrowserRouter future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true
+    }}>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Landing />}></Route>
+          <Route path="/dashboard/user-management" element={<UserTable />}></Route>
+          <Route path="/dashboard" element={<TutorDashboard />}></Route>
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
   );
 }
+
+export default App;

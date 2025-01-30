@@ -1,4 +1,3 @@
-import React from 'react';
 import { Modal, Button, Col } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 

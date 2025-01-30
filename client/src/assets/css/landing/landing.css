@@ -1,0 +1,141 @@
+.landing {
+    width: 100%;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+header {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0px 30px;
+}
+
+header h1 {
+    font-size: 2rem;
+}
+
+header img {
+    position: relative;
+    width: clamp(250px, 60vw, 350px);
+    animation-name: model-move;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes model-move {
+    0% {top: 0;}
+    25% {top: 10px;}
+    50% {top: -15px;}
+    75% {top: 0px;}
+}
+
+.content {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+.content p {
+    color: #565656;
+    margin-top: 10px;
+}
+
+.content a {
+    margin-top: 15px;
+    width: clamp(190px, 25vw, 230px);
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #8B12EB;
+    padding: 10px 25px;
+    border-radius: 15px;
+    transition: all 0.5s;
+}
+
+.content a:hover {
+    background-color: #a948f8;
+    transition: all 0.5s;
+}
+
+.card-list {
+    margin-top: 100px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.card-container {
+    width: 350px;
+    display: flex;
+    align-items: center;
+}
+
+.card-container p {
+    font-size: 0.9rem;
+}
+
+.card-list img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+}
+
+.auth-mobile a{
+    color: rgb(21, 25, 253);
+    text-decoration: underline;
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M2 5L8 11L14 5'/%3e%3c/svg%3e");
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--text-primary);
+    /* background-color: transparent; */
+}
+
+@media only screen and (max-width:1200px) {
+    .content {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card-container {
+        width: 350px;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-container p {
+        font-size: 0.9rem;
+    }
+
+    header img {
+        margin-top: 35px;
+    }
+
+    h1 {
+        font-size: 1.8rem ;
+    }
+
+    .content p {
+        font-size: 0.9rem;
+    }
+
+    .content a {
+        font-size: clamp(12px, 90%, 14px);
+    }
+
+    .card-list img {
+        width: 120px;
+        height: 120px;
+    }
+}

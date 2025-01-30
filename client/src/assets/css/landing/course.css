@@ -1,0 +1,100 @@
+.course-list {
+    cursor:grab;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.course-list-container h2 {
+    margin-top: 100px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.course-list:active {
+    cursor:grabbing;
+}
+
+.course-container {
+    width: 260px;
+    box-shadow: -2px -2px 3px 0px #00000005, 3px 3px 4px 0px #00000010;
+    border-radius: 15px;
+}
+
+.course-container .course-content {
+    padding: 20px 15px;
+}
+
+.course-container strong {
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.1rem;
+    text-align: justify;
+}
+
+.course-content > span {
+    width: 100%;
+    color: #777777;
+    font-size: 0.75rem;
+    text-align: justify;
+}
+
+.swiper-wrapper {
+    padding-bottom: 55px;
+}
+
+.swiper-slide, .course-info, .rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.course-info {
+    margin-top: 15px;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.rating {
+    justify-content: flex-start;
+}
+
+.course-container img {
+    width: 100%;
+    height: 190px;
+}
+
+.MuiBox-root {
+    font-size: 0.85rem;
+}
+
+.course-info a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.65rem;
+    padding: 5px 15px;
+    color: #FFFFFF;
+    background-color: #A000C8;
+    border-radius: 15px;
+    transition: all 0.5s;
+}
+
+.course-info a:hover{
+    background-color: #ab36c9;
+    transition: all 0.5s;
+}
+
+@media only screen and (max-width:1200px) {
+    .course-container {
+        width: 240px;
+    }
+
+    .course-container img {
+        height: 170px;
+    }
+
+}

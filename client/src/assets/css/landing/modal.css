@@ -1,0 +1,120 @@
+.modal-content {
+    width: 80% !important;
+    margin-left: 65px;
+    padding: 45px 50px;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-container img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.modal-title span {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    background: -webkit-linear-gradient(180deg, var(--header-modal-pink), var(--header-modal-purple));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+*:focus { 
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+label {
+    color: var(--text-label);
+    font-family: "Poppins", sans-serif;
+    font-size: clamp(12px, 120%, 14px);
+    font-weight: 700;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.modal input::-webkit-outer-spin-button,
+.modal input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.modal input[type=number] {
+    appearance: textfield;
+}
+
+.modal input::placeholder {
+    font-family: "Mitr", sans-serif;
+    font-size: clamp(12px, 90%, 13px);
+    font-weight: 400;
+}
+
+.modal input:focus {
+    border: 1px solid purple !important;
+    box-shadow: 0px 0px 1px 1px rgba(255, 87, 255, 0.616) !important;
+}
+
+.ref-code {
+    margin-left: 5px;
+    font-size: clamp(12px, 120%, 13px);
+    font-weight: 400;
+    color: var(--text-black-primary);
+}
+
+.forgot-password {
+    color: #7F0437;
+    font-weight: 400;
+    font-size: clamp(12px, 120%, 13px);
+}
+
+.resend-otp {
+    color: #AF05FE;
+    text-decoration: underline;
+    text-decoration-color: #AF05FE;
+    font-size: clamp(13px, 120%, 14px);
+}
+
+.wait-resend {
+    color: var(--text-black-primary);
+    font-size: clamp(13px, 120%, 14px);
+}
+
+.signup-link {
+    color: var(--text-black-primary);
+    font-size: clamp(14px, 120%, 15px);
+}
+
+.signup-link a {
+    color: #a502f0;
+    text-decoration: underline;
+    text-decoration-color: #a502f0;
+}
+
+.modal button[type="submit"] {
+    color: #FFFFFF;
+    margin-top: 15px;
+    margin-left: auto;
+    background-color: #A900F8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 25px;
+    border-radius: 10px;
+}
+
+@media only screen and (max-width: 1440px) {
+    .modal-content {
+        margin: 0;
+        width: 100% !important;
+        padding: 35px 25px;
+    }
+}

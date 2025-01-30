@@ -1,0 +1,166 @@
+nav.topbar, .responsive-container, .page-container, .button-container, .page-container a {
+    display: flex;
+    align-items: center;
+}
+
+nav.topbar {
+    width: 100%;
+    padding: 15px 20px;
+    box-shadow: 0px 4px 4px 0px #00000005;
+}
+
+.logo {
+    width: 18%;
+    min-width: 182px;
+}
+
+.logo span {
+    color: var(--text-black-primary);
+    font-family: "Poppins", sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.logo span > span {
+    background: -webkit-linear-gradient(45deg, var(--purple-logo-primary), var(--pink-logo-primary));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.responsive-container > i {
+    font-size: 28px;
+    display: none;
+}
+
+.responsive-container {
+    width: 80%;
+    justify-content: flex-start;
+}
+
+.search-container {
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 35px;
+    width: clamp(220px, 60%, 500px);
+    border: 1px solid #cecece;
+    border-radius: 35px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container i {
+    font-size: 18px;
+}
+
+.search-container input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+.page-container {
+    margin-left: 30px;
+    gap: 15px;
+}
+
+.page-container a {
+    gap: 5px;
+    transition: all 0.5s;
+}
+
+.page-container a:hover {
+    color: var(--purple-logo-primary);
+    transition: all 0.5s;
+}
+
+.page-container i {
+    font-size: 20px;
+}
+
+.button-container {
+    margin-left: auto;
+    gap: 20px;
+}
+
+.button-container button {
+    border: none;
+    border-radius: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 30px;
+}
+
+button#signin-btn {
+    color: var(--button-primary);
+    border: 2px solid var(--button-primary);
+    background-color: transparent;
+    transition: all 0.5s;
+}
+
+button#signin-btn:hover {
+    color: #FFFFFF;
+    background-color: rgb(117, 0, 195);
+    transition: all 0.5s;
+}
+
+button#signup-btn {
+    color: #FFFFFF;
+    background-color: var(--button-primary);
+    transition: all 0.5s;
+}
+
+button#signup-btn:hover {
+    background-color: rgb(225, 179, 255);
+    transition: all 0.5s;
+} 
+
+
+@media only screen and (max-width: 1440px) {
+    .responsive-container{
+        justify-content: flex-end;
+    }
+
+    .responsive-container > i {
+        cursor: pointer;
+        display: block;
+    }
+
+    .responsive-container div {
+        display: none;
+    }
+
+    .page-container {
+        margin: 0;
+        gap: 0;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .search-container {
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .search-mobile {
+        padding: 5px 10px;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 5px;
+        width: 80px;
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(117, 0, 195);
+    }
+}
