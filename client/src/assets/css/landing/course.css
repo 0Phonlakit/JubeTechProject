@@ -16,32 +16,6 @@
     cursor:grabbing;
 }
 
-.course-container {
-    width: 260px;
-    box-shadow: -2px -2px 3px 0px #00000005, 3px 3px 4px 0px #00000010;
-    border-radius: 15px;
-}
-
-.course-container .course-content {
-    padding: 20px 15px;
-}
-
-.course-container strong {
-    width: 100%;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    font-family: "Poppins", sans-serif;
-    font-size: 1.1rem;
-    text-align: justify;
-}
-
-.course-content > span {
-    width: 100%;
-    color: #777777;
-    font-size: 0.75rem;
-    text-align: justify;
-}
-
 .swiper-wrapper {
     padding-bottom: 55px;
 }
@@ -90,11 +64,11 @@
 
 @media only screen and (max-width:1200px) {
     .course-container {
-        width: 240px;
+        width: 220px;
     }
 
     .course-container img {
-        height: 170px;
+        height: 180px;
     }
 
 }

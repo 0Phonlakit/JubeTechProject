@@ -19,8 +19,10 @@ export default function MainDashboard({ title, order, children }:MainDashboardPr
             <Sidebar order={order} />
             <div className="main-content">
                 <Topbar />
-                <div className="table-responsive content">
-                    {children}
+                <div className="table-responsive">
+                    <div className="dashboard-content">
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>

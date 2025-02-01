@@ -4,16 +4,20 @@ header.topbar {
     justify-content: flex-end;
     align-items: center;
     height: 80px;
+    min-height: 80px;
     background-color: #FFFFFF;
     padding-right: 30px;
     box-shadow: 0px 3px 3px 0px #00000015;
     position: relative;
+    margin-bottom: 30px;
 }
 
 .option-avatar {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 5px;
+    cursor: pointer;
 }
 
 .option-avatar i {
@@ -25,4 +29,94 @@ header.topbar {
     height: 57px;
     object-fit: cover;
     border-radius: 50%;
+}
+
+.dropdown-container {
+    user-select: none;
+    position: absolute;
+    top: 10vh;
+    right: 5vw;
+    background-color: #FFFFFF;
+    padding: 10px 0;
+    box-shadow: -1px -1px 4px 0px #00000015, 2px 2px 2px 0px #00000020;
+    border-radius: 5px;
+    z-index: 2;
+    width: 220px;
+    transform: translateX(20px) translateY(-30px);
+    filter: opacity(0);
+    pointer-events: none;
+    transition: all 0.5s;
+}
+
+.dropdown-container.active {
+    display: block;
+    transform: translateX(0px) translateY(0px);
+    filter: opacity(1);
+    transition: all 0.5s;
+    pointer-events: all;
+}
+
+.dropdown-container img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dropdown-container div {
+    padding: 0px 10px;
+}
+
+.dropdown-container .avatar-info, .dropdown-container a div {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-container i {
+    font-size: 18px;
+}
+
+.content-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.content-info p {
+    font-family: "Poppins", "Mitr", sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0;
+    text-wrap:inherit;
+}
+
+.content-info span {
+    color: #8D8D8D;
+    font-family: "Poppins", "Mitr", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.point-container {
+    padding: 0 20px !important;
+}
+
+.dropdown-container a div {
+    gap: 10px;
+    transition: all 0.5s;
+}
+
+.dropdown-container a div:hover {
+    color: var(--active-link-purple);
+    transition: all 0.5s;
+}
+
+.dropdown-container a div span {
+    font-size: 0.85rem;
+}
+
+@media only screen and (max-width: 450px) {
+    header.topbar {
+        padding-right: 20px;
+    }
 }

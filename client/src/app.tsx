@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 const UserTable = lazy(() => import("./pages/UserTable"));
 const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
 const Landing = lazy(() => import("./pages/Landing"));
+const CourseManagement = lazy(() => import("./pages/CourseManagement"));
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Landing />}></Route>
           <Route path="/dashboard/user-management" element={<UserTable />}></Route>
           <Route path="/dashboard" element={<TutorDashboard />}></Route>
+          <Route path="/dashboard/course-management" element={<CourseManagement />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

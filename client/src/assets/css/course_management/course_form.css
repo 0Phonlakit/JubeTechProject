@@ -1,0 +1,73 @@
+.course-content h1 {
+    font-size: 1.6rem;
+}
+
+.form-container {
+    width: 100%;
+    height: 100%;
+    min-height: 67vh;
+    background-color: #FAF9FF;
+    border-radius: 10px;
+    padding: 30px 10px;
+}
+
+.preview-container {
+    display: flex;
+    gap: 20px;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.courses-container label {
+    color: #64008F;
+    font-size: 0.95rem;
+}
+
+.sub-input {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sub-input input, .sub-input textarea {
+    border: none;
+    width: clamp(200px, 40vw, 750px);
+    border-radius: 5px;
+    outline: none;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+}
+
+.sub-input textarea {
+    resize: none;
+}
+
+.amount-word {
+    position: absolute;
+    font-size: 0.7rem;
+    right: 10px;
+    bottom: 5px;
+}
+
+.input-container-2 {
+    display: flex;
+}
+
+.input-container-2 .sub-input {
+    width: 50%;
+}
+
+.input-container-2 input {
+    width: 250px;
+}
+
+@media only screen and (max-width:1440px) {
+    .course-content h1 {
+        font-size: 1rem;
+    }
+}
