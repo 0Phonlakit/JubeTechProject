@@ -8,10 +8,11 @@ interface CourseProp {
     description: string,
     image: string,
     score: number,
+    price: number,
     href?: string
 }
 
-export default function Course({ title, description, image, score, href }:CourseProp):JSX.Element {
+export default function Course({ title, description, image, score, href, price }:CourseProp):JSX.Element {
     return (
         <>
         {href ? 
@@ -19,8 +20,8 @@ export default function Course({ title, description, image, score, href }:Course
                 <div className="course-container">
                     <img src={image} alt={title} />
                     <div className="course-content">
-                        <strong>{title}</strong><br />
-                        <span>{description.slice(0, 120)}...</span>
+                        <strong>{title.slice(0, 44)}{title.length > 44 ? "..." : null}</strong><br />
+                        <span>{description.slice(0, 63)}{description.length > 63 ? "..." : null}</span>
                         <div className="course-info">
                             <div className="rating">
                                 <Rating
@@ -32,7 +33,9 @@ export default function Course({ title, description, image, score, href }:Course
                                 />
                                 <Box sx={{ ml: 1 }}>{score}</Box>
                             </div>
-                            <Link to="#">{"เข้าเรียนฟรี"}</Link>
+                            <Link to="#">
+                                {price > 0 ? `${price.toLocaleString()} บาท` : "เข้าเรียนฟรี"}
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -41,8 +44,8 @@ export default function Course({ title, description, image, score, href }:Course
             <div className="course-container">
                 <img src={image} alt={title} />
                 <div className="course-content">
-                    <strong>{title}</strong><br />
-                    <span>{description.slice(0, 120)}...</span>
+                    <strong>{title.slice(0, 44)}{title.length > 44 ? "..." : null}</strong><br />
+                    <span>{description.slice(0, 63)}{description.length > 63 ? "..." : null}</span>
                     <div className="course-info">
                         <div className="rating">
                             <Rating
@@ -54,7 +57,9 @@ export default function Course({ title, description, image, score, href }:Course
                             />
                             <Box sx={{ ml: 1 }}>{score}</Box>
                         </div>
-                        <Link to="#">{"เข้าเรียนฟรี"}</Link>
+                        <Link to="#">
+                            {price > 0 ? `${price.toLocaleString()} บาท` : "เข้าเรียนฟรี"}
+                        </Link>
                     </div>
                 </div>
             </div>

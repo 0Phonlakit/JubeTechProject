@@ -1,14 +1,14 @@
-.course-content h1 {
-    font-size: 1.6rem;
+.course-form-container h1 {
+    font-size: 1.8rem;
+    padding-left: 10px;
 }
 
-.form-container {
+.main-course-form {
     width: 100%;
-    height: 100%;
-    min-height: 67vh;
+    overflow: scroll;
+    padding: 25px 20px;
     background-color: #FAF9FF;
     border-radius: 10px;
-    padding: 30px 10px;
 }
 
 .preview-container {
@@ -16,58 +16,67 @@
     gap: 20px;
 }
 
-.input-container {
+.course-overview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+}
+
+.input-container, .sub-input {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-.courses-container label {
-    color: #64008F;
-    font-size: 0.95rem;
+.input-container {
+    gap: 20px;
 }
 
 .sub-input {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.sub-input input, .sub-input textarea {
-    border: none;
-    width: clamp(200px, 40vw, 750px);
-    border-radius: 5px;
-    outline: none;
-    font-size: 0.85rem;
-    padding: 5px 10px;
+    width: 700px;
 }
 
 .sub-input textarea {
+    border: none;
+    padding: 10px;
+    font-size: 0.85rem;
+    outline: none;
     resize: none;
 }
 
-.amount-word {
-    position: absolute;
+.sub-input .form-control {
+    outline: none;
+    box-shadow: none;
+}
+
+.sub-input .form-control:focus {
+    border: 1px solid var(--active-link-purple);
+}
+
+.count-word {
     font-size: 0.7rem;
-    right: 10px;
+    position: absolute;
+    right: 5px;
     bottom: 5px;
 }
 
-.input-container-2 {
-    display: flex;
+.image span {
+    color: #686868;
+    font-size: 0.8rem;
 }
 
-.input-container-2 .sub-input {
-    width: 50%;
-}
-
-.input-container-2 input {
-    width: 250px;
+.sub-input label {
+    color: #64008F;
+    font-size: 1.05rem;
+    margin-bottom: 5px;
 }
 
 @media only screen and (max-width:1440px) {
-    .course-content h1 {
-        font-size: 1rem;
+    .course-form-container h1 {
+        font-size: 1.4rem;
     }
 }

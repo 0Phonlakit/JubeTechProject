@@ -3,6 +3,9 @@
     box-shadow: -2px -2px 3px 0px #00000005, 3px 3px 4px 0px #00000010;
     border-radius: 15px;
     background-color: #FFFFFF;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .course-container .course-content {
@@ -10,18 +13,18 @@
 }
 
 .course-container strong {
-    width: 100%;
+    width: 210px;
     margin-top: 5px;
     margin-bottom: 10px;
     font-family: "Poppins", sans-serif;
-    font-size: 1.1rem;
+    font-size: 0.89rem;
     text-align: justify;
 }
 
 .course-content > span {
-    width: 100%;
+    width: 210px;
     color: #777777;
-    font-size: 0.75rem;
+    font-size: 0.67rem;
     text-align: justify;
 }
 
@@ -81,15 +84,23 @@
     }
 
     .course-info a {
-        font-size: 0.6rem;
+        font-size: 0.51rem;
     }
 
     .MuiBox-root.css-1isemmb {
-        font-size: 0.7rem;
+        font-size: 0.55rem;
         margin-left: 2px !important;
     }
 
     .course-container strong {
-        font-size: 0.95rem;
+        font-size: 0.7rem;
+    }
+
+    .course-content > span {
+        font-size: 0.5rem;
+    }
+
+    .course-container strong, .course-content > span {
+        width: 160px;
     }
 }
