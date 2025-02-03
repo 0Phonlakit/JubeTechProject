@@ -263,6 +263,7 @@ export default function CategoryTable() {
                         placeholder="ค้นหาหมวดหมู่จากชื่อ..."
                         className="form-control"
                         value={searchCategory}
+                        maxLength={100}
                         onChange={(event) => setSearchCategory(event.target.value)}
                     />
                     <div

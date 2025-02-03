@@ -3,15 +3,16 @@ const mongoose = require("mongoose");
 const Categories = require("../models/Category");
 
 const validateCategory = Joi.object({
-    name: Joi.string().trim().required()
+    name: Joi.string().trim().max(100).required()
 });
 
-async function create(req, res) { // Create Category: parameter => (name)
+async function createCategory(req, res) { // Create Category: parameter => (name)
     try {
         const { name } = req.body;
         const { error } = validateCategory.validate({ name });
         // Validate Request
         if (error && error.details[0].type === "string.empty") return res.status(400).json({error: "กรุณาป้อนข้อมูลหมวดหมู่"});
+        if (error && error.details[0].type === "string.max") return res.status(400).json({error: "กรุณาป้อนข้อมูลไม่เกิน 100 ตัวอักษร"});
         // When Success
         const category = await Categories.create({
             name: name
@@ -103,6 +104,7 @@ async function updateCategory(req, res) { // Edit Category: parameter => (_id, n
         const { error } = validateCategory.validate({ name });
         // Validate Request
         if (error && error.details[0].type === "string.empty") return res.status(400).json({error: "กรุณาป้อนข้อมูลหมวดหมู่"});
+        if (error && error.details[0].type === "string.max") return res.status(400).json({error: "กรุณาป้อนข้อมูลไม่เกิน 100 ตัวอักษร"});
         const response = await Categories.updateOne({ _id }, { $set: { name } });
         return res.status(200).json({ success: "อัพเดตข้อมูลหมวดหมู่สำเร็จ" });
     } catch (err) {
@@ -129,7 +131,7 @@ async function deleteCategories(req, res) { // Delete Many Category: parameter =
 }
 
 module.exports = {
-    create,
+    createCategory,
     getCategories,
     editCategory,
     updateCategory,
