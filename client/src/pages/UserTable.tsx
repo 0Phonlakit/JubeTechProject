@@ -8,6 +8,7 @@ import DeleteUser from '../components/Admin/userManagement/DeleteUser';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
 import MainDashboard from '../layouts/MainDashboard';
+import "../assets/css/dataTable.min.css";
 
 DataTable.use(DT);
 

@@ -33,7 +33,7 @@ export default function Sidebar({ order }:SidebarProp):JSX.Element {
                 {filter_menus! && filter_menus.map((menu, index) => (
                     <Link
                         to={menu.href}
-                        className={"menu-list " + (selected === index ? "active" : null)}
+                        className={"menu-list " + (selected === menu.order ? "active" : null)}
                         key={index}
                         onClick={() => setSelected(index)}
                     >

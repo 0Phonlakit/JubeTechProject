@@ -7,6 +7,7 @@ const UserTable = lazy(() => import("./pages/UserTable"));
 const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
 const Landing = lazy(() => import("./pages/Landing"));
 const CourseManagement = lazy(() => import("./pages/CourseManagement"));
+const CategoryManagement = lazy(() => import("./pages/CategoryManagement"));
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/dashboard/user-management" element={<UserTable />}></Route>
           <Route path="/dashboard" element={<TutorDashboard />}></Route>
           <Route path="/dashboard/course-management" element={<CourseManagement />}></Route>
+          <Route path="/dashboard/category-management" element={<CategoryManagement />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

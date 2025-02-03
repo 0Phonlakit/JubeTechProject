@@ -1,5 +1,6 @@
-import Course from "../../Landing/Course";
 import { useState } from "react";
+import Select from "react-select";
+import Course from "../../Landing/Course";
 
 import NoImage from "../../../assets/img/no image.jpg";
 import "../../../assets/css/course_management/course_form.css";
@@ -111,6 +112,9 @@ export default function CourseForm() {
                             <span className="mt-2">ขนาดรูปภาพไม่เกิน 5MB</span>
                         </div>
                     </div>
+                </div>
+                <div className="categories sub-input">
+
                 </div>
             </div>
         </div>

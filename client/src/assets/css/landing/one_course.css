@@ -16,9 +16,10 @@
     width: 210px;
     margin-top: 5px;
     margin-bottom: 10px;
-    font-family: "Poppins", sans-serif;
+    font-family: "Mitr", sans-serif;
     font-size: 0.89rem;
     text-align: justify;
+    font-weight: 600;
 }
 
 .course-content > span {

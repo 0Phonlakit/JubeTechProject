@@ -12,8 +12,10 @@
 }
 
 .preview-container {
+    width: 100%;
     display: flex;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .course-overview {
@@ -78,5 +80,19 @@
 @media only screen and (max-width:1440px) {
     .course-form-container h1 {
         font-size: 1.4rem;
+    }
+
+    .sub-input {
+        width: 600px;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .preview-container {
+        justify-content: center;
+    }
+
+    .sub-input {
+        width: 90%;
     }
 }
