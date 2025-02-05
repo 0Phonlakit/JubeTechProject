@@ -275,8 +275,12 @@ export default function CategoryTable() {
                 </div>
                 <button
                     className="create-category-btn"
-                    onClick={() => setShowCreateForm(!showCreateForm)}
-                    >
+                    onClick={() => {
+                        setEditId("");
+                        setCategory("");
+                        setShowCreateForm(!showCreateForm)
+                    }}
+                >
                     <i><FaPlus /></i>สร้างหมวดหมู่
                 </button>
             </div>

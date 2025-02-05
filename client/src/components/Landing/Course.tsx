@@ -44,7 +44,7 @@ export default function Course({ title, description, image, score, href, price }
             <div className="course-container">
                 <img src={image} alt={title} />
                 <div className="course-content">
-                    <strong>{title.slice(0, 44)}{title.length > 44 ? "..." : null}</strong><br />
+                    <strong>{title.slice(0, 47)}{title.length > 47 ? "..." : null}</strong><br />
                     <span>{description.slice(0, 63)}{description.length > 63 ? "..." : null}</span>
                     <div className="course-info">
                         <div className="rating">
@@ -58,7 +58,11 @@ export default function Course({ title, description, image, score, href, price }
                             <Box sx={{ ml: 1 }}>{score}</Box>
                         </div>
                         <Link to="#">
-                            {price > 0 ? `${price.toLocaleString()} บาท` : "เข้าเรียนฟรี"}
+                            {
+                                price > 0 ? `${price.toLocaleString().length > 5
+                                ? price.toLocaleString().slice(0,4) + ".."
+                                : price.toLocaleString()} บาท` : "เข้าเรียนฟรี"
+                            }
                         </Link>
                     </div>
                 </div>
