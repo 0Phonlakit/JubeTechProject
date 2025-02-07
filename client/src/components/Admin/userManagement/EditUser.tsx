@@ -61,22 +61,24 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
   }, [userId]);
 
   const handleChange = (
-    input: React.ChangeEvent<HTMLInputElement> | any,
+    input: | { name: string; value: string | boolean } | ReadonlyArray<{ value: string }>,
     action?: { name: string }
   ) => {
-    if (action?.name === 'role') {
+    if (!input) return;
+  
+    if (action?.name === "role" && Array.isArray(input)) {
       setFormData((prevState) => ({
         ...prevState,
-        role: input ? input.map((option: { value: string }) => option.value) : [],
+        role: input.map((option) => option.value),
       }));
-    } else if (input.target) {
-      const { name, value, type, checked } = input.target;
+    } else if (!Array.isArray(input) && "name" in input) {
       setFormData((prevState) => ({
         ...prevState,
-        [name]: type === 'checkbox' ? checked : value,
+        [input.name]: typeof input.value === "boolean" ? input.value : input.value,
       }));
     }
   };
+  
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -181,7 +183,7 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
                 type="text"
                 name="firstName"
                 value={formData.firstName}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter First Name"
               />
             </Form.Group>
@@ -191,7 +193,7 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
                 type="text"
                 name="lastName"
                 value={formData.lastName}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Last Name"
               />
             </Form.Group>
@@ -204,7 +206,7 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Email"
               />
             </Form.Group>
@@ -226,7 +228,7 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
                     value: role._id,
                     label: role.role_name,
                   }))}
-                onChange={handleChange}
+                onChange={(selectedOptions) => handleChange(selectedOptions, { name: "role" })}
                 className="basic-multi-select"
                 classNamePrefix="select"
               />
@@ -240,7 +242,7 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
                 type="password"
                 name="currentPassword"
                 value={formData.currentPassword}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Current Password"
               />
             </Form.Group>
@@ -253,7 +255,7 @@ export default function EditUser({ userId, onClose }: EditUserProps) {
                 type="password"
                 name="newPassword"
                 value={formData.newPassword}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter New Password (Leave blank to keep current)"
               />
             </Form.Group>

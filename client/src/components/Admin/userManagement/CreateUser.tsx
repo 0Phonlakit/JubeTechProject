@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { Modal, Button, Form, Row, Col, Stack } from 'react-bootstrap';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
@@ -12,6 +12,11 @@ interface CreateUserProps {
 interface Role {
   value: string;
   label: string;
+}
+
+interface RoleData {
+  _id: string;
+  role_name: string;
 }
 
 // Define the form data type
@@ -50,9 +55,9 @@ export default function CreateUser({ onClose }: CreateUserProps) {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/getAllRoles`)
       .then((response) => response.json())
-      .then((data) => {
+      .then((data: RoleData[]) => {
         setRoles(
-          data.map((role: any) => ({
+          data.map((role) => ({
             value: role._id,
             label: role.role_name,
           }))
@@ -64,22 +69,23 @@ export default function CreateUser({ onClose }: CreateUserProps) {
   }, []);
 
   const handleChange = (
-    input: ChangeEvent<HTMLInputElement> | Role[] | null,
-    action?: { name?: string }
-  ) => {
-    if (action?.name === 'role') {
-      setFormData((prevState) => ({
-        ...prevState,
-        role: input ? (input as Role[]).map((option) => option.value) : [],
-      }));
-    } else if ((input as ChangeEvent<HTMLInputElement>).target) {
-      const { name, value } = (input as ChangeEvent<HTMLInputElement>).target;
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
-  };
+    input: | { name: string; value: string | boolean } | ReadonlyArray<{ value: string }>,
+    action?: { name: string }
+    ) => {
+      if (!input) return;
+    
+      if (action?.name === "role" && Array.isArray(input)) {
+        setFormData((prevState) => ({
+          ...prevState,
+          role: input.map((option) => option.value),
+        }));
+      } else if (!Array.isArray(input) && "name" in input) {
+        setFormData((prevState) => ({
+          ...prevState,
+          [input.name]: input.value,
+        }));
+      }
+    };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -174,7 +180,7 @@ export default function CreateUser({ onClose }: CreateUserProps) {
                 type="text"
                 name="firstName"
                 value={formData.firstName}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter First Name"
               />
             </Form.Group>
@@ -184,7 +190,7 @@ export default function CreateUser({ onClose }: CreateUserProps) {
                 type="text"
                 name="lastName"
                 value={formData.lastName}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Last Name"
               />
             </Form.Group>
@@ -197,7 +203,7 @@ export default function CreateUser({ onClose }: CreateUserProps) {
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Email"
               />
             </Form.Group>
@@ -211,7 +217,7 @@ export default function CreateUser({ onClose }: CreateUserProps) {
                 name="role"
                 options={roles}
                 value={roles.filter((role) => formData.role.includes(role.value))}
-                onChange={(selectedOptions) => handleChange(selectedOptions, { name: 'role' })}
+                onChange={(selectedOptions) => handleChange(selectedOptions, { name: "role" })}
                 className="basic-multi-select"
                 classNamePrefix="select"
               />
@@ -225,7 +231,7 @@ export default function CreateUser({ onClose }: CreateUserProps) {
                 type="password"
                 name="password"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Password"
               />
             </Form.Group>
@@ -238,7 +244,7 @@ export default function CreateUser({ onClose }: CreateUserProps) {
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
-                onChange={handleChange}
+                onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                 placeholder="Enter Confirm Password"
               />
             </Form.Group>

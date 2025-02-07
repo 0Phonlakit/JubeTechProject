@@ -7,6 +7,8 @@ const UserTable = lazy(() => import("./pages/UserTable"));
 const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
 const Landing = lazy(() => import("./pages/Landing"));
 const CourseManagement = lazy(() => import("./pages/CourseManagement"));
+const RoleManagement = lazy(() => import("./pages/RoleTable"));
+const PromotionManagement = lazy(() => import("./pages/PromotionTable"));
 const CategoryManagement = lazy(() => import("./pages/CategoryManagement"));
 
 
@@ -23,6 +25,8 @@ function App() {
           <Route path="/dashboard/user-management" element={<UserTable />}></Route>
           <Route path="/dashboard" element={<TutorDashboard />}></Route>
           <Route path="/dashboard/course-management" element={<CourseManagement />}></Route>
+          <Route path="/dashboard/role-management" element={<RoleManagement />}></Route>
+          <Route path="/dashboard/promotion-management" element={<PromotionManagement />}></Route>
           <Route path="/dashboard/category-management" element={<CategoryManagement />}></Route>
         </Routes>
       </Suspense>

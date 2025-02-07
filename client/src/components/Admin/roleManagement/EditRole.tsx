@@ -7,7 +7,7 @@ type FormData = {
 };
 
 type EditRoleProps = {
-  roleId: FormData;
+  roleId: string;
   onClose: () => void;
 };
 
