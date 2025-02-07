@@ -14,13 +14,14 @@ export interface CourseState {
     point: number,
     description: string,
     categories: string[],
-    lessons: string[],
+    objectives: string[],
+    sections: string[],
     image: File | null
 }
 
 export default function CourseManagement() {
     const [tabPage, setTapPage] = useState<number>(0);
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState(1);
     const [course, setCourse] = useState<CourseState>({
         title: "",
         price: 0,
@@ -28,7 +29,8 @@ export default function CourseManagement() {
         is_point: false,
         description: "",
         categories: [],
-        lessons: [],
+        objectives: [],
+        sections: [],
         image: null
     });
 

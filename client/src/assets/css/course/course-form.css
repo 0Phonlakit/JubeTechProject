@@ -128,6 +128,26 @@
     transition: all 0.5s;
 }
 
+/* Course Detail */
+.course-detail-form {
+    height: 72vh;
+}
+.course-detail-form .sub-input {
+    position: relative;
+    flex-grow: 1;
+}
+
+.course-detail-form textarea {
+    font-size: 0.95rem;
+}
+
+.course-detail-form .count-word {
+    bottom: 5px;
+    right: 45px;
+}
+
+
+
 @media only screen and (max-width:1440px) {
     .course-form-container {
         padding: 5px;
@@ -159,5 +179,9 @@
 
     .button-course-container button {
         font-size: 0.84rem;
+    }
+
+    .course-detail-form .count-word {
+        font-size: 0.65rem;
     }
 }

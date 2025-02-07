@@ -22,3 +22,5 @@ const PromotionSchema = new Schema ({
         end_time: { type: Date } // เวลาที่สิ้นสุด promotion  (ใช้ input time)
     }] // สร้างเป็น Array เพราะจะเก็บเป็นช่วงเวลาที่ใช้ promotion ได้
 }, { timestamps: true });
+
+module.exports = mongoose.model("Promotions", PromotionSchema);
