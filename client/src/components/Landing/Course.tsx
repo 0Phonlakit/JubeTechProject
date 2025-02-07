@@ -45,7 +45,7 @@ export default function Course({ title, description, image, score, href, price }
                 <img src={image} alt={title} />
                 <div className="course-content">
                     <strong>{title.slice(0, 47)}{title.length > 47 ? "..." : null}</strong><br />
-                    <span>{description.slice(0, 63)}{description.length > 63 ? "..." : null}</span>
+                    <span>{description.slice(0, 80)}{description.length > 63 ? "..." : null}</span>
                     <div className="course-info">
                         <div className="rating">
                             <Rating

@@ -1,5 +1,6 @@
 import ProcessBar from "./ProcessBar";
 import CourseCardForm from "./CourseCardForm";
+import CourseDetailForm from "./CourseDetailForm";
 import "../../../assets/css/course/course-form.css";
 import { CourseState } from "../../../pages/CourseManagement";
 
@@ -11,8 +12,8 @@ interface CourseStateFunction {
     setCourse: (value: CourseState | ((prev: CourseState) => CourseState)) => void,
 }
 
-export default function CourseForm({ title, price, point, is_point, description, categories, lessons, image, setCourse, setProgress, progress }:CourseState & CourseStateFunction) {
-    const course = { title, price, point, is_point, description, categories, lessons, image};
+export default function CourseForm({ title, price, point, is_point, description, categories, sections, image, setCourse, setProgress, progress, objectives }:CourseState & CourseStateFunction) {
+    const course = { title, price, point, is_point, description, categories, sections, image, objectives};
 
     function handleCourse(event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, name:string) {
         const target = event.target;
@@ -40,6 +41,10 @@ export default function CourseForm({ title, price, point, is_point, description,
         }
     }
 
+    function handleCourseArray(value:string[], name:string) {
+        setCourse({...course, [name]: value});
+    }
+
     return (
         <div className="course-form-container">
             <ProcessBar steps={steps} progress={progress} />
@@ -56,7 +61,9 @@ export default function CourseForm({ title, price, point, is_point, description,
                 /> 
             : null}
             {progress === 1 ? 
-                <button onClick={() => setProgress(0)}>Click</button>
+                <CourseDetailForm 
+                    handleCourseArray={handleCourseArray}
+                />
             : null}
         </div>
     )

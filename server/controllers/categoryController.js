@@ -29,6 +29,18 @@ async function createCategory(req, res) { // Create Category: parameter => (name
     }
 }
 
+async function getAllcategories(req, res) {
+    try {
+        const categories = await Categories.find({}).select("_id name").lean().exec();
+        return res.status(200).json({ data: categories });
+    } catch (err) {
+        console.log({ position: "Get All Categories", error:err });
+        return res.status(500).json({
+            error: "มีข้อผิดพลาดบางอย่างเกิดขึ้น"
+        });
+    }
+}
+
 async function getCategories(req, res) { // Get Category: parameter => (page, pageSize)
     let { page, pageSize } = req.query;
     page = page === "0" ? 0 : parseInt(page) || 1;
@@ -132,6 +144,7 @@ async function deleteCategories(req, res) { // Delete Many Category: parameter =
 
 module.exports = {
     createCategory,
+    getAllcategories,
     getCategories,
     editCategory,
     updateCategory,
