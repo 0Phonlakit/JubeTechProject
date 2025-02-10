@@ -9,4 +9,4 @@ const tokenSchema = new Schema ({
     isActive: { type: Boolean, default: false }
 }, { timestamps: true });
 
-module.exports = mongoose.Model("Tokens", tokenSchema);
+module.exports = mongoose.model("Tokens", tokenSchema);
