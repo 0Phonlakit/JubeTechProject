@@ -1,5 +1,4 @@
 const Joi = require("joi");
-const mongoose = require("mongoose");
 const Categories = require("../models/Category");
 
 const validateCategory = Joi.object({

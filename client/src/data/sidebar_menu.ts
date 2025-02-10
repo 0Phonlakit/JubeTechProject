@@ -34,38 +34,17 @@ export const menus:Menu[] = [
         roles: ["Tutor"]
     },
     {
-        title: "จัดการแบบทดสอบ",
-        href: "/dashboard/exam-management",
-        icon: FaFilePen,
-        order: 2,
-        roles: ["Tutor"]
-    },
-    {
-        title: "จัดการการเงิน",
-        href: "/dashboard/payment-management",
-        icon: FaCreditCard,
-        order: 3,
-        roles: ["Tutor"]
-    },
-    {
         title: "จัดการผู้ใช้งาน",
         href: "/dashboard/user-management",
         icon: FaUser,
-        order: 4,
+        order: 2,
         roles: ["Admin"]
-    },
-    {
-        title: "คอร์สที่ซื้อแล้ว",
-        href: "#",
-        icon: FaAtlassian,
-        order: 5,
-        roles: ["Student"]
     },
     {
         title: "จัดการหมวดหมู่",
         href: "/dashboard/category-management",
         icon: FaSitemap,
-        order: 6,
+        order: 3,
         roles: ["Admin"]
     }
 ]

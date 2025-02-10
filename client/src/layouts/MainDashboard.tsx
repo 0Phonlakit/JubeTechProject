@@ -10,7 +10,7 @@ interface MainDashboardProp {
     children?: ReactNode
 }
 
-export default function MainDashboard({ title, order, children }:MainDashboardProp):JSX.Element {
+export default function MainDashboard({ title, order, children }:MainDashboardProp) {
     useEffect(() => {
         document.title = `${title!} - ${import.meta.env.VITE_APP_NAME}`
     }, []);

@@ -1,18 +1,18 @@
 import { Link } from "react-router-dom";
 import { Rating, Box } from "@mui/material";
 
-import "../../assets/css/landing/one_course.css";
+import "../../assets/css/landing/course.css";
 
 interface CourseProp {
     title: string,
     description: string,
     image: string,
-    score: number,
+    score?: number,
     price: number,
     href?: string
 }
 
-export default function Course({ title, description, image, score, href, price }:CourseProp):JSX.Element {
+export default function Course({ title, description, image, score, href, price }:CourseProp) {
     return (
         <>
         {href ? 
@@ -20,8 +20,8 @@ export default function Course({ title, description, image, score, href, price }
                 <div className="course-container">
                     <img src={image} alt={title} />
                     <div className="course-content">
-                        <strong>{title.slice(0, 44)}{title.length > 44 ? "..." : null}</strong><br />
-                        <span>{description.slice(0, 63)}{description.length > 63 ? "..." : null}</span>
+                        <strong>{title.slice(0, 47)}{title.length > 47 ? "..." : null}</strong><br />
+                        <span>{description.slice(0, 70)}{description.length > 70 ? "..." : null}</span>
                         <div className="course-info">
                             <div className="rating">
                                 <Rating
@@ -45,7 +45,7 @@ export default function Course({ title, description, image, score, href, price }
                 <img src={image} alt={title} />
                 <div className="course-content">
                     <strong>{title.slice(0, 47)}{title.length > 47 ? "..." : null}</strong><br />
-                    <span>{description.slice(0, 80)}{description.length > 63 ? "..." : null}</span>
+                    <span>{description.slice(0, 70)}{description.length > 70 ? "..." : null}</span>
                     <div className="course-info">
                         <div className="rating">
                             <Rating

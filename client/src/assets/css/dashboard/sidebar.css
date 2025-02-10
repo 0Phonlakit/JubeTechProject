@@ -8,7 +8,7 @@ nav.sidebar {
     padding-right: 20px;
     background-color: #FFFFFF;
     z-index: 1;
-    box-shadow: 2px 0px 2px 0px #00000010;
+    border-right: 1px solid #bdbdbd;
 }
 
 .logo {

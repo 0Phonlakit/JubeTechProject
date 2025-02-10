@@ -1,9 +1,9 @@
 import MainDashboard from "../layouts/MainDashboard";
 import CategoryTable from "../components/Admin/categoryManagement/CategoryTable";
 
-export default function TutorDashboard():JSX.Element {
+export default function TutorDashboard() {
     return (
-        <MainDashboard title="Category Management" order={6}>
+        <MainDashboard title="Category Management" order={3}>
             <CategoryTable />
         </MainDashboard>
     );

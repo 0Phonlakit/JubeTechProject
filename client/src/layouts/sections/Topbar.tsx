@@ -14,7 +14,7 @@ import Avatar from "../../assets/img/no image.jpg";
 import "../../assets/css/dashboard/topbar.css";
 import { useState } from "react";
 
-export default function Topbar():JSX.Element {
+export default function Topbar() {
     const [dropdownStatus, setDropdown] = useState<boolean>(false);
     return (
         <header className="topbar">

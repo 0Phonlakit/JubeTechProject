@@ -22,7 +22,7 @@
 
 @media only screen and (max-width: 1440px) {
     .dashboard {
-        grid-template-columns: 80px 90%;
+        grid-template-columns: 80px auto;
     }
 }
 

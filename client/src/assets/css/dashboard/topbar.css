@@ -6,8 +6,8 @@ header.topbar {
     height: 80px;
     min-height: 80px;
     background-color: #FFFFFF;
-    padding-right: 30px;
-    box-shadow: 0px 3px 3px 0px #00000015;
+    padding-right: 60px;
+    border-bottom: 1px solid #cccccc;
     position: relative;
     margin-bottom: 30px;
 }

@@ -9,7 +9,7 @@ interface SidebarProp {
     order:number
 }
 
-export default function Sidebar({ order }:SidebarProp):JSX.Element {
+export default function Sidebar({ order }:SidebarProp) {
     const [selected, setSelected] = useState<number>(0);
     
     useEffect(() => {

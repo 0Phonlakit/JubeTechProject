@@ -154,7 +154,7 @@ export default function UserTable() {
   ];
 
   return (
-    <MainDashboard title="User Management" order={4}>
+    <MainDashboard title="User Management" order={2}>
       <div>
         <Breadcrumb>
           <Breadcrumb.Item href={`/dashboard/user-management`}>

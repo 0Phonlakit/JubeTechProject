@@ -21,7 +21,7 @@ export interface CourseState {
 
 export default function CourseManagement() {
     const [tabPage, setTapPage] = useState<number>(0);
-    const [progress, setProgress] = useState(1);
+    const [progress, setProgress] = useState(0);
     const [course, setCourse] = useState<CourseState>({
         title: "",
         price: 0,
