@@ -1,4 +1,5 @@
 import './App.css';
+import { useState } from 'react';
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -11,7 +12,7 @@ const CategoryManagement = lazy(() => import("./pages/CategoryManagement"));
 
 
 function App() {
-
+  const [toggleSidebar, setToggleSidebar] = useState<boolean>(true); // Toggle state
   return (
     <BrowserRouter future={{
       v7_startTransition: true,
@@ -20,10 +21,10 @@ function App() {
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<Landing />}></Route>
-          <Route path="/dashboard/user-management" element={<UserTable />}></Route>
-          <Route path="/dashboard" element={<TutorDashboard />}></Route>
-          <Route path="/dashboard/course-management" element={<CourseManagement />}></Route>
-          <Route path="/dashboard/category-management" element={<CategoryManagement />}></Route>
+          <Route path="/dashboard/user-management" element={<UserTable toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/dashboard" element={<TutorDashboard toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/dashboard/course-management" element={<CourseManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/dashboard/category-management" element={<CategoryManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

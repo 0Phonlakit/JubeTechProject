@@ -1,17 +1,12 @@
 import { useState } from "react";
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import {
-    FaAngleDown,
-    FaAngleRight,
-    FaSistrix,
-    FaCartShopping,
-    FaNewspaper,
-    FaBars 
-} from "react-icons/fa6";
+import Carousel from 'react-bootstrap/Carousel';
+import Offcanvas from 'react-bootstrap/Offcanvas';
 import { getUser } from "../../services/authorize";
 
 import "../../assets/css/landing/topbar.css";
+import { FaAngleDown, FaAngleRight, FaSistrix, FaCartShopping, FaNewspaper, FaBars } from "react-icons/fa6";
 
 interface TopbarProp {
     modalStatus: boolean,
@@ -52,14 +47,18 @@ function ButtonContainer({ modalStatus, setShowModal, setTypeModal }:TopbarProp)
                 สมัครสมาชิก
             </button>
         </div>
-    )
+    );
 }
 
 export default function Topbar({ modalStatus, setShowModal, setTypeModal }:TopbarProp) {
-    // Offcanvas Section
-    const [showOffcanvas, setShowOffCanvas] = useState<boolean>(false);
-    // Popover Section
-    const [showPopover, setShowPopover] = useState<boolean>(false);
+    const [showOffcanvas, setShowOffCanvas] = useState<boolean>(false); // Canvas state
+    const [showPopover, setShowPopover] = useState<boolean>(false); // Popover state
+    const [carouselIndex, setCarouselIndex] = useState<number>(0); // Carousel state
+    
+    // Data Section
+
+
+
     // Render
     return (
         <nav className="topbar">
@@ -165,10 +164,26 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
                         setTypeModal={setTypeModal}
                     />
                 }
-                <div className="sidetab-container">
+                <div className="sidetab-container" onClick={() => setShowOffCanvas(true)}>
                     <i><FaBars /></i>
                 </div>
             </div>
+
+            <Offcanvas show={showOffcanvas} placement="end" onHide={() => setShowOffCanvas(false)}>
+                <Offcanvas.Header closeButton>
+                    <Offcanvas.Title>รายการเมนู</Offcanvas.Title>
+                </Offcanvas.Header>
+                <Offcanvas.Body>
+                    <Carousel activeIndex={carouselIndex}>
+                        <Carousel.Item>
+                            123
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            456
+                        </Carousel.Item>
+                    </Carousel>
+                </Offcanvas.Body>
+            </Offcanvas>
         </nav>
     );
 }

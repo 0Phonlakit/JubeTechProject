@@ -1,28 +1,30 @@
-import { ReactNode, useEffect } from "react";
 import Topbar from "./sections/Topbar";
 import Sidebar from "./sections/Sidebar";
+import { useEffect } from "react";
 
 import "../assets/css/dashboard/dashboard.css";
 
-interface MainDashboardProp {
-    title:string,
-    order:number,
-    children?: ReactNode
+interface DashboardProp {
+    title: string,
+    order: number,
+    children: React.ReactNode,
+    toggleSidebar: boolean,
+    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
 }
 
-export default function MainDashboard({ title, order, children }:MainDashboardProp) {
-    useEffect(() => {
-        document.title = `${title!} - ${import.meta.env.VITE_APP_NAME}`
+export default function MainDashboard({ order, title, children, toggleSidebar, setToggleSidebar }:DashboardProp) {
+    useEffect(() => { // Change Title
+        document.title = title;
     }, []);
+
+    // Render
     return (
-        <div className="dashboard">
-            <Sidebar order={order} />
-            <div className="main-content">
+        <div className={"main-dashboard " + (toggleSidebar ? "active-sidebar" : null)}>
+            <Sidebar order={order} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
+            <div className="main-dashboard-content">
                 <Topbar />
-                <div className="table-responsive">
-                    <div className="dashboard-content">
-                        {children}
-                    </div>
+                <div className="sub-dashboard-content">
+                    {children}
                 </div>
             </div>
         </div>

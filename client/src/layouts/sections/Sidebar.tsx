@@ -1,47 +1,50 @@
-import { useEffect, useState } from "react";
+import { FaChevronRight } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { menus, Menu } from "../../data/sidebar_menu";
 
-import Logo from "../../assets/img/no image.jpg";
+import { menus, Menu } from "../../data/sidebar_menu";
 import "../../assets/css/dashboard/sidebar.css";
+import Logo from "../../assets/img/jubetech_logo.png";
 
 interface SidebarProp {
-    order:number
+    order: number,
+    toggleSidebar: boolean,
+    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void,
 }
 
-export default function Sidebar({ order }:SidebarProp) {
-    const [selected, setSelected] = useState<number>(0);
-    
-    useEffect(() => {
-        setSelected(order);
-    }, []);
-
-    const userRole = ["Admin", "Tutor", "Student"];
-    const filter_menus:Menu[] = menus.filter((menu) => {
-        return menu.roles.some(role => userRole.includes(role));
-    });
-
+export default function Sidebar({ order, toggleSidebar, setToggleSidebar }:SidebarProp) {
+    const currentUserRole:string[] = ["Student", "Tutor", "Admin"];
+    const filteredMenus = menus.filter((menu) =>
+        menu.roles.some(role => currentUserRole.includes(role))
+    );
     return (
-        <nav className="sidebar">
-            {/* Logo */}
-            <Link className="logo" to="/dashboard">
-                <img src={Logo} alt="logo" />
-                <span><span>Jube</span>Tech</span>
-            </Link>
-            {/* Sidebar Menu */}
-            <div className="sidebar-menu">
-                {filter_menus! && filter_menus.map((menu, index) => (
-                    <Link
-                        to={menu.href}
-                        className={"menu-list " + (selected === menu.order ? "active" : null)}
-                        key={index}
-                        onClick={() => setSelected(index)}
-                    >
-                        <menu.icon size={19} />
-                        <span>{menu.title}</span>
-                    </Link>
-                )) }
+        <div className="sidebar">
+            <div
+                className={"toggle-sidebar " + (toggleSidebar ? "active-toggle" : "")}
+                onClick={() => setToggleSidebar(!toggleSidebar)}
+            >
+                <i className={toggleSidebar ? "active-icon" : ""}><FaChevronRight size={14} /></i>
             </div>
-        </nav>
+            <div className="sidebar-content">
+                <div className="logo-section">
+                    <img src={Logo} alt="JubeTech Logo" />
+                    <span className="logo-title" hidden={!toggleSidebar}>JubeTech</span>
+                </div>
+                <hr />
+                <div className="link-sidebar">
+                    <ul className={toggleSidebar ? "active-list" : "normal-list"}>
+                        {filteredMenus.map((menu:Menu, index) => (
+                            <Link to={menu.href} key={index}>
+                                <li 
+                                    className={toggleSidebar ? "active-link " + (order === index ? "active-order" : "") : "normal-link " + (order === index ? "active-order" : "")}
+                                >
+                                    <i><menu.icon size={15} /></i>
+                                    <span hidden={!toggleSidebar}>{menu.title}</span>
+                                </li>
+                            </Link>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </div>
     );
 }

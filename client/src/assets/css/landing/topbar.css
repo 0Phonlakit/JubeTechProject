@@ -255,6 +255,19 @@ nav.topbar {
         display: none;
     }
 
+    #category-tab {
+        padding: 3px 7px;
+        font-size: 0.65rem !important;
+    }
+
+    .left-container {
+        gap: 5px;
+    }
+
+    .right-container {
+        gap: 6px;
+    }
+
     .right-container a {
         margin-top: 0 !important;
     }

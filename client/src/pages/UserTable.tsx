@@ -29,7 +29,12 @@ type ConfigDataTable = {
   searchBuilder?: boolean;
 }
 
-export default function UserTable() {
+interface DashboardProp {
+  toggleSidebar: boolean,
+  setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
+}
+
+export default function UserTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
   const [users, setUsers] = useState<User[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -154,7 +159,12 @@ export default function UserTable() {
   ];
 
   return (
-    <MainDashboard title="User Management" order={2}>
+    <MainDashboard
+      title="User Management"
+      toggleSidebar={toggleSidebar}
+      setToggleSidebar={setToggleSidebar}
+      order={2}
+    >
       <div>
         <Breadcrumb>
           <Breadcrumb.Item href={`/dashboard/user-management`}>

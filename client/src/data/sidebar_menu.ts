@@ -1,10 +1,7 @@
 import {
-    FaChartLine,
+    FaHouse,
     FaBookOpenReader,
-    FaFilePen,
-    FaCreditCard,
     FaUser,
-    FaAtlassian,
     FaSitemap
 } from "react-icons/fa6";
 
@@ -22,7 +19,7 @@ export const menus:Menu[] = [
     { 
         title: "แผนภูมิภาพรวม",
         href: "/dashboard",
-        icon: FaChartLine,
+        icon: FaHouse,
         order: 0,
         roles: ["Tutor"]
     },
