@@ -43,11 +43,11 @@ async function signin(req, res) {
 
         // check activated
         const activated = Tokens.find({ for_email: email, isActive: true });
-        if (!activated) return res.status(401).json({ message: "ทำการยืนยันอีเมล" });
+        if (!activated) return res.status(401).json({ message: "กรุณาทำการยืนยันอีเมล" });
 
         // create jwt
-        const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
-        return res.status(200).json({ message: "เข้าสู่ระบบสำเร็จ", token });
+        const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
+        return res.status(200).json({ message: "เข้าสู่ระบบสำเร็จ", token, _id: user._id });
     } catch (err) {
         console.log({ position: "Sigin", error: err });
         return res.status(500).json({ message: "มีข้อผิดพลาดบางอย่างเกิดขึ้น" });
@@ -73,6 +73,7 @@ async function signup(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // check exist user
+        let token_jwt
         const existedUser = await User.findOne({ email });
         if (existedUser) {
             if (existedUser.email_verified_at) return res.status(409).json({ message: "มีผู้ใช้งานนี้ในระบบแล้ว" });
@@ -83,6 +84,10 @@ async function signup(req, res) {
             existedUser.password = hashedPassword;
             existedUser.email_verified_at = new Date();
             await existedUser.save();
+
+            // create jwt
+            token_jwt = jwt.sign({ _id: existedUser._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
+            return res.status(200).json({ message: "อัพเดตข้อมูลสมาชิกสำเร็จ", token: token_jwt, _id: existedUser._id });
         }
         // create user
         const newUser = await User.create({ 
@@ -92,7 +97,9 @@ async function signup(req, res) {
             email_verified_at: new Date(),
             role_ids: [new mongoose.Types.ObjectId(student_role._id)]
         });
-        return res.status(200).json({ message: "สมัครสมาชิกสำเร็จ" });
+        // create jwt
+        token_jwt = jwt.sign({ _id: newUser._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
+        return res.status(200).json({ message: "อัพเดตข้อมูลสมาชิกสำเร็จ", token: token_jwt, _id: newUser._id });
     } catch (err) {
         console.log({ position: "Signup", error: err });
         return res.status(500).json({ message: "มีข้อผิดพลาดบางอย่างเกิดขึ้น" });

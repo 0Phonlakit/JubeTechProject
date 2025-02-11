@@ -9,6 +9,7 @@ import {
     FaNewspaper,
     FaBars 
 } from "react-icons/fa6";
+import { getUser } from "../../services/authorize";
 
 import "../../assets/css/landing/topbar.css";
 
@@ -59,8 +60,6 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
     const [showOffcanvas, setShowOffCanvas] = useState<boolean>(false);
     // Popover Section
     const [showPopover, setShowPopover] = useState<boolean>(false);
-    // User
-    const auth = true;
     // Render
     return (
         <nav className="topbar">
@@ -156,15 +155,15 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
                 <a href="#"><i><FaCartShopping /></i></a>
                 {/* Notification */}
                 <a href="#"><i><FaNewspaper /></i></a>
-                {auth
+                {getUser()
                     ?
+                    ""
+                    :
                     <ButtonContainer
                         modalStatus={modalStatus}
                         setShowModal={setShowModal}
                         setTypeModal={setTypeModal}
                     />
-                    :
-                    ""
                 }
                 <div className="sidetab-container">
                     <i><FaBars /></i>

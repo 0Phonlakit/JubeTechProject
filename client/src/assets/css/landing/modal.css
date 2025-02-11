@@ -80,9 +80,11 @@
     margin-bottom: 5px;
 }
 
-.modal-auth a {
+.modal-auth button.resend-otp {
     color: #3b42fc;
     font-size: 0.8rem;
+    border: none;
+    background-color: transparent;
 }
 
 .btn-sign-container {
@@ -114,7 +116,21 @@
     margin: 0;
 }
 
+.modal-auth a {
+    font-size: 0.8rem;
+    color: #b922ff;
+}
+
 .modal-auth input[type="number"] {
     border-radius: 4px !important;
     -moz-appearance: textfield;
+}
+
+.modal-auth .text-danger {
+    font-size: 0.75rem;
+    color: rgb(255, 59, 59) !important;
+}
+
+.modal-auth .is-invalid {
+    box-shadow: none !important;
 }

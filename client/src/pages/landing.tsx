@@ -11,7 +11,7 @@ import Star from "../assets/img/landing/Star.png";
 import FactoryImage from "../assets/img/landing/Factory Education.png";
 
 export default function Landing() {
-    const [showModal, setShowModal] = useState<boolean>(true);
+    const [showModal, setShowModal] = useState<boolean>(false);
     const [typeModal, setTypeModal] = useState<number>(0);
     return (
         <div className="landing">
