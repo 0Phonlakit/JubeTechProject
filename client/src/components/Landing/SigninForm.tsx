@@ -2,7 +2,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useState } from "react";
 import { FaRegCircleUser, FaKey } from "react-icons/fa6";
-import { authentication } from "../../services/authorize";
+import { authentication } from "../../services/authorize.ts";
 
 import 'animate.css';
 

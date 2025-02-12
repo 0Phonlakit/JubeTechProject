@@ -22,7 +22,7 @@ export default function MainDashboard({ order, title, children, toggleSidebar, s
         <div className={"main-dashboard " + (toggleSidebar ? "active-sidebar" : null)}>
             <Sidebar order={order} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
             <div className="main-dashboard-content">
-                <Topbar />
+                <Topbar title={title} />
                 <div className="sub-dashboard-content">
                     {children}
                 </div>

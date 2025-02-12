@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Carousel from 'react-bootstrap/Carousel';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { getUser } from "../../services/authorize";
+import { getUser } from "../../services/authorize.ts";
 
 import "../../assets/css/landing/topbar.css";
 import { FaAngleDown, FaAngleRight, FaSistrix, FaCartShopping, FaNewspaper, FaBars } from "react-icons/fa6";

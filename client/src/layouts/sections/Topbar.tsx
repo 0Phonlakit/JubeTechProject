@@ -2,15 +2,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../assets/css/dashboard/topbar.css";
 import Avatar from "../../assets/img/avatar-test.png";
-import { logout } from "../../services/authorize";
+import { logout } from "../../services/authorize.ts";
 
 import { FaAngleDown, FaPowerOff } from "react-icons/fa6";
 
-export default function Topbar() {
+export default function Topbar({ title }:{ title:string }) {
     const [toggleDropdown, setToggleDropdown] = useState<boolean>(false);
 
     return (
         <div className="topbar">
+            <div className="title-dashboard">
+                <h1>{title}</h1>
+            </div>
             {/* Avatar */}
             <div className="avatar-info" onClick={() => setToggleDropdown(!toggleDropdown)}>
                 <img src={Avatar} alt="avatar" />

@@ -1,11 +1,12 @@
 .topbar {
     position: relative;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
     height: 100%;
     border-bottom: 1px solid #c9c8c8;
+    padding-left: 30px;
     padding-right: 10px;
 }
 
@@ -92,10 +93,16 @@
     color: #323232;
 }
 
-
 .avatar-dropdown.active-dropdown {
     pointer-events: all;
     transform: translateX(10px) translateY(0px);
     filter: opacity(1);
     transition: 0.3s all;
+}
+
+.title-dashboard h1 {
+    color: rgb(84, 15, 149);
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
 }

@@ -1,7 +1,7 @@
 import { FaChevronRight } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-import { menus, Menu } from "../../data/sidebar_menu";
+import { menus, Menu } from "../../data/sidebar_menu.ts";
 import "../../assets/css/dashboard/sidebar.css";
 import Logo from "../../assets/img/jubetech_logo.png";
 
