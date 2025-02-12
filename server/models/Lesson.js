@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const LessonSchema = new Schema({
-    name: { type: String, required: true, maxlength: 80 },
+    name: { type: String, required: true },
     type: { type: String, enum: ["lecture", "video"], required: true },
     sub_file: { type: String },
-    main_content: { type: String },
+    main_content: { type: String, required: true },
     duration: { type: Number, default: 0 },
     order: { type: Number, required: true },
     isFreePreview: { type: Boolean, default: false }

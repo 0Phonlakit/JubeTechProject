@@ -40,7 +40,7 @@
 }
 
 .avatar-content span {
-    text-align: end;
+    text-align: start;
     font-family: "Poppins", sans-serif;
     font-size: 0.75rem;
 }
@@ -103,6 +103,6 @@
 .title-dashboard h1 {
     color: rgb(84, 15, 149);
     font-family: "Poppins", sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
