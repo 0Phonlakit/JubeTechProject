@@ -8,7 +8,9 @@ const LessonSchema = new Schema({
     main_content: { type: String, required: true },
     duration: { type: Number, default: 0 },
     order: { type: Number, required: true },
-    isFreePreview: { type: Boolean, default: false }
+    isFreePreview: { type: Boolean, default: false },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+    updatedBy: { type: mongoose.Types.ObjectId, ref: "User", required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.Model("Lessons", LessonSchema);

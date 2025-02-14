@@ -1,9 +1,13 @@
+// Joi validate
 const Joi = require("joi");
+// encrypt & decrypt
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
+// unique
 const { v4: uuidv4 } = require("uuid");
+// schema
+const mongoose = require("mongoose");
 const Role = require("../models/Role");
 const User = require("../models/User");
 const Tokens = require("../models/Token");
@@ -29,25 +33,25 @@ const signinValidate = Joi.object({
 
 async function signin(req, res) {
     try {
-        const { error } = signinValidate.validate(req.body);
+        const { error } = signinValidate.validate(req.body, { abortEarly: false });
         if (error && error.details) return res.status(400).json({ message: error.details });
 
-        // check email
+        // 1.check email
         const { email, password } = req.body;
         const user = await User.findOne({ email, status: true });
         if (!user) return res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
 
-        // check password
+        // 2.check password
         const matched = await bcrypt.compare(password, user.password);
         if (!matched) return res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
 
-        // check activated
-        const activated = Tokens.find({ for_email: email, isActive: true });
-        if (!activated) return res.status(401).json({ message: "กรุณาทำการยืนยันอีเมล" });
+        // 3.check activated
+        // const activated = Tokens.find({ for_email: email, isActive: true });
+        // if (!activated) return res.status(401).json({ message: "กรุณาทำการยืนยันอีเมล" });
 
-        // create jwt
+        // 4.create jwt
         const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
-        return res.status(200).json({ message: "เข้าสู่ระบบสำเร็จ", token, _id: user._id });
+        return res.status(200).json({ message: "เข้าสู่ระบบสำเร็จ", token });
     } catch (err) {
         console.log({ position: "Sigin", error: err });
         return res.status(500).json({ message: "มีข้อผิดพลาดบางอย่างเกิดขึ้น" });
@@ -56,23 +60,24 @@ async function signin(req, res) {
 
 async function signup(req, res) {
     try {
+        const { firstname, lastname, email, password, otp, ref_code } = req.body;
+        // 1.check request
         const { error } = signupValidate.validate(req.body, { abortEarly: false });
         if (error && error.details) return res.status(400).json({ message: error.details });
-        const { firstname, lastname, email, password, otp, ref_code } = req.body;
 
-        // check otp
+        // 2.check otp
         const token = await Tokens.findOne({ for_email: email, token: parseInt(otp), reference_no: ref_code });
         if (!token) return res.status(400).json({ message: "ยืนยัน OTP ไม่สำเร็จกรุณาทำการเช็คอีกครั้ง" });
 
-        // check expired
+        // 3.check expired
         const diffTime = new Date() - new Date(token.expiredAt);
         if (diffTime > (15*60*1000)) return res.status(401).json({ message: "รหัส OTP หมดอายุกรุณาร้องขออีกครั้ง" });
 
-        // prepare data
+        // 4.prepare data
         const student_role = await Role.findOne({ role_name: "Student" }).select("_id");
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // check exist user
+        // 5.check exist user
         let token_jwt
         const existedUser = await User.findOne({ email });
         if (existedUser) {
@@ -87,7 +92,7 @@ async function signup(req, res) {
 
             // create jwt
             token_jwt = jwt.sign({ _id: existedUser._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
-            return res.status(200).json({ message: "อัพเดตข้อมูลสมาชิกสำเร็จ", token: token_jwt, _id: existedUser._id });
+            return res.status(200).json({ message: "อัพเดตข้อมูลสมาชิกสำเร็จ", token: token_jwt });
         }
         // create user
         const newUser = await User.create({ 
@@ -99,7 +104,7 @@ async function signup(req, res) {
         });
         // create jwt
         token_jwt = jwt.sign({ _id: newUser._id }, process.env.TOKEN_SECRET, { expiresIn: "14d" });
-        return res.status(200).json({ message: "อัพเดตข้อมูลสมาชิกสำเร็จ", token: token_jwt, _id: newUser._id });
+        return res.status(200).json({ message: "อัพเดตข้อมูลสมาชิกสำเร็จ", token: token_jwt });
     } catch (err) {
         console.log({ position: "Signup", error: err });
         return res.status(500).json({ message: "มีข้อผิดพลาดบางอย่างเกิดขึ้น" });

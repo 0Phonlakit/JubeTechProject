@@ -1,12 +1,11 @@
-// Save session
-export const authentication = (_id:string, token:string) => {
+// save token
+export const authentication = (token:string) => {
     if (typeof window !== "undefined") {
         sessionStorage.setItem("token", JSON.stringify(token));
-        sessionStorage.setItem("user", JSON.stringify(_id));
     }
 }
 
-// Get session
+// get token
 export const getToken = () => {
     if (typeof window !== "undefined") {
         const token = sessionStorage.getItem("token");
@@ -18,19 +17,15 @@ export const getToken = () => {
     }
 }
 
-// Get user
-export const getUser = () => {
+// check user
+export const checkUser = () => {
     if (typeof window !== "undefined") {
-        const user = sessionStorage.getItem("user");
-        if (user) {
-            return JSON.parse(user);
-        } else {
-            return false;
-        }
+        if (sessionStorage.getItem("token")) return true
     }
+    return false;
 }
 
-// Logout
+// logout
 export const logout = () => {
     if (typeof window !== "undefined") {
         sessionStorage.removeItem("token");

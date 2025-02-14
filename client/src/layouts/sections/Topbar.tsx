@@ -11,9 +11,10 @@ export default function Topbar({ title }:{ title:string }) {
 
     return (
         <div className="topbar">
-            <div className="title-dashboard">
+            <div></div>
+            {/* <div className="title-dashboard">
                 <h1>{title}</h1>
-            </div>
+            </div> */}
             {/* Avatar */}
             <div className="avatar-info" onClick={() => setToggleDropdown(!toggleDropdown)}>
                 <img src={Avatar} alt="avatar" />

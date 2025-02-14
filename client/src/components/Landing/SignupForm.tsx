@@ -17,7 +17,6 @@ interface SignupState {
 }
 
 interface ResponseSuccessSignup {
-    _id: string,
     token: string,
     message: string
 }
@@ -71,7 +70,7 @@ export default function SignupForm() {
                     Swal.showLoading();
                     submitSignup().then((response) => {
                         const info = response as ResponseSuccessSignup;
-                        authentication(info._id, info.token);
+                        authentication(info.token);
                         Swal.fire({
                             title: "สถานะการสมัครสมาชิก",
                             text: info.message ?? "เกิดข้อผิดพลาดในการสมัครสมาชิก",

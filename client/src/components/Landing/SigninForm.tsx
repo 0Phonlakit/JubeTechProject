@@ -12,7 +12,6 @@ interface SigninState {
 }
 
 interface ResponseSuccess {
-    _id: string,
     token: string,
     message: string
 }
@@ -36,7 +35,7 @@ export default function SigninForm() {
                 Swal.showLoading();
                 submitSignin().then((response) => {
                     const info = response as ResponseSuccess;
-                    authentication(info._id, info.token);
+                    authentication(info.token);
                     Swal.fire({
                         title: "เข้าสู่ระบบ",
                         text: info.message ?? "เกิดข้อผิดพลาดในการเข้าสู่ระบบ",
