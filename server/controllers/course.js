@@ -13,13 +13,15 @@ const getAllCourses = async (req, res) => {
 
 const createCourse = async (req, res) => {
     try {
-        const { title, description, price, duration, status } = req.body;
+        const { title, isPoint, price, score } = req.body;
         const newCourse = new Course({
             title,
-            description,
+            description: req.body.description || "",
+            isPoint,
             price,
-            duration,
-            status
+            score,
+            objectives: req.body.objectives || [],
+            categories: req.body.categories || [],
         });
         await newCourse.save();
         res.status(201).json({ message: "Course created successfully", course: newCourse });

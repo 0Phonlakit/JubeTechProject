@@ -4,7 +4,7 @@ import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import MainDashboard from '../layouts/MainDashboard';
 import CreatePromotion from '../components/Admin/promotionManagement/CreatePromotion';
-// import EditPromotion from '../components/Admin/promotionManagement/EditPromotion';
+import EditPromotion from '../components/Admin/promotionManagement/EditPromotion';
 import DeletePromotion from '../components/Admin/promotionManagement/DeletePromotion';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
@@ -165,11 +165,11 @@ export default function PromotionTable() {
                 </Modal>
 
                 {/* Modal for Edit Promotion */}
-                {/* {selectedPromotion && (
+                {selectedPromotion && (
                     <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
                         <EditPromotion promotionId={selectedPromotion._id} onClose={() => setShowEditModal(false)} />
                     </Modal>
-                )} */}
+                )}
 
                 {/* Modal for Delete Promotion */}
                 {selectedPromotion && (
