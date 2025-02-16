@@ -86,3 +86,11 @@ img {
     user-select: none;
     pointer-events: none;
 }
+
+i {
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

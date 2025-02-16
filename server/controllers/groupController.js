@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const Groups = require("../models/Group");
 
 const groupBlueprint = Joi.object({
-    name: Joi.string().trim().max(80).required,
+    name: Joi.string().trim().max(80).required(),
 });
 const groupBlueprintArr = Joi.object({
     groups: Joi.array().items(groupBlueprint).required().custom((value, helpers) => {
@@ -21,9 +21,11 @@ const createGroups = async(req, res) => {
         // check request
         const { error } = groupBlueprintArr.validate(req.body, { abortEarly: false });
         if (error && error.details) return res.status(400).json({ message: error.details });
-        // modify group
         const { _id } = req.verify_user;
         const { groups } = req.body;
+        // check groups
+        if (!Array.isArray(groups) || groups.length === 0) return res.status(404).json({ message: "Groups were not found." });
+        // modify group
         const modifyGroups = groups.map((group) => ({
             ...group,
             createdBy: new mongoose.Types.ObjectId(_id),
@@ -38,11 +40,11 @@ const createGroups = async(req, res) => {
     }
 }
 
-const getAllGroups = async(req, res) => {
+const getAllGroups = async(_req, res) => {
     try {
         // query group
         const groups = await Groups.find({})
-            .select("_id name createdBy updatedBy")
+            .select("_id name updatedAt")
             .sort({ createdAt: -1 })
             .lean();
         return res.status(200).json({ data: groups });
@@ -61,7 +63,7 @@ const getGroupById = async(req, res) => {
         const group = await Groups.findById(group_id)
             .select("_id name updatedAt")
             .lean();
-        return res.status(200).json({ data: group });
+        return res.status(200).json({ data: [group] });
     } catch (err) {
         console.error({ position: "Get Group By Id", error: err });
         return res.status(500).json({ message: "Something went wrong." });
@@ -82,7 +84,8 @@ const updateGroup = async(req, res) => {
         await Groups.findByIdAndUpdate(group_id, {
             name,
             updatedBy: new mongoose.Types.ObjectId(_id)
-        })
+        });
+        return res.status(200).json({ message: "The group was updated successfully." });
     } catch (err) {
         console.error({ position: "Update Group", error: err });
         return res.status(409).json({ message: "Group names must be unique." });
