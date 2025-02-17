@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MainDashboard from "../layouts/MainDashboard";
 import { GroupProvider } from "../contexts/GroupContext";
+import { CategoryProvider } from "../contexts/CategoryContext";
 import GroupForm from "../components/Admin/categoryManagement/GroupForm";
 import CategoryList from "../components/Admin/categoryManagement/CategoryList";
 import { BsChevronRight } from "react-icons/bs";
@@ -17,18 +18,20 @@ export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:D
 
     return (
         <MainDashboard title="Category Management" order={3} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} >
-            <GroupProvider>
-                <div className={"category-manage-container " + (toggleCategory ? "active-toggle" : "")}>
-                    <button
-                        onClick={() => setToggleCategory(!toggleCategory)}
-                        className={"toggle-category " + (toggleCategory ? "active-toggle" : "")}
-                    >
-                        <i><BsChevronRight /></i>
-                    </button>
-                    <CategoryList />
-                    <GroupForm />
-                </div>
-            </GroupProvider>
+            <CategoryProvider>
+                <GroupProvider>
+                    <div className={"category-manage-container " + (toggleCategory ? "active-toggle" : "")}>
+                        <button
+                            onClick={() => setToggleCategory(!toggleCategory)}
+                            className={"toggle-category " + (toggleCategory ? "active-toggle" : "")}
+                        >
+                            <i><BsChevronRight /></i>
+                        </button>
+                        <CategoryList />
+                        <GroupForm />
+                    </div>
+                </GroupProvider>
+            </CategoryProvider>
         </MainDashboard>
     );
 }

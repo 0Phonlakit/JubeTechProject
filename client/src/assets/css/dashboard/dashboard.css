@@ -23,7 +23,7 @@
 .sub-dashboard-content {
     height: 100%;
     max-height: 90vh;
-    background-color: rgb(255, 255, 250);
+    background-color: #fafafa;
     overflow-y: scroll;
 }
 

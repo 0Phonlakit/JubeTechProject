@@ -45,7 +45,7 @@ const getAllGroups = async(_req, res) => {
         // query group
         const groups = await Groups.find({})
             .select("_id name updatedAt")
-            .sort({ createdAt: -1 })
+            .sort({ updatedAt: -1 })
             .lean();
         return res.status(200).json({ data: groups });
     } catch (err) {

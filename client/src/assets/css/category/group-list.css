@@ -99,7 +99,15 @@
 
 .group-card .sub-option button {
     border: none;
+    padding: 4px;
+    border-radius: 50%;
     background-color: transparent;
+    transition: 0.3s all;
+}
+
+.group-card .sub-option button:hover {
+    background-color: #e6e6e6;
+    transition: 0.3s all;
 }
 
 .group-card .group-name {
@@ -214,10 +222,11 @@ button.add-group {
 }
 
 .input-group-modify button {
-    color: #FFFFFF;
     border: none;
-    padding: 2px;
+    padding: 1px;
+    color: #FFFFFF;
     border-radius: 50%;
+    transition: 0.3s all;
 }
 
 .input-group-modify button.cancel-modify {
@@ -227,6 +236,16 @@ button.add-group {
 
 .input-group-modify button.accept-modify {
     background-color: #35ef10;
+}
+
+.input-group-modify button.cancel-modify:hover {
+    background-color: #fa593c;
+    transition: 0.3s all;
+}
+
+.input-group-modify button.accept-modify:hover {
+    background-color: #67fe49;
+    transition: 0.3s all;
 }
 
 .confirm-group-delete {
