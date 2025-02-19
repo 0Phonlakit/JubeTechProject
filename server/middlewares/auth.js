@@ -1,18 +1,62 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const Role = require("../models/Role");
+require("dotenv").config();
 
-const authUser = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) {
-    return res.status(401).json({ message: "Access denied. No token provided." });
-  }
-
+const verifyToken = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.user = decoded;
+    // 1. check header
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) return res.status(401).json({ message: "ไม่มีการยืนยันความถูกต้องของผู้ใช้งาน", status: "unauthorized" });
+    
+    // 2. verify token
+    let decoded;
+    const token = authHeader.split(" ")[1];
+    try {
+      decoded = await new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+          if (err) {
+            if (err.name === "TokenExpiredError") {
+              return reject({ status: 401, message: "หมดเวลาในการใช้งานโปรดเข้าสู่ระบบอีกครั้ง", statusText: "expired" });
+            }
+            return reject({ status: 403, message: "การยืนยันผู้ใช้งานไม่ถูกต้อง", statusText: "invalid_token" });
+          }
+          resolve(decoded);
+        });
+      });
+    } catch (err) {
+      return res.status(err.status).json({ message: err.message, status: err.statusText });
+    }
+
+    // 3. query user
+    const user = await User.findById(decoded._id).select("role_ids").lean();
+    if (!user) return res.status(404).json({ message: "ไม่พบผู้ใช้งานในระบบ" });
+
+    // 4. query role
+    const roles = await Role.find({ _id: { $in: user.role_ids } }).select("role_name").lean();
+    const role_names = roles.map(role => role.role_name);
+
+    // 5. create verify user data
+    req.verify_user = {
+      _id: decoded._id,
+      roles: role_names
+    };
+
     next();
   } catch (error) {
-    res.status(400).json({ message: "Invalid token." });
+    res.status(400).json({ message: "การยืนยันผู้ใช้งานไม่ถูกต้อง", status: "invalid_token" });
   }
 };
 
-module.exports = { authUser };
+const verifyRole = (allow_roles) => {
+  return (req, res, next) => {
+    // check verify user
+    if (!req.verify_user || !req.verify_user.roles) return res.status(403).json({ message: "การเข้าถึงถูกปฏิเสธ" });
+    // check role
+    const hasRole = req.verify_user.roles.some(role => allow_roles.includes(role));
+    if (!hasRole) return res.status(403).json({ message: "การเข้าถึงถูกปฏิเสธ" });
+    next();
+  }
+}
+
+module.exports = { verifyToken, verifyRole };

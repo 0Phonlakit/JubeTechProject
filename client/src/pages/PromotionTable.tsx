@@ -8,7 +8,9 @@ import EditPromotion from '../components/Admin/promotionManagement/EditPromotion
 import DeletePromotion from '../components/Admin/promotionManagement/DeletePromotion';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
+
 import "../assets/css/dataTable.min.css";
+import "../assets/css/adminConfig/setting.css"
 
 type Promotion = {
   _id: string;
@@ -30,7 +32,12 @@ type ConfigDataTable = {
     searchBuilder?: boolean;
   }
 
-export default function PromotionTable() {
+interface DashboardProp {
+    toggleSidebar: boolean,
+    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
+}
+
+export default function PromotionTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
     DataTable.use(DT);
     
     const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -131,8 +138,12 @@ export default function PromotionTable() {
     ];
 
     return (
-        <MainDashboard title="Promootion Management" order={6}>
-            <div>
+        <MainDashboard title="Promotion Management"
+          toggleSidebar={toggleSidebar}
+          setToggleSidebar={setToggleSidebar}
+          order={5}
+          >
+            <div className='promotion-from-container'>
                 <Breadcrumb>
                     <Breadcrumb.Item href={`/dashboard/promotion-management`}>
                         Promotion Management

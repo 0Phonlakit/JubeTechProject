@@ -1,89 +1,187 @@
-import { useState, Dispatch, SetStateAction } from "react";
-import { Link } from "react-router-dom";
-import { Offcanvas, Accordion } from "react-bootstrap";
-import { BsSearch, BsBookHalf, BsFillMortarboardFill, BsList } from "react-icons/bs";
+import { useState } from "react";
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import Carousel from 'react-bootstrap/Carousel';
+import Offcanvas from 'react-bootstrap/Offcanvas';
+import { checkUser } from "../../services/authorize.ts";
 
 import "../../assets/css/landing/topbar.css";
+import { FaAngleDown, FaAngleRight, FaSistrix, FaCartShopping, FaNewspaper, FaBars } from "react-icons/fa6";
 
-interface SigninFormProp {
-    signinShow: boolean,
-    setSignin: Dispatch<SetStateAction<boolean>>
+interface TopbarProp {
+    modalStatus: boolean,
+    setShowModal: (value: boolean | ((prev: boolean) => boolean)) => void,
+    setTypeModal: (value: number | ((prev: number) => number)) => void
 }
 
-interface SignupFormProp {
-    signupShow: boolean,
-    setSignup: Dispatch<SetStateAction<boolean>>
+const MUIButton = styled(Button)({
+    boxShadow: "none",
+    fontSize: "0.8rem",
+    color: "#c13dff",
+    borderColor: "#c13dff",
+    "&:hover": {
+        backgroundColor: "#c13dff10",
+        boxShadow: "0px 1px 2px 1px #00000030"
+    }
+});
+
+function ButtonContainer({ modalStatus, setShowModal, setTypeModal }:TopbarProp) {
+    return (
+        <div className="btn-container">
+            <button
+                id="signin-btn"
+                onClick={() => {
+                    setShowModal(!modalStatus)
+                    setTypeModal(0);
+                }}
+            >
+                เข้าสู่ระบบ
+            </button>
+            <button
+                id="signup-btn"
+                onClick={() => {
+                    setShowModal(!modalStatus)
+                    setTypeModal(1);
+                }}
+            >
+                สมัครสมาชิก
+            </button>
+        </div>
+    );
 }
 
-export default function Topbar({ signinShow, setSignin, signupShow, setSignup }:SigninFormProp & SignupFormProp) {
-    // Offcanvas Section
-    const [show, setShow] = useState<boolean>(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+export default function Topbar({ modalStatus, setShowModal, setTypeModal }:TopbarProp) {
+    const [showOffcanvas, setShowOffCanvas] = useState<boolean>(false); // Canvas state
+    const [showPopover, setShowPopover] = useState<boolean>(false); // Popover state
+    const [carouselIndex, setCarouselIndex] = useState<number>(0); // Carousel state
+    
+    // Data Section
+
+
+
     // Render
     return (
         <nav className="topbar">
-            {/* Logo */}
-            <div className="logo">
-                <span><span>Jube</span>Tech</span>
-            </div>
-            {/* Desktop View */}
-            <div className="responsive-container">
-                <i onClick={handleShow}><BsList /></i>
+            {/* Left Section */}
+            <div className="left-container">
+                {/* Logo */}
+                <div className="logo-container">
+                    <a href="/"><span>Jube<span>Tech</span></span></a>
+                </div>
+                {/* Category */}
+                <div className={"category-container " + (showPopover ? "active" : null)}>
+                    <MUIButton
+                        className={showPopover ? "active" : ""}
+                        id="category-tab"
+                        aria-describedby="category-tab"
+                        variant="outlined"
+                        endIcon={<FaAngleDown size={14} />}
+                        onMouseEnter={() => setShowPopover(true)}
+                        onClick={() => setShowPopover(!showPopover)}
+                    >
+                        <span>หมวดหมู่</span>
+                    </MUIButton>
+                    <div
+                        className="category-info"
+                        style={{display: showPopover ? "flex" : "none"}}
+                        onMouseLeave={() => setShowPopover(false)}
+                    >
+                        <div className="main-category">
+                            <p>ค้นหาหมวดหมู่ที่คุณสนใจ</p>
+                            <ul>
+                                <li>
+                                    Web Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Mobile Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Desktop Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    UX/UI Designer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    IOT Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Cybersecurity
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Data Science
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Prompt Engineer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="sub-category">
+                            <ul>
+                                <li>Javascript</li>
+                                <li>Typescript</li>
+                                <li>Java</li>
+                                <li>Python</li>
+                                <li>Kotlin</li>
+                                <li>React.js</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {/* Search */}
                 <div className="search-container">
-                    <i><BsSearch /></i>
-                    <input type="text" placeholder="ค้นหาคอร์สเรียน" />
-                </div>
-                <div className="page-container">
-                    <Link to="#">
-                        <i><BsBookHalf /></i>
-                        <span>เข้าสู่หน้าคอร์สเรียน</span>
-                    </Link>
-                    <Link to="#">
-                        <i><BsFillMortarboardFill /></i>
-                        <span>สมัครเป็นติวเตอร์</span>
-                    </Link>
-                </div>
-                <div className="button-container">
-                    <button id="signin-btn" onClick={() => setSignin(!signinShow)}>เข้าสู่ระบบ</button>
-                    <button id="signup-btn" onClick={() => setSignup(!signupShow)}>สมัครสมาชิก</button>
+                    <input type="text" placeholder="ค้นหาคอร์สเรียน..." />
+                    <i><FaSistrix /></i>
                 </div>
             </div>
-            {/* Mobile & Tablet View */}
-            <Offcanvas show={show} onHide={handleClose} placement="end">
+            {/* Right Section */}
+            <div className="right-container">
+                {/* Link */}
+                <a href="#">
+                    สมัครเป็นติวเตอร์
+                </a>
+                <a href="#">
+                    การเรียนรู้ของเรา
+                </a>
+                {/* Cart */}
+                <a href="#"><i><FaCartShopping /></i></a>
+                {/* Notification */}
+                <a href="#"><i><FaNewspaper /></i></a>
+                {checkUser()
+                    ?
+                    ""
+                    :
+                    <ButtonContainer
+                        modalStatus={modalStatus}
+                        setShowModal={setShowModal}
+                        setTypeModal={setTypeModal}
+                    />
+                }
+                <div className="sidetab-container" onClick={() => setShowOffCanvas(true)}>
+                    <i><FaBars /></i>
+                </div>
+            </div>
+
+            <Offcanvas show={showOffcanvas} placement="end" onHide={() => setShowOffCanvas(false)}>
                 <Offcanvas.Header closeButton>
-                    <Offcanvas.Title>Menu</Offcanvas.Title>
+                    <Offcanvas.Title>รายการเมนู</Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
-                    <Accordion>
-                        <Accordion.Item eventKey="0">
-                            <Accordion.Header>เข้าสู่ระบบ & สมัครสมาชิก</Accordion.Header>
-                            <Accordion.Body className="auth-mobile">
-                                <Link to="#" onClick={() => setSignin(!signinShow)}>เข้าสู่ระบบ</Link><br /><br />
-                                <Link to="#" onClick={() => setSignup(!signupShow)}>สมัครสมาชิก</Link>
-                            </Accordion.Body>
-                        </Accordion.Item>
-                        <Accordion.Item eventKey="1">
-                            <Accordion.Header>ตัวเลือกหน้าเว็บ</Accordion.Header>
-                            <Accordion.Body>
-                                <div className="page-container">
-                                    <Link to="#">
-                                        <i><BsBookHalf /></i>
-                                        <span>เข้าสู่หน้าคอร์สเรียน</span>
-                                    </Link>
-                                    <Link to="#">
-                                        <i><BsFillMortarboardFill /></i>
-                                        <span>สมัครเป็นติวเตอร์</span>
-                                    </Link>
-                                </div>
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    </Accordion>
-                    <div className="search-container">
-                        <i><BsSearch /></i>
-                        <input type="text" placeholder="ค้นหาคอร์สเรียน" />
-                    </div>
-                    <div className="btn-container"><button type="button" className="search-mobile">ค้นหา</button></div>
+                    <Carousel activeIndex={carouselIndex}>
+                        <Carousel.Item>
+                            123
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            456
+                        </Carousel.Item>
+                    </Carousel>
                 </Offcanvas.Body>
             </Offcanvas>
         </nav>

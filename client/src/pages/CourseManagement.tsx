@@ -19,9 +19,14 @@ export interface CourseState {
     image: File | null
 }
 
-export default function CourseManagement() {
+interface DashboardProp {
+    toggleSidebar: boolean,
+    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
+}
+
+export default function CourseManagement({ toggleSidebar, setToggleSidebar }:DashboardProp) {
     const [tabPage, setTapPage] = useState<number>(0);
-    const [progress, setProgress] = useState(1);
+    const [progress, setProgress] = useState(0);
     const [course, setCourse] = useState<CourseState>({
         title: "",
         price: 0,
@@ -39,7 +44,12 @@ export default function CourseManagement() {
     }
     
     return (
-        <MainDashboard title="Course Management" order={1}>
+        <MainDashboard 
+            title="Course Management"
+            toggleSidebar={toggleSidebar}
+            setToggleSidebar={setToggleSidebar}
+            order={1}
+        >
             <div className="main-course-container">
                 <Paper sx={{ height: 800, width: "100%", borderRadius: "20px", padding: "10px 5px", overflowY: "scroll"}}>
                     <Tabs

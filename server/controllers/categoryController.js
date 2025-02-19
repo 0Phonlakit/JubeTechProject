@@ -1,153 +1,181 @@
+// Joi validate
 const Joi = require("joi");
+// Schema
 const mongoose = require("mongoose");
 const Categories = require("../models/Category");
 
-const validateCategory = Joi.object({
-    name: Joi.string().trim().max(100).required()
+const categoryBlueprint = Joi.object({
+    name: Joi.string().trim().max(100).required(),
+    group_ids: Joi.array().items(Joi.string()),
+});
+const categoryBlueprintArr = Joi.object({
+    categories: Joi.array().items(categoryBlueprint).required().custom((value, helpers) => {
+        const names = value.map(category => category.name);
+        const filterNames = new Set(names);
+        if (filterNames.size !== names.length) return helpers.error("any.custom", { message: "Category names must be unique." });
+        return value;
+    })
 });
 
-async function createCategory(req, res) { // Create Category: parameter => (name)
+const createCategories = async(req, res) => {
     try {
-        const { name } = req.body;
-        const { error } = validateCategory.validate({ name });
-        // Validate Request
-        if (error && error.details[0].type === "string.empty") return res.status(400).json({error: "กรุณาป้อนข้อมูลหมวดหมู่"});
-        if (error && error.details[0].type === "string.max") return res.status(400).json({error: "กรุณาป้อนข้อมูลไม่เกิน 100 ตัวอักษร"});
-        // When Success
-        const category = await Categories.create({
-            name: name
-        });
-        return res.status(201).json({
-            data: category,
-            success: "สร้างหมวดหมู่สำเร็จ"
-        });
+        // check request
+        const { error } = categoryBlueprintArr.validate(req.body, { abortEarly: false });
+        if (error && error.details) return res.status(400).json({ message: error.details });
+        // modify categories
+        const { _id } = req.verify_user;
+        const { categories } = req.body;
+        const modifyCategories = categories.map((category) => ({
+            ...category,
+            group_ids: category.group_ids.map((group) => new mongoose.Types.ObjectId(group)),
+            createdBy: new mongoose.Types.ObjectId(_id),
+            updatedBy: new mongoose.Types.ObjectId(_id)
+        }));
+        // create categories
+        await Categories.insertMany(modifyCategories);
+        return res.status(201).json({ message: "Categories were created successfully." });
     } catch (err) {
-        console.log({ position: "Create Category", error: err });
-        return res.status(409).json({
-            error: "มีข้อมูลหมวดหมู่นี้แล้ว"
-        });
+        console.error({ position: "Create Categories", error: err });
+        return res.status(409).json({ message: "Category names must be unique." });
     }
 }
 
-async function getAllcategories(req, res) {
+const getAllCategories = async(_req, res) => {
     try {
-        const categories = await Categories.find({}).select("_id name").lean().exec();
+        // query categories
+        const categories = await Categories.find({})
+            .select("_id name group_ids updatedAt")
+            .sort({ updatedAt: -1 })
+            .populate("group_ids")
+            .lean();
         return res.status(200).json({ data: categories });
     } catch (err) {
-        console.log({ position: "Get All Categories", error:err });
-        return res.status(500).json({
-            error: "มีข้อผิดพลาดบางอย่างเกิดขึ้น"
-        });
+        console.error({ position: "Get All Categories", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
     }
 }
 
-async function getCategories(req, res) { // Get Category: parameter => (page, pageSize)
-    let { page, pageSize } = req.query;
-    page = page === "0" ? 0 : parseInt(page) || 1;
-    pageSize = parseInt(pageSize) || 20;
-    const skip = page === 0 ? 0 : page * pageSize;
+const paginationCategories = async(req, res) => {
     try {
-        const categories = await Categories.find()
-            .select("_id name updatedAt")
+        const { page, pageSize } = req.params;
+        const parsePage = parseInt(page);
+        const parsePageSize = parseInt(pageSize);
+        // check page or pageSize
+        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The page number or page size is invalid." });
+        const skip = (parsePage - 1) * parsePageSize;
+        // query categories
+        const categories = await Categories.find({})
+            .select("_id name group_ids updatedAt")
+            .sort({ updatedAt: -1 })
+            .populate("group_ids")
             .skip(skip)
             .limit(pageSize)
-            .lean()
-            .exec();
-        const total = await Categories.countDocuments();
+            .lean();
         return res.status(200).json({
             data: categories,
             pagination: {
-                total, page, pageSize, totalPages: Math.ceil(total/pageSize)
+                total, page:parsePage , pageSize:10, totalPages: Math.ceil(total/10) 
             }
         });
     } catch (err) {
-        console.log({ position: "Get Category", error: err });
-        return res.status(500).json({
-            error: "มีข้อผิดพลาดบางอย่างเกิดขึ้น"
-        });
+        console.error({ position: "Pagination Categories", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
     }
 }
 
-async function searchCategoryByName(req, res) { // Search Category: parameter => (name, page, pageSize)
-    let { page, pageSize, name } = req.query;
-    page = page === "0" ? 0 : parseInt(page) || 1;
-    pageSize = parseInt(pageSize) || 20;
-    const skip = page === 0 ? 0 : page * pageSize;
+const getCategoryById = async(req, res) => {
     try {
-        const categories = await Categories.find({ name: { $regex: name, $options: 'i' } })
-            .select("_id name updatedAt")
-            .skip(skip)
-            .limit(pageSize)
-            .lean()
-            .exec();
-        const total = await Categories.countDocuments();
-        return res.status(200).json({
-            data: categories,
-            pagination: {
-                total, page, pageSize, totalPages: Math.ceil(total/pageSize)
-            }
-        });
-    } catch (err) {
-        console.log({ position: "Get Category", error: err });
-        return res.status(500).json({
-            error: "มีข้อผิดพลาดบางอย่างเกิดขึ้น"
-        });
-    }
-}
-
-async function editCategory(req, res) { // Edit Category: parameter => (_id)
-    const { _id } = req.body;
-    try {
-        if (!_id) return res.status(404).json({error: "ไม่พบข้อมูลของหมวดหมู่"});
-        const category = await Categories.findById(_id, "name").exec();
+        // check category id
+        const { category_id } = req.params;
+        if (!category_id) return res.status(404).json({ message: "The category was not found." });
+        // query category
+        const category = await Categories.findById(category_id)
+            .select("_id name group_ids updatedAt")
+            .populate("group_ids")
+            .lean();
         return res.status(200).json({ data: category });
-    } catch (error) {
-        console.log({ position: "Edit Category", error:err });
-        return res.status(500).json({
-            error: "มีข้อผิดพลาดบางอย่างเกิดขึ้น"
-        });
-    }
-}
-
-async function updateCategory(req, res) { // Edit Category: parameter => (_id, name)
-    const { _id, name } = req.body;
-    try {
-        if (!_id) return res.status(404).json({error: "ไม่พบข้อมูลของหมวดหมู่"});
-        const { error } = validateCategory.validate({ name });
-        // Validate Request
-        if (error && error.details[0].type === "string.empty") return res.status(400).json({error: "กรุณาป้อนข้อมูลหมวดหมู่"});
-        if (error && error.details[0].type === "string.max") return res.status(400).json({error: "กรุณาป้อนข้อมูลไม่เกิน 100 ตัวอักษร"});
-        const response = await Categories.updateOne({ _id }, { $set: { name } });
-        return res.status(200).json({ success: "อัพเดตข้อมูลหมวดหมู่สำเร็จ" });
     } catch (err) {
-        console.log({ position: "Update Category", error: err });
-        return res.status(409).json({
-            error: "มีข้อมูลหมวดหมู่นี้แล้ว"
-        });
+        console.error({ position: "Get Category By Id", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
     }
 }
 
-async function deleteCategories(req, res) { // Delete Many Category: parameter => (_ids:array)
-    const { _ids } = req.body;
+const searchCategories = async(req, res) => {
     try {
-        if (typeof _ids === "object" && _ids.length > 0) {
-            const response = await Categories.deleteMany({ _id: { $in: _ids } });
-            return res.status(200).json({ success: "ลบข้อมูลหมวดหมู่สำเร็จ" });
-        } else {
-            return res.status(404).json({ error: "ไม่พบรายการหมวดหมู่" });
+        const { name, startDate, endDate, page, pageSize, group_ids } = req.query;
+        const parsePage = parseInt(page);
+        const parsePageSize = parseInt(pageSize);
+        // check page and pageSize
+        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The page number or page size is invalid." });
+        const skip = (parsePage - 1) * parsePageSize;
+        // prepare filter
+        let filter = {};
+        if (name) filter.name = { $regex: new RegExp(name, "i") };
+        if (startDate || endDate) {
+            filter.createdAt = {};
+            if (startDate) filter.createdAt.$gte = new Date(startDate);
+            if (endDate) filter.createdAt.$lte = new Date(endDate);
         }
+        if (Array.isArray(group_ids) && group_ids.length > 0) filter.group_ids = { $in: group_ids };
+        // query category
+        const categories = await Categories.find(filter)
+            .select("_id name group_ids updatedAt")
+            .populate("group_ids")
+            .sort({ updatedAt: -1 })
+            .skip(skip)
+            .limit(parsePageSize)
+            .lean();
+        return res.status(200).json({ data: categories });
     } catch (err) {
-        console.log({ position: "Delete Category", error: err });
-        return res.status(500).json({error: "มีข้อผิดพลาดบางอย่างเกิดขึ้น"});
+        console.error({ position: "Search Categories", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
+const updateCategory = async(req, res) => {
+    try {
+        // check category id
+        const { category_id } = req.params;
+        if (!category_id) return res.status(404).json({ message: "The category was not found." });
+        // check request
+        const { name, group_ids } = req.body;
+        const { error } = categoryBlueprint.validate({ name, group_ids }, { abortEarly: false });
+        if (error && error.details) return res.status(400).json({ message: error.details });
+        // update category
+        const { _id } = req.verify_user;
+        await Categories.findByIdAndUpdate(category_id, {
+            name,
+            group_ids: group_ids.map((group) => new mongoose.Types.ObjectId(group)),
+            updatedBy: new mongoose.Types.ObjectId(_id)
+        });
+        return res.status(200).json({ message: "The category was updated successfully." });
+    } catch (err) {
+        console.error({ position: "Update Category", error: err });
+        return res.status(409).json({ message: "Category names must be unique." });
+    }
+}
+
+const deleteCategories = async(req, res) => {
+    try {
+        // check group ids
+        const { category_ids } = req.body;
+        if (!Array.isArray(category_ids) || category_ids.length === 0) return res.status(404).json({ message: "Categories were not found." });
+        // delete many category
+        const modify_category_ids = category_ids.map((category) => new mongoose.Types.ObjectId(category));
+        await Categories.deleteMany({ _id: { $in: modify_category_ids } });
+        return res.status(200).json({ message: "Categories were deleted successfully." });
+    } catch (err) {
+        console.error({ position: "Delete Categories", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
     }
 }
 
 module.exports = {
-    createCategory,
-    getAllcategories,
-    getCategories,
-    editCategory,
+    createCategories,
+    getAllCategories,
+    paginationCategories,
+    getCategoryById,
+    searchCategories,
     updateCategory,
-    deleteCategories,
-    searchCategoryByName
+    deleteCategories
 }

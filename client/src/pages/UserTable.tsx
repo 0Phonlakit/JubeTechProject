@@ -8,7 +8,9 @@ import DeleteUser from '../components/Admin/userManagement/DeleteUser';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
 import MainDashboard from '../layouts/MainDashboard';
+
 import "../assets/css/dataTable.min.css";
+import "../assets/css/adminConfig/setting.css"
 
 type User = {
   _id: string;
@@ -27,7 +29,12 @@ type ConfigDataTable = {
   searchBuilder?: boolean;
 }
 
-export default function UserTable() {
+interface DashboardProp {
+  toggleSidebar: boolean,
+  setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
+}
+
+export default function UserTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
   DataTable.use(DT);
   
   const [users, setUsers] = useState<User[]>([]);
@@ -151,9 +158,14 @@ export default function UserTable() {
   ];
 
   return (
-    <MainDashboard title="User Management" order={4}>
-      <div>
-        <Breadcrumb>
+    <MainDashboard
+      title="User Management"
+      toggleSidebar={toggleSidebar}
+      setToggleSidebar={setToggleSidebar}
+      order={2}
+    >
+      <div className='user-form-container'>
+        <Breadcrumb className='breadcrumb1'>
           <Breadcrumb.Item href={`/dashboard/user-management`}>
             User Management
           </Breadcrumb.Item>

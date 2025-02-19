@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Role = require("../models/Role");
 
 // Get All Roles

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const CategorySchema = new Schema({
-    name: { type: String, required: true, unique: true, maxlength: 80 },
-    group_ids: [{ type: mongoose.Types.ObjectId, ref: "Groups" }],
+const SectionSchema = new Schema({
+    name: { type: String, required: true },
+    lessons: [{ type: mongoose.Types.ObjectId, ref: "Lessons" }],
     createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
     updatedBy: { type: mongoose.Types.ObjectId, ref: "User", required: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Categories", CategorySchema);
+module.exports = mongoose.model("Sections", SectionSchema);

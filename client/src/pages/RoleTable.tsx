@@ -8,7 +8,9 @@ import EditRole from '../components/Admin/roleManagement/EditRole';
 import DeleteRole from '../components/Admin/roleManagement/DeleteRole';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
+
 import "../assets/css/dataTable.min.css";
+import "../assets/css/adminConfig/setting.css"
 
 type Role = {
   _id: string;
@@ -24,7 +26,13 @@ type ConfigDataTable = {
     searchBuilder?: boolean;
   }
 
-export default function RoleTable() {
+interface DashboardProp {
+  toggleSidebar: boolean,
+  setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
+}
+
+
+export default function RoleTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
   DataTable.use(DT);
 
   const [roles, setRoles] = useState<Role[]>([]);
@@ -135,8 +143,12 @@ export default function RoleTable() {
   ];
 
   return (
-    <MainDashboard title="User Management" order={5}>
-      <div>
+    <MainDashboard title="Role Management"
+      toggleSidebar={toggleSidebar}
+      setToggleSidebar={setToggleSidebar}
+      order={4}
+      >
+      <div className='role-form-container'>
         <Breadcrumb>
           <Breadcrumb.Item href={`/dashboard/role-management`}>
             Role Management
