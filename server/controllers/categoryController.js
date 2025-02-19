@@ -46,7 +46,7 @@ const getAllCategories = async(_req, res) => {
         const categories = await Categories.find({})
             .select("_id name group_ids updatedAt")
             .sort({ updatedAt: -1 })
-            .populate("group_ids")
+            .populate({ path: "group_ids", select: "_id name" })
             .lean();
         return res.status(200).json({ data: categories });
     } catch (err) {
@@ -57,7 +57,7 @@ const getAllCategories = async(_req, res) => {
 
 const paginationCategories = async(req, res) => {
     try {
-        const { page, pageSize } = req.params;
+        const { page, pageSize } = req.query;
         const parsePage = parseInt(page);
         const parsePageSize = parseInt(pageSize);
         // check page or pageSize
@@ -67,7 +67,7 @@ const paginationCategories = async(req, res) => {
         const categories = await Categories.find({})
             .select("_id name group_ids updatedAt")
             .sort({ updatedAt: -1 })
-            .populate("group_ids")
+            .populate({ path: "group_ids", select: "_id name" })
             .skip(skip)
             .limit(pageSize)
             .lean();
@@ -91,9 +91,9 @@ const getCategoryById = async(req, res) => {
         // query category
         const category = await Categories.findById(category_id)
             .select("_id name group_ids updatedAt")
-            .populate("group_ids")
+            .populate({ path: "group_ids", select: "_id name" })
             .lean();
-        return res.status(200).json({ data: category });
+        return res.status(200).json({ data: [category] });
     } catch (err) {
         console.error({ position: "Get Category By Id", error: err });
         return res.status(500).json({ message: "Something went wrong." });
@@ -120,7 +120,7 @@ const searchCategories = async(req, res) => {
         // query category
         const categories = await Categories.find(filter)
             .select("_id name group_ids updatedAt")
-            .populate("group_ids")
+            .populate({ path: "group_ids", select: "_id name" })
             .sort({ updatedAt: -1 })
             .skip(skip)
             .limit(parsePageSize)
