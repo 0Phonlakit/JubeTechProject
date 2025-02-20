@@ -15,6 +15,8 @@ interface DashboardProp {
 
 export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:DashboardProp) {
     const [toggleCategory, setToggleCategory] = useState<boolean>(false);
+    const [startCategory, setStartCategory] = useState<boolean>(false);
+    const [startGroup, setStartGroup] = useState<boolean>(false);
 
     return (
         <MainDashboard title="Category Management" order={3} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} >
@@ -27,8 +29,8 @@ export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:D
                         >
                             <i><BsChevronRight /></i>
                         </button>
-                        <CategoryList />
-                        <GroupForm />
+                        <CategoryList startCategory={startCategory} setStartCategory={setStartCategory} />
+                        <GroupForm startGroup={startGroup} setStartGroup={setStartGroup} />
                     </div>
                 </GroupProvider>
             </CategoryProvider>

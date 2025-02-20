@@ -28,7 +28,12 @@ const alertStyle = {
     borderRadius: "5px",
 }
 
-export default function GroupForm() {
+interface GroupFormProp {
+    startGroup: boolean,
+    setStartGroup: (value:boolean | ((prev:boolean) => boolean)) => void
+}
+
+export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
     const { state, fetchAllGroups, createGroups, updateGroup, deleteGroups, dispatch } = useGroup();
     const [filterGroup, setFilterGroup] = useState<Group[]>(state.groups);
     const [messageList, setMessageList] = useState<ResponseMessage[]>([]);
@@ -94,9 +99,10 @@ export default function GroupForm() {
     }
 
     useEffect(() => {
-        if (state.groups.length === 0) {
+        if (state.groups.length === 0 && startGroup === false) {
             fetchAllGroups();
             setFilterGroup(state.groups);
+            setStartGroup(true);
         } else {
             if (searchGroup.trim() !== "") {
                 setFilterGroup(

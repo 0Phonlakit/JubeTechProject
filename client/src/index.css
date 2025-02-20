@@ -47,6 +47,14 @@
     font-family: "Mitr", sans-serif;
 }
 
+:lang(th) {
+    font-family: "Mitr", sans-serif;
+}
+
+/* :lang(en) {
+    font-family: "Poppins", sans-serif;
+} */
+
 html {
     display: flex;
     flex-direction: column;
