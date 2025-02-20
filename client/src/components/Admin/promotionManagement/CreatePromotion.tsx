@@ -418,34 +418,7 @@ export default function CreatePromotion({ onClose }: CreatePromotionProps) {
           </Row>
   
           <Row className="mb-3">
-            <Form.Group as={Col} controlId="discount">
-              <Form.Label>Discount <span style={{ color: "red" }}>*</span> </Form.Label>
-              <Form.Control type="number" 
-                            name="discount" 
-                            value={formData.discount || ''}
-                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
-                            placeholder="0" />
-            </Form.Group>
-            <Form.Group as={Col} controlId="min_purchase_amount">
-              <Form.Label>Min Purchase Amount <span style={{ color: "red" }}>*</span> </Form.Label>
-              <Form.Control type="number" 
-                            name="min_purchase_amount" 
-                            value={formData.min_purchase_amount || ''}
-                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
-                            placeholder="0" />
-            </Form.Group>
-          </Row>
-  
-          <Row className="mb-3">
-            <Form.Group as={Col} controlId="max_discount">
-              <Form.Label>Max Discount <span style={{ color: "red" }}>*</span> </Form.Label>
-              <Form.Control type="number" 
-                            name="max_discount" 
-                            value={formData.max_discount || ''}
-                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })} 
-                            placeholder="0" />
-            </Form.Group>
-            <Form.Group as={Col} controlId="condition_type">
+          <Form.Group as={Col} controlId="condition_type">
               <Form.Label>Condition Type <span style={{ color: "red" }}>*</span> </Form.Label>
               <Form.Select name="condition_type" 
                            value={formData.condition_type || ''}
@@ -455,6 +428,33 @@ export default function CreatePromotion({ onClose }: CreatePromotionProps) {
                 <option value="Unlimited">Unlimited</option>
                 <option value="LimitPerDay">Limit Per Day</option>
               </Form.Select>
+            </Form.Group>
+            <Form.Group as={Col} controlId="discount">
+              <Form.Label>Discount <span style={{ color: "red" }}>*</span> </Form.Label>
+              <Form.Control type="number" 
+                            name="discount" 
+                            value={formData.discount || ''}
+                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
+                            placeholder="0" />
+            </Form.Group>
+          </Row>
+  
+          <Row className="mb-3">
+          <Form.Group as={Col} controlId="min_purchase_amount">
+              <Form.Label>Min Purchase Amount <span style={{ color: "red" }}>*</span> </Form.Label>
+              <Form.Control type="number" 
+                            name="min_purchase_amount" 
+                            value={formData.min_purchase_amount || ''}
+                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
+                            placeholder="0" />
+            </Form.Group>
+            <Form.Group as={Col} controlId="max_discount">
+              <Form.Label>Max Discount <span style={{ color: "red" }}>*</span> </Form.Label>
+              <Form.Control type="number" 
+                            name="max_discount" 
+                            value={formData.max_discount || ''}
+                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })} 
+                            placeholder="0" />
             </Form.Group>
           </Row>
   
