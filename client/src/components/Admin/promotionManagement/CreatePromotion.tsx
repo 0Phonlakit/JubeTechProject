@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
-import { Modal, Button, Form, Row, Col, Stack, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { FaExclamationCircle } from 'react-icons/fa';
+import { Modal, Button, Form, Row, Col, Stack, Tooltip, OverlayTrigger, InputGroup } from 'react-bootstrap';
+import { FaExclamationCircle, FaSyncAlt } from 'react-icons/fa';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 
@@ -78,12 +78,18 @@ export default function CreatePromotion({ onClose }: CreatePromotionProps) {
 
   const emptyFields = requiredFields.filter((field) => !formData[field]);
 
+  const generatedCodes = new Set();
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let code = '';
-    for (let i = 0; i < 15; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    let code;
+    do {
+      code = '';
+      for (let i = 0; i < 15; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+    } while (generatedCodes.has(code));
+  
+    generatedCodes.add(code);
     return code;
   };
 
@@ -355,24 +361,30 @@ export default function CreatePromotion({ onClose }: CreatePromotionProps) {
               <OverlayTrigger
                 placement="right"
                 overlay={
-                <Tooltip id="tooltip-right">
-                  Click the Promotion Code field to generate a random code if none is provided.
-                </Tooltip>}>
+                  <Tooltip id="tooltip-right">
+                    Click the button on the right to generate a random promotion code.
+                  </Tooltip>
+                }
+              >
                 <span>
-                  <FaExclamationCircle style={{ cursor: 'pointer', marginLeft: '4px', marginBottom: '3px' , color: 'orange' }} />
+                  <FaExclamationCircle style={{ cursor: 'pointer', marginLeft: '4px', marginBottom: '3px', color: 'orange' }} />
                 </span>
               </OverlayTrigger>
-              <Form.Control type="text" 
-                            name="code" 
-                            value={formData.code} 
-                            onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
-                            onBlur={() => {
-                              if (!formData.code.trim()) {
-                                handleChange({ name: "code", value: generateRandomCode() });
-                              }
-                            }}
-                            placeholder="Enter Promotion Code"
-                          />
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
+                  placeholder="Enter Promotion Code"
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => handleChange({ name: 'code', value: generateRandomCode() })}
+                >
+                  <FaSyncAlt />
+                </Button>
+              </InputGroup>
             </Form.Group>
           </Row>
   
