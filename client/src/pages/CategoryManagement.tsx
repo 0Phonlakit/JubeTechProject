@@ -14,7 +14,7 @@ interface DashboardProp {
 }
 
 export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:DashboardProp) {
-    const [toggleCategory, setToggleCategory] = useState<boolean>(true);
+    const [toggleCategory, setToggleCategory] = useState<boolean>(false);
 
     return (
         <MainDashboard title="Category Management" order={3} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} >

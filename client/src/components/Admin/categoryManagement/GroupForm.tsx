@@ -120,6 +120,9 @@ export default function GroupForm() {
                 setMessageList([...messageList, response]);
             }
             state.response = "";
+            setTimeout(() => {
+                setMessageList((prev) => prev.slice(1));
+            }, 2000);
         }
         dispatch({ type: "CLEAR_RESPONSE", payload: null, message: "", status: 0 });
     }, [state.response, searchGroup, state.groups]);
@@ -201,7 +204,7 @@ export default function GroupForm() {
             }
             {state.loading
                 ?
-                <div className="skeliton-container">
+                <div className="skeleton-container">
                     <Skeleton variant="text" sx={{ fontSize: '0.8rem' }} />
                     <Skeleton variant="rectangular" width={210} height={60} />
                     <Skeleton variant="rounded" width={210} height={10} />
