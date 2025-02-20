@@ -20,7 +20,13 @@ const createGroups = async(req, res) => {
     try {
         // check request
         const { error } = groupBlueprintArr.validate(req.body, { abortEarly: false });
-        if (error && error.details) return res.status(400).json({ message: error.details });
+        if (error && error.details) {
+            const modifyDetail = error.details.map(err => ({
+                path: err.path,
+                message: err.message
+            }));
+            return res.status(400).json({ message: modifyDetail });
+        }
         const { _id } = req.verify_user;
         const { groups } = req.body;
         // check groups
@@ -78,7 +84,13 @@ const updateGroup = async(req, res) => {
         // check request
         const { name } = req.body;
         const { error } = groupBlueprint.validate({ name }, { abortEarly: false });
-        if (error && error.details) return res.status(400).json({ message: error.details });
+        if (error && error.details) {
+            const modifyDetail = error.details.map(err => ({
+                path: err.path,
+                message: err.message
+            }));
+            return res.status(400).json({ message: modifyDetail });
+        }
         // update group
         const { _id } = req.verify_user;
         await Groups.findByIdAndUpdate(group_id, {

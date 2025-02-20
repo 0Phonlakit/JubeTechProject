@@ -41,7 +41,12 @@ const alertStyle = {
     borderRadius: "5px",
 }
 
-export default function CategoryList() {
+interface CategoryListProp {
+    startCategory: boolean,
+    setStartCategory: (value:boolean | ((prev:boolean) => boolean)) => void
+}
+
+export default function CategoryList({ startCategory, setStartCategory }:CategoryListProp) {
     // Context
     const { state:groupsState } = useGroup();
     const { state:categoriesState, fetchAllCategories, createCategories, updateCategory, deleteCategories, dispatch } = useCategory();
@@ -60,9 +65,10 @@ export default function CategoryList() {
 
     // Effect
     useEffect(() => {
-        if (categoriesState.categories.length === 0) {
+        if (categoriesState.categories.length === 0 && startCategory === false) {
             fetchAllCategories("");
             setFilterCategory(categoriesState.categories);
+            setStartCategory(true);
         } else {
             if (searchCategory.trim() !== "") {
                 setFilterCategory(
@@ -185,7 +191,7 @@ export default function CategoryList() {
                             {isServerError(alert.status) &&
                                 <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
                             }
-                            <p className='me-auto'>Group alert</p>
+                            <p className='me-auto'>Category alert</p>
                         </Toast.Header>
                         <Toast.Body>
                             <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>

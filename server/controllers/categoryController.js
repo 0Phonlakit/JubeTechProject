@@ -21,7 +21,13 @@ const createCategories = async(req, res) => {
     try {
         // check request
         const { error } = categoryBlueprintArr.validate(req.body, { abortEarly: false });
-        if (error && error.details) return res.status(400).json({ message: error.details });
+        if (error && error.details) {
+            const modifyDetail = error.details.map(err => ({
+                path: err.path,
+                message: err.message
+            }));
+            return res.status(400).json({ message: modifyDetail });
+        }
         // modify categories
         const { _id } = req.verify_user;
         const { categories } = req.body;
@@ -113,10 +119,10 @@ const searchCategories = async(req, res) => {
         if (name) filter.name = { $regex: new RegExp(name, "i") };
         if (startDate || endDate) {
             filter.createdAt = {};
-            if (startDate) filter.createdAt.$gte = new Date(startDate);
-            if (endDate) filter.createdAt.$lte = new Date(endDate);
+            if (startDate && !isNaN(new Date(startDate))) filter.createdAt.$gte = new Date(startDate);
+            if (endDate && !isNaN(new Date(endDate))) filter.createdAt.$lte = new Date(endDate);
         }
-        if (Array.isArray(group_ids) && group_ids.length > 0) filter.group_ids = { $in: group_ids };
+        if (group_ids) filter.group_ids = { $in: group_ids.split(',') };
         // query category
         const categories = await Categories.find(filter)
             .select("_id name group_ids updatedAt")
@@ -140,7 +146,13 @@ const updateCategory = async(req, res) => {
         // check request
         const { name, group_ids } = req.body;
         const { error } = categoryBlueprint.validate({ name, group_ids }, { abortEarly: false });
-        if (error && error.details) return res.status(400).json({ message: error.details });
+        if (error && error.details) {
+            const modifyDetail = error.details.map(err => ({
+                path: err.path,
+                message: err.message
+            }));
+            return res.status(400).json({ message: modifyDetail });
+        }
         // update category
         const { _id } = req.verify_user;
         await Categories.findByIdAndUpdate(category_id, {
