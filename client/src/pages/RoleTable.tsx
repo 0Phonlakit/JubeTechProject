@@ -8,6 +8,7 @@ import EditRole from '../components/Admin/roleManagement/EditRole';
 import DeleteRole from '../components/Admin/roleManagement/DeleteRole';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
+import { IFToggleSidebar } from '../app';
 
 import "../assets/css/dataTable.min.css";
 import "../assets/css/adminConfig/setting.css"
@@ -26,13 +27,7 @@ type ConfigDataTable = {
     searchBuilder?: boolean;
   }
 
-interface DashboardProp {
-  toggleSidebar: boolean,
-  setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
-}
-
-
-export default function RoleTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
+export default function RoleTable({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
   DataTable.use(DT);
 
   const [roles, setRoles] = useState<Role[]>([]);

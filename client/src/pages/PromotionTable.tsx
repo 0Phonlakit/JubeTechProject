@@ -8,6 +8,7 @@ import EditPromotion from '../components/Admin/promotionManagement/EditPromotion
 import DeletePromotion from '../components/Admin/promotionManagement/DeletePromotion';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
+import { IFToggleSidebar } from '../app';
 
 import "../assets/css/dataTable.min.css";
 import "../assets/css/adminConfig/setting.css"
@@ -32,12 +33,7 @@ type ConfigDataTable = {
     searchBuilder?: boolean;
   }
 
-interface DashboardProp {
-    toggleSidebar: boolean,
-    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
-}
-
-export default function PromotionTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
+export default function PromotionTable({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
     DataTable.use(DT);
     
     const [promotions, setPromotions] = useState<Promotion[]>([]);
