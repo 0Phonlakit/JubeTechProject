@@ -8,6 +8,11 @@ import DeleteUser from '../components/Admin/userManagement/DeleteUser';
 import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
 import MainDashboard from '../layouts/MainDashboard';
+<<<<<<< HEAD
+=======
+import "../assets/css/dataTable.min.css";
+import { IFToggleSidebar } from '../App';
+>>>>>>> d39bfacc8bae2e5b1dc4e0d28b7b23d4aaf10746
 
 import "../assets/css/dataTable.min.css";
 import "../assets/css/adminConfig/setting.css"
@@ -29,6 +34,7 @@ type ConfigDataTable = {
   searchBuilder?: boolean;
 }
 
+<<<<<<< HEAD
 interface DashboardProp {
   toggleSidebar: boolean,
   setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
@@ -37,6 +43,9 @@ interface DashboardProp {
 export default function UserTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
   DataTable.use(DT);
   
+=======
+export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
+>>>>>>> d39bfacc8bae2e5b1dc4e0d28b7b23d4aaf10746
   const [users, setUsers] = useState<User[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

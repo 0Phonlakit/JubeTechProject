@@ -106,7 +106,7 @@ export type SortField = "rating" | "student_enrolled" | "price" | "point" | "upd
 export interface IFCourseContext {
     state: IFInitialCourse,
     dispatch: React.Dispatch<IFAction>,
-    fetchAllCourses: () => Promise<void>,
+    fetchAllCourses: (message:string) => Promise<void>,
     fetchCourseByTutor: (message:string, searchCourse:IFSearchCourse) => Promise<void>,
     paginationCourse: (message:string, searchCourse:IFSearchCourse) => Promise<void>,
     fetchCourseBySlug: (message:string, slug:string) => Promise<void>,

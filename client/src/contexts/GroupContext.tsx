@@ -21,7 +21,7 @@ export interface GroupState {
 }
 interface IFGroupContext {
     state: GroupState,
-    fetchAllGroups: () => Promise<void>,
+    fetchAllGroups: (message:string) => Promise<void>,
     dispatch: React.Dispatch<IFAction>;
     fetchGroupById: (group_id: string) => Promise<void>,
     createGroups: (groups: { name: string }[]) => Promise<void>,

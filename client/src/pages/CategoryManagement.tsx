@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IFToggleSidebar } from "../App";
 import MainDashboard from "../layouts/MainDashboard";
 import { GroupProvider } from "../contexts/GroupContext";
 import { CategoryProvider } from "../contexts/CategoryContext";
@@ -8,12 +9,7 @@ import { BsChevronRight } from "react-icons/bs";
 
 import "../assets/css/category/category.css";
 
-interface DashboardProp {
-    toggleSidebar: boolean,
-    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
-}
-
-export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:DashboardProp) {
+export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
     const [toggleCategory, setToggleCategory] = useState<boolean>(false);
     const [startCategory, setStartCategory] = useState<boolean>(false);
     const [startGroup, setStartGroup] = useState<boolean>(false);

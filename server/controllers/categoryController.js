@@ -122,7 +122,7 @@ const searchCategories = async(req, res) => {
             if (startDate && !isNaN(new Date(startDate))) filter.createdAt.$gte = new Date(startDate);
             if (endDate && !isNaN(new Date(endDate))) filter.createdAt.$lte = new Date(endDate);
         }
-        if (group_ids) filter.group_ids = { $in: group_ids.split(',') };
+        if (group_ids) filter.group_ids = { $elemMatch: { $in: group_ids.split(",") } };
         // query category
         const categories = await Categories.find(filter)
             .select("_id name group_ids updatedAt")
