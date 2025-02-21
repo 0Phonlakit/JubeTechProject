@@ -10,6 +10,10 @@ const Landing = lazy(() => import("./pages/Landing"));
 const CourseManagement = lazy(() => import("./pages/CourseManagement"));
 const CategoryManagement = lazy(() => import("./pages/CategoryManagement"));
 
+export interface IFToggleSidebar {
+  toggleSidebar: boolean,
+  setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
+}
 
 function App() {
   const [toggleSidebar, setToggleSidebar] = useState<boolean>(true); // Toggle state

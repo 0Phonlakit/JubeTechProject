@@ -100,7 +100,7 @@ export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
 
     useEffect(() => {
         if (state.groups.length === 0 && startGroup === false) {
-            fetchAllGroups();
+            fetchAllGroups("");
             setFilterGroup(state.groups);
             setStartGroup(true);
         } else {

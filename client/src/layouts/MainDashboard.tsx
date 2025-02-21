@@ -1,6 +1,7 @@
 import Topbar from "./sections/Topbar";
 import Sidebar from "./sections/Sidebar";
 import { useEffect } from "react";
+import { IFToggleSidebar } from "../App";
 
 import "../assets/css/dashboard/dashboard.css";
 
@@ -8,11 +9,9 @@ interface DashboardProp {
     title: string,
     order: number,
     children: React.ReactNode,
-    toggleSidebar: boolean,
-    setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
 }
 
-export default function MainDashboard({ order, title, children, toggleSidebar, setToggleSidebar }:DashboardProp) {
+export default function MainDashboard({ order, title, children, toggleSidebar, setToggleSidebar }:DashboardProp & IFToggleSidebar) {
     useEffect(() => { // Change Title
         document.title = title;
     }, []);

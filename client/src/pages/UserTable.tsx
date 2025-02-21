@@ -9,6 +9,7 @@ import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
 import MainDashboard from '../layouts/MainDashboard';
 import "../assets/css/dataTable.min.css";
+import { IFToggleSidebar } from '../App';
 
 DataTable.use(DT);
 
@@ -29,12 +30,7 @@ type ConfigDataTable = {
   searchBuilder?: boolean;
 }
 
-interface DashboardProp {
-  toggleSidebar: boolean,
-  setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void
-}
-
-export default function UserTable({ toggleSidebar, setToggleSidebar }:DashboardProp) {
+export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
   const [users, setUsers] = useState<User[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

@@ -80,7 +80,7 @@ const getCoursesByTutor = async(req, res) => {
         const { _id } = req.verify_user;
         if (!_id) return res.status(404).json({ message: "The user was not found." });
         // request
-        const { title, rating, duration, group_ids, minPrice, maxPrice, minPoint, maxPoint, sort, page = 1, pageSize = 20 } = req.query;
+        const { title, rating, duration, group_ids, minPrice, maxPrice, minPoint, maxPoint, sort, page = 1, pageSize = 20, useCertificate } = req.query;
         // check page and pageSize
         const parsePage = parseInt(page);
         const parsePageSize = parseInt(pageSize);
@@ -91,7 +91,7 @@ const getCoursesByTutor = async(req, res) => {
         if (title) filter.title = { $regex: title, $options: "i" };
         if (rating) filter.rating = { $gte: Number(rating || 0) };
         if (duration) filter.duration = { $gte: Number(duration || 0) };
-        if (group_ids) filter.group_ids = { $in: group_ids.split(",") };
+        if (group_ids) filter.group_ids = { $elemMatch: { $in: group_ids.split(",") } };
         if (minPrice || maxPrice) {
             filter.price = {};
             if (minPrice) filter.price.$gte = Number(minPrice || 0);
@@ -173,7 +173,7 @@ const paginationCourse = async(req, res) => {
         if (title) filter.title = { $regex: title, $options: "i" };
         if (rating) filter.rating = { $gte: Number(rating || 0) };
         if (duration) filter.duration = { $gte: Number(duration || 0) };
-        if (group_ids) filter.group_ids = { $in: group_ids.split(",") };
+        if (group_ids) filter.group_ids = { $elemMatch: { $in: group_ids.split(",") } };
         if (useCertificate) filter.useCertificate = Boolean(useCertificate);
         if (minPrice || maxPrice) {
             filter.price = {};
