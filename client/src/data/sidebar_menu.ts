@@ -2,10 +2,12 @@ import {
     FaHouse,
     FaBookOpenReader,
     FaUser,
-    FaSitemap
+    FaSitemap,
+    FaUserPlus
 } from "react-icons/fa6";
 
 import { IconType } from "react-icons";
+import { MdDiscount } from "react-icons/md";
 
 export interface Menu {
     title: string,
@@ -43,5 +45,19 @@ export const menus:Menu[] = [
         icon: FaSitemap,
         order: 3,
         roles: ["Admin"]
-    }
+    },
+    {
+        title: "จัดการบทบาท",
+        href: "/dashboard/role-management",
+        icon: FaUserPlus,
+        order: 4,
+        roles: ["Admin"]
+    },
+    {
+        title: "จัดการโปรโมชั่น",
+        href: "/dashboard/promotion-management",
+        icon: MdDiscount ,
+        order: 5,
+        roles: ["Admin"]
+    },
 ]

@@ -20,6 +20,7 @@
     "fs": "^0.0.1-security",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
     "mjml": "^4.15.3",
     "mongoose": "^8.8.4",
     "mongoose-sequence": "^6.0.1",

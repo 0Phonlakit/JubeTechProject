@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback} from 'react';
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import { Modal, Button, Breadcrumb } from 'react-bootstrap';
@@ -9,9 +9,10 @@ import EditIcon from '../assets/img/icon/editIcon.png';
 import BinIcon from '../assets/img/icon/binIcon.png';
 import MainDashboard from '../layouts/MainDashboard';
 import "../assets/css/dataTable.min.css";
-import { IFToggleSidebar } from '../App';
+import { IFToggleSidebar } from '../app';
 
-DataTable.use(DT);
+import "../assets/css/dataTable.min.css";
+import "../assets/css/adminConfig/setting.css"
 
 type User = {
   _id: string;
@@ -31,6 +32,8 @@ type ConfigDataTable = {
 }
 
 export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
+  DataTable.use(DT);
+  
   const [users, setUsers] = useState<User[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -47,48 +50,45 @@ export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
 
   // Handle Modal Toggle
   const handleCreateUser = () => setShowCreateModal(true);
-  const handleEditUser = (userId: string) => {
+  const handleEditUser = useCallback((userId: string) => {
     const user = users.find((user) => user._id === userId);
     setSelectedUser(user || null);
     setShowEditModal(true);
-  };
-
-  const handleDeleteUser = (userId: string) => {
+  }, [users]);
+  
+  const handleDeleteUser = useCallback((userId: string) => {
     const user = users.find((user) => user._id === userId);
     setSelectedUser(user || null);
     setShowDeleteModal(true);
-  };
+  }, [users]);
+  
+  const handleButtonClick = useCallback((event: Event) => {
+    const target = event.target as HTMLElement;
+    const button = target.closest("button");
+    if (!button) return;
+  
+    const id = button.getAttribute("data-id");
+    const action = button.classList.contains("btn-edit")
+      ? "edit"
+      : button.classList.contains("btn-delete")
+      ? "delete"
+      : null;
+  
+    if (id && action) {
+      if (action === "edit") {
+        handleEditUser(id);
+      } else if (action === "delete") {
+        handleDeleteUser(id);
+      }
+    }
+  }, [handleEditUser, handleDeleteUser]); 
 
   useEffect(() => {
-    const handleButtonClick = (event: Event) => {
-      const target = event.target as HTMLElement;
-      const button = target.closest('button'); // Find closest button
-      if (!button) return;
-
-      const id = button.getAttribute('data-id');
-      const action = button.classList.contains('btn-edit')
-        ? 'edit'
-        : button.classList.contains('btn-delete')
-        ? 'delete'
-        : null;
-
-      if (id && action) {
-        if (action === 'edit') {
-          handleEditUser(id);
-        } else if (action === 'delete') {
-          handleDeleteUser(id);
-        }
-      }
-    };
-
-    // Attach event listeners
-    document.addEventListener('click', handleButtonClick);
-
+    document.addEventListener("click", handleButtonClick);
     return () => {
-      // Clean up event listeners
-      document.removeEventListener('click', handleButtonClick);
+      document.removeEventListener("click", handleButtonClick);
     };
-  }, [users]);
+  }, [handleButtonClick]);
 
   const columns = [
     { title: 'No', data: null, render: (_: unknown, __: unknown, ___: unknown, meta: { row: number }) => meta.row + 1 },
@@ -161,8 +161,8 @@ export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
       setToggleSidebar={setToggleSidebar}
       order={2}
     >
-      <div>
-        <Breadcrumb>
+      <div className='user-form-container'>
+        <Breadcrumb className='breadcrumb1'>
           <Breadcrumb.Item href={`/dashboard/user-management`}>
             User Management
           </Breadcrumb.Item>
@@ -176,7 +176,7 @@ export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
 
         <DataTable
           data={users}
-          columns={columns as any} 
+          columns={columns} 
           className="display"
           options={{
             paging: true,
