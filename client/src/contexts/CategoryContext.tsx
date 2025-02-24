@@ -202,6 +202,6 @@ export const CategoryProvider = ({ children }: { children: React.ReactNode }) =>
 
 export const useCategory = () => {
     const context = useContext(CategoryContext);
-    if (!context) throw new Error("useCategories must be used within GroupProvider");
+    if (!context) throw new Error("useCategory must be used within CategoryProvider");
     return context;
 }

@@ -50,7 +50,6 @@ export const CourseReducer = (state:IFInitialCourse, action:IFAction) => {
                         loading: false,
                         status: action.status ?? 0,
                         response: action.message ?? "",
-                        pagination: action.pagination ?? null
                     }
                 } else if (action.payload.editCourse) {
                     return { 
@@ -59,7 +58,6 @@ export const CourseReducer = (state:IFInitialCourse, action:IFAction) => {
                         loading: false,
                         status: action.status ?? 0,
                         response: action.message ?? "",
-                        pagination: action.pagination ?? null
                     }
                 } else {
                     return state;
@@ -68,26 +66,11 @@ export const CourseReducer = (state:IFInitialCourse, action:IFAction) => {
                 return state;
             }
         case "FETCH_ERROR":
-            if (action.payload) {
-                return {
-                    ...state,
-                    courses: action.payload.courseLists ?? [],
-                    full_courses: action.payload.fullCourses ?? [],
-                    course_edit: action.payload.editCourse ?? null,
-                    course_detail: action.payload.courseDetail ?? null,
-                    loading: false,
-                    response: action.message ?? "",
-                    status: action.status ?? 0,
-                    pagination: action.pagination ?? null
-                }
-            } else {
-                return {
-                    ...state,
-                    loading: false,
-                    response: action.message ?? "",
-                    status: action.status ?? 0,
-                    pagination: action.pagination ?? null
-                }
+            return {
+                ...state,
+                loading: false,
+                response: action.message ?? "",
+                status: action.status ?? 0,
             }
         case "CLEAR_RESPONSE":
             return { ...state, response: "" };

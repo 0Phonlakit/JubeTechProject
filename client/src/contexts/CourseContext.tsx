@@ -145,11 +145,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status });
             } else {
-                if (axios.isAxiosError(error)) {
-                    dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status  })
-                } else {
-                    dispatch({ type: "FETCH_ERROR", message: "Something went wrong.", status: 404  });
-                }
+                dispatch({ type: "FETCH_ERROR", message: "Something went wrong.", status: 404  });
             }
         }
     }
@@ -284,6 +280,6 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
 
 export const useCourse = () => {
     const context = useContext(CourseContext);
-    if (!context) throw new Error("useCategories must be used within GroupProvider");
+    if (!context) throw new Error("useCourse must be used within CourseProvider");
     return context;
 }

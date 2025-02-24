@@ -90,7 +90,6 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
                 }
                 setMessageList([...messageList, response]);
             }
-            categoriesState.response = "";
             setTimeout(() => {
                 setMessageList((prev) => prev.slice(1));
             }, 3000);

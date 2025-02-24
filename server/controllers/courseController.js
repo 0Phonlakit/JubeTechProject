@@ -84,13 +84,14 @@ const getCoursesByTutor = async(req, res) => {
         // check page and pageSize
         const parsePage = parseInt(page);
         const parsePageSize = parseInt(pageSize);
-        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The price or point has an invalid format." });
+        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The page or pageSize has an invalid format." });
         // prepare filter
         let filter = {};
         filter.createdBy = new mongoose.Types.ObjectId(_id)
         if (title) filter.title = { $regex: title, $options: "i" };
         if (rating) filter.rating = { $gte: Number(rating || 0) };
         if (duration) filter.duration = { $gte: Number(duration || 0) };
+        if (useCertificate) filter.useCertificate = useCertificate;
         if (group_ids) filter.group_ids = { $elemMatch: { $in: group_ids.split(",") } };
         if (minPrice || maxPrice) {
             filter.price = {};
@@ -137,6 +138,7 @@ const getCoursesByTutor = async(req, res) => {
             .skip(skip)
             .limit(parsePageSize)
             .lean();
+        const total = await Courses.countDocuments(filter);
         return res.status(200).json({ data: courses, pagination: {
             total, page:parsePage , pageSize:parsePageSize, totalPages: Math.ceil(total/parsePageSize) 
         } });
@@ -166,7 +168,7 @@ const paginationCourse = async(req, res) => {
         // check page and pageSize
         const parsePage = parseInt(page);
         const parsePageSize = parseInt(pageSize);
-        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The price or point has an invalid format." });
+        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The page or pageSize has an invalid format." });
         // prepare filter
         let filter = {};
         filter.status = "published";
@@ -205,6 +207,7 @@ const paginationCourse = async(req, res) => {
             .skip(skip)
             .limit(parsePageSize)
             .lean();
+        const total = await Courses.countDocuments(filter);
         return res.status(200).json({ data: courses, pagination: {
             total, page:parsePage , pageSize:parsePageSize, totalPages: Math.ceil(total/parsePageSize) 
         } });

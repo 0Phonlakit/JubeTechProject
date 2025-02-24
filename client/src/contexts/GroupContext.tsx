@@ -151,6 +151,6 @@ export const GroupProvider = ({ children }:{ children:React.ReactNode }) => {
 
 export const useGroup = () => {
     const context = useContext(GroupContext);
-    if (!context) throw new Error("useGroups must be used within GroupProvider");
+    if (!context) throw new Error("useGroup must be used within GroupProvider");
     return context;
 }
