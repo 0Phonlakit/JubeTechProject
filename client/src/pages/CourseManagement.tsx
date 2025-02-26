@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IFToggleSidebar } from "../App";
+import { IFToggleSidebar } from "../app";
 import MainDashboard from "../layouts/MainDashboard";
 import CourseManage from "../components/Tutor/course/CourseManage";
 import LessonManage from "../components/Tutor/course/LessonManage";
@@ -15,10 +15,10 @@ export default function CourseManagement({ toggleSidebar, setToggleSidebar }:IFT
                 <div className="course-manage-container">
                     <ul className="nav nav-underline">
                         <li className="nav-item" onClick={() => setTabManage(0)}>
-                            <a className={"nav-link " + (tabManage === 0 ? "active" : "")} href="#">Course</a>
+                            <span className={"nav-link " + (tabManage === 0 ? "active" : "")} style={{ cursor: "pointer" }}>Course</span>
                         </li>
                         <li className="nav-item" onClick={() => setTabManage(1)}>
-                            <a className={"nav-link " + (tabManage === 1 ? "active" : "")} href="#">Lesson</a>
+                            <span className={"nav-link " + (tabManage === 1 ? "active" : "")} style={{ cursor: "pointer" }}>Lesson</span>
                         </li>
                     </ul>
                 </div>

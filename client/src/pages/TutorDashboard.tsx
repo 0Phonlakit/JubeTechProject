@@ -1,4 +1,4 @@
-import { IFToggleSidebar } from "../App";
+import { IFToggleSidebar } from "../app";
 import MainDashboard from "../layouts/MainDashboard";
 import CardList from "../components/Tutor/dashboard/CardList";
 import EnrollGraph from "../components/Tutor/dashboard/EnrollGraph";

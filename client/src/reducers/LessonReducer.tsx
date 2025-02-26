@@ -6,6 +6,7 @@ export interface IFAction {
         normalLesson?: Lesson[],
         editLesson?: Lesson
     },
+    _id?:string,
     message: string | ErrorResponse[],
     status?: number,
     pagination?: {
@@ -54,6 +55,25 @@ export const LessonReducer = (state:IFInitialLesson, action:IFAction) => {
                 response: action.message ?? "",
                 status: action.status ?? 0
             }
+        case "DELETE_LESSON":
+            const oldLesson = state.lessons;
+            return {
+                ...state,
+                lessons: oldLesson.filter(lesson => lesson._id !== action._id),
+                response: action.message ?? "",
+                status: action.status ?? 0,
+                loading: false
+            };
+        case "CLEAR_SUB_FILE":
+            if (state.editLesson !== null) {
+                const newSubfile = { ...state.editLesson };
+                newSubfile.sub_file = [];
+                return { ...state, editLesson: newSubfile };
+            } else {
+                return {...state};
+            }
+        case "CLEAR_EDIT":
+            return { ...state, editLesson: null };
         case "CLEAR_RESPONSE":
             return { ...state, response: "", status: 0 };
         default:

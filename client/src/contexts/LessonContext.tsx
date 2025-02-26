@@ -5,13 +5,14 @@ import { createContext, useContext, useReducer, useEffect } from "react";
 
 /* Interface & Type Section */
 export interface LessonCard {
+    _id: string,
     name: string,
     type: "lecture" | "video",
     isFreePreview: boolean,
     updatedAt: Date
 }
 export interface Lesson extends LessonCard {
-    sub_file: string,
+    sub_file: string[],
     main_content: string,
     duration: number,
     createdBy: string,
@@ -37,8 +38,8 @@ export interface IFInitialLesson {
 }
 export interface CreateLesson {
     name: string,
-    type: "lecture" | "video",
-    sub_file: string,
+    type: "lecture" | "video" | "",
+    sub_file: string[],
     main_content: string,
     duration: number,
     isFreePreview: boolean,
@@ -105,7 +106,7 @@ export const LessonProvider = ({ children }:{ children: React.ReactNode }) => {
     const createLesson = async(lesson:CreateLesson, searchLesson:IFSearchParam) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/lesson/ceate`, { ...lesson }, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/lesson/create`, { ...lesson }, {
                 headers: {
                     Authorization: `Bearer ${getToken()}`
                 }
@@ -158,7 +159,7 @@ export const LessonProvider = ({ children }:{ children: React.ReactNode }) => {
         }
     }
 
-    const deleteLesson = async(lesson_id:string, searchLesson:IFSearchParam) => {
+    const deleteLesson = async(lesson_id:string, _searchLesson:IFSearchParam) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/lesson/delete/${lesson_id}`, {
@@ -166,7 +167,7 @@ export const LessonProvider = ({ children }:{ children: React.ReactNode }) => {
                     Authorization: `Bearer ${getToken()}`
                 }
             });
-            fetchLessonByTutor(response.data.message, searchLesson);
+            dispatch({ type: "DELETE_LESSON", _id: lesson_id, message: response.data.message, status: response.status });
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status })

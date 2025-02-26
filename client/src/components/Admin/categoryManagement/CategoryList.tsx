@@ -175,29 +175,29 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
         <div className="category-list-container">
             {messageList.length > 0 &&
                 <ToastContainer position="top-end" className="p-3" style={{ zIndex: 99 }}>
-                {messageList.map((alert, index) => (
-                    <Toast onClose={() => removeToast(index)} key={index}>
-                        <Toast.Header>
-                            {isUnknown(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "gray" }}></div>
-                            }
-                            {isSuccess(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "green" }}></div>
-                            }
-                            {isClientError(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                            }
-                            {isServerError(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                            }
-                            <p className='me-auto'>Category alert</p>
-                        </Toast.Header>
-                        <Toast.Body>
-                            <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>
-                        </Toast.Body>
-                    </Toast>
-                ))}
-            </ToastContainer>
+                    {messageList.map((alert, index) => (
+                        <Toast onClose={() => removeToast(index)} key={index}>
+                            <Toast.Header>
+                                {isUnknown(alert.status) &&
+                                    <div style={{ ...alertStyle, backgroundColor: "gray" }}></div>
+                                }
+                                {isSuccess(alert.status) &&
+                                    <div style={{ ...alertStyle, backgroundColor: "green" }}></div>
+                                }
+                                {isClientError(alert.status) &&
+                                    <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
+                                }
+                                {isServerError(alert.status) &&
+                                    <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
+                                }
+                                <p className='me-auto'>Category alert</p>
+                            </Toast.Header>
+                            <Toast.Body>
+                                <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>
+                            </Toast.Body>
+                        </Toast>
+                    ))}
+                </ToastContainer>
             }
             {/* Option */}
             <div className="category-option-container">

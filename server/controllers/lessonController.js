@@ -1,10 +1,15 @@
 // Joi Validate
 const Joi = require("joi");
 // HTML Sanitization
+const jsdom = require("jsdom");
 const DOMPurify = require("dompurify");
 // Schema
 const mongoose = require("mongoose");
 const Lessons = require("../models/Lesson");
+
+const { JSDOM } = jsdom;
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
 
 const LessonBlueprint = Joi.object({
     name: Joi.string().trim().max(45).required(),
@@ -30,6 +35,7 @@ const createLesson = async(req, res) => {
             return res.status(400).json({ message: modifyDetail });
         }
         // create lesson
+        console.log(req.body);
         await Lessons.create({
             ...req.body,
             main_content: HTMLsanitization(req.body.main_content),
@@ -159,11 +165,11 @@ const deleteLesson = async(req, res) => {
 
 const HTMLsanitization = (htmlContent) => {
     const allowedTags = [
-        "p", "strong", "em", "ul", "li", "a", 
+        "p", "strong", "em", "ul", "li", "a", "ol", "br",
         "h1", "h2", "h3", "h4", "h5", "h6", 
-        "blockquote", "code", "hr"
+        "blockquote", "code", "hr", "pre"
     ];
-    return DOMPurify.sanitize(htmlContent, {
+    return purify.sanitize(htmlContent, {
         ALLOWED_TAGS: allowedTags
     });
 }

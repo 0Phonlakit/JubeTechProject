@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IFToggleSidebar } from "../App";
+import { IFToggleSidebar } from "../app";
 import MainDashboard from "../layouts/MainDashboard";
 import { GroupProvider } from "../contexts/GroupContext";
 import { CategoryProvider } from "../contexts/CategoryContext";

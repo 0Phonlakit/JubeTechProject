@@ -267,7 +267,7 @@ p.create-hint span {
     font-size: 0.75rem;
 }
 
-span.ant-select-selection-item::before {
+.category-list-container span.ant-select-selection-item::before {
     content: "";
     width: 7px;
     height: 7px;
@@ -277,24 +277,24 @@ span.ant-select-selection-item::before {
     background-color: #9b17de;
 }
 
-span.ant-select-selection-item {
+.category-list-container span.ant-select-selection-item {
     background-color: #f3e1fe !important;
 }
 
-.ant-select-selection-item svg {
+.category-list-container .ant-select-selection-item svg {
     color: rgb(79, 2, 134);
 }
 
-:where(.css-dev-only-do-not-override-19lec04).ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector {
+.category-list-container :where(.css-dev-only-do-not-override-19lec04).ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector {
     border-color: #8a24f1;
     box-shadow: none !important;
 }
 
-:where(.css-dev-only-do-not-override-19lec04).ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+.category-list-container :where(.css-dev-only-do-not-override-19lec04).ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
     background-color: #f4e9ff;
 }
 
-:where(.css-dev-only-do-not-override-19lec04).ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-state {
+.category-list-container :where(.css-dev-only-do-not-override-19lec04).ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-state {
     color: #8a24f1;
 }
 
