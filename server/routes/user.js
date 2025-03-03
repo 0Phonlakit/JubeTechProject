@@ -5,9 +5,10 @@ const {
   getUserById,
   updateUser,
   deleteUser,
-  getApiMessage
+  getApiMessage,
+  getRoleByUserId
 } = require("../controllers/userManagement"); 
-// const { authUser } = require("../middlewares/auth"); 
+const { verifyToken } = require("../middlewares/auth"); 
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.post("/createUser", createUser);
 router.get("/getUser/:id", getUserById);
 router.put("/updateUser/:id", updateUser);
 router.delete("/deleteUser/:id", deleteUser);
+router.get("/getRoleByUser", verifyToken, getRoleByUserId);
 
 module.exports = router;

@@ -167,7 +167,10 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                     await uploadFileWithProgress(subfile.file as File, "/course/course_file/", fileName, (currentProgress: number) => {
                         handleSubfile(index, "progress", Number(currentProgress.toFixed(2)));
                     });
-                    handleLessonForm("sub_file", [...sub_file, newSubFile]);
+                    setLessonForm((prev) => ({
+                        ...prev,
+                        sub_file: [...prev.sub_file, newSubFile]
+                    }));
                 }
             }
             setRequestProcess(true);

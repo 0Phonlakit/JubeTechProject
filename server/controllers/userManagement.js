@@ -132,11 +132,33 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Get Role By User Id
+const getRoleByUserId = async (req, res) => {
+  try {
+    // check user id
+    const { _id } = req.verify_user;
+    if (!_id) return res.status(404).json({ message: "The user was not found." });
+    // query user
+    const user = await User.findById(_id)
+      .select("role_ids")
+      .populate({
+        path: "role_ids",
+        select: "role_name"
+      })
+      .lean();
+    return res.status(200).json({ data: user });
+  } catch (err) {
+    console.error({ position: "Get Role User Id", error: err.message });
+    return res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
-  getApiMessage
+  getApiMessage,
+  getRoleByUserId
 };

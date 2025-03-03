@@ -1,3 +1,5 @@
+import axios from "axios";
+import { getToken } from "./authorize";
 import { initializeApp } from "firebase/app";
 import {
     getStorage,
@@ -23,11 +25,14 @@ const storage = getStorage(app);
 
 // Upload File Function
 export const uploadFile = async(file:File, path:string, fileName:string) => {
-    if (!file || !path.trim() || !fileName.trim()) return false;
-    const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
     try {
-        await uploadBytes(fileRef, file);
-        return true;
+        if (!file || !path.trim() || !fileName.trim()) return false;
+        if (await verifyUser()) {
+            const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
+            await uploadBytes(fileRef, file);
+            return true;
+        }
+        return false;
     } catch (error) {
         return false;
     }
@@ -36,43 +41,78 @@ export const uploadFile = async(file:File, path:string, fileName:string) => {
 // Fetch File
 export const fetchFileFromStorage = async(path:string, fileName:string) => {
     try {
-        const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
-        const url = await getDownloadURL(fileRef);
-        return url;
+        if (await verifyUser()) {
+            const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
+            const url = await getDownloadURL(fileRef);
+            return url;
+        }
+        return false;
     } catch (error) {
         return false;
     }
 }
 
 // Upload File And See Progress
-export const uploadFileWithProgress = (file: File, path: string, fileName:string, onProgress:(progress:number) => void) => {
+export const uploadFileWithProgress = async(file: File, path: string, fileName:string, onProgress:(progress:number) => void) => {
     if (!file || !path.trim() || !fileName.trim()) return false;
-    const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
-    const uploadTask = uploadBytesResumable(fileRef, file);
-    return new Promise((resolve, reject) => {
-        uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                onProgress(progress);
-            },
-            (error) => {
-                reject(error);
-            },
-            () => {
-                resolve(true);
-            }
-        );
-    });
+    if (await verifyUser()) {
+        const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
+        const uploadTask = uploadBytesResumable(fileRef, file);
+        return new Promise((resolve, reject) => {
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    onProgress(progress);
+                },
+                (error) => {
+                    reject(error);
+                },
+                () => {
+                    resolve(true);
+                }
+            );
+        });
+    }
+    return false;
 }
 
 // Delete File
-export const deleteFile = async(path:string) => {
-    if (!path.trim()) return false;
-    const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}`);
+export const deleteFile = async(paths:string[]) => {
     try {
-        await deleteObject(fileRef);
-        return true;
+        if (await verifyUser()) {
+            if (paths.length === 0) return false;
+            const deletePromises = paths.map((path:string) => {
+                const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}`);
+                return deleteObject(fileRef);
+            });
+            await Promise.all(deletePromises);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        return false;
+    }
+}
+
+export const verifyUser = async() => {
+    try {
+        const token = getToken();
+        if (!token) return false;
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/getRoleByUser`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (response.data.data !== null) {
+            const data = response.data.data;
+            if (data.role_ids && data.role_ids.length > 0) {
+                const roles = data.role_ids.map((role:{_id:string, role_name:string}) => role.role_name);
+                const hasRole = ["Student", "Admin", "Tutor"].some(role => roles.includes(role));
+                if (hasRole) return true;
+            }
+        }
+        return false;
     } catch (error) {
         return false;
     }

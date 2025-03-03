@@ -7,7 +7,7 @@ const verifyToken = async (req, res, next) => {
   try {
     // 1. check header
     const authHeader = req.headers["authorization"];
-    if (!authHeader) return res.status(401).json({ message: "ไม่มีการยืนยันความถูกต้องของผู้ใช้งาน", status: "unauthorized" });
+    if (!authHeader) return res.status(401).json({ message: "There is no verification of user authentication.", status: "unauthorized" });
     
     // 2. verify token
     let decoded;
@@ -19,7 +19,7 @@ const verifyToken = async (req, res, next) => {
             if (err.name === "TokenExpiredError") {
               return reject({ status: 401, message: "หมดเวลาในการใช้งานโปรดเข้าสู่ระบบอีกครั้ง", statusText: "expired" });
             }
-            return reject({ status: 403, message: "การยืนยันผู้ใช้งานไม่ถูกต้อง", statusText: "invalid_token" });
+            return reject({ status: 403, message: "Your session has expired. Please log in again.", statusText: "invalid_token" });
           }
           resolve(decoded);
         });
@@ -30,7 +30,7 @@ const verifyToken = async (req, res, next) => {
 
     // 3. query user
     const user = await User.findById(decoded._id).select("role_ids").lean();
-    if (!user) return res.status(404).json({ message: "ไม่พบผู้ใช้งานในระบบ" });
+    if (!user) return res.status(404).json({ message: "The user was not found." });
 
     // 4. query role
     const roles = await Role.find({ _id: { $in: user.role_ids } }).select("role_name").lean();
@@ -44,17 +44,17 @@ const verifyToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    res.status(400).json({ message: "การยืนยันผู้ใช้งานไม่ถูกต้อง", status: "invalid_token" });
+    res.status(400).json({ message: "User authentication is incorrect.", status: "invalid_token" });
   }
 };
 
 const verifyRole = (allow_roles) => {
   return (req, res, next) => {
     // check verify user
-    if (!req.verify_user || !req.verify_user.roles) return res.status(403).json({ message: "การเข้าถึงถูกปฏิเสธ" });
+    if (!req.verify_user || !req.verify_user.roles) return res.status(403).json({ message: "Access denied." });
     // check role
     const hasRole = req.verify_user.roles.some(role => allow_roles.includes(role));
-    if (!hasRole) return res.status(403).json({ message: "การเข้าถึงถูกปฏิเสธ" });
+    if (!hasRole) return res.status(403).json({ message: "Access denied." });
     next();
   }
 }

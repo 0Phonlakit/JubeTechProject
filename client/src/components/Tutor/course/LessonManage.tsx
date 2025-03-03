@@ -109,14 +109,16 @@ export default function LessonManage() {
     const removeFile = async () => {
         if (state.editLesson && state.editLesson.sub_file.length > 0) {
             try {
-                await Promise.all(state.editLesson.sub_file.map(async (file) => {
-                    await deleteFile(file);
-                }));
+                console.log(state.editLesson.sub_file);
+                const fileDelete = await deleteFile(state.editLesson.sub_file);
+                console.log(fileDelete);
+                dispatch({ type: "CLEAR_EDIT", message: "" });
             } catch (error) {
                 console.error('Error deleting files:', error);
             }
+        } else {
+            dispatch({ type: "CLEAR_EDIT", message: "" });
         }
-        dispatch({ type: "CLEAR_EDIT", message: "" });
         setRequestProcess(true);
     };
     const prepareRemoveLesson = async() => {
