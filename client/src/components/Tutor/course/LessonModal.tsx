@@ -1,6 +1,6 @@
 import { Popover, Select } from "antd";
 import TiptapEditor from "./TiptapEditor";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { uploadFileWithProgress } from "../../../services/storage";
 import { CreateLesson, useLesson, IFSearchParam } from "../../../contexts/LessonContext";
 import {
@@ -109,7 +109,9 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
         duration: 0,
         isFreePreview: false,
     });
-    const { name, type, main_content, sub_file } = lessonForm;
+    // ref
+    const videoRef = useRef<HTMLInputElement>(null);
+    const { name, type, main_content } = lessonForm;
     // useEffect
     useEffect(() => {
         if (editLesson.trim() !== "") {
@@ -219,6 +221,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
             setMessageList([...messageList, response]);
         }
     }
+
     const handleSubfile = (currentIndex:number, key:string, value:string | number | string[]) => {
         setSubFiles((prev) => {
             return prev.map((subfile, index) => (
@@ -226,11 +229,21 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
             ));
         });
     }
+    
     const addMaterial = () => {
         if (subFiles.length < 5) setSubFiles([...subFiles, { file: "", type: "", progress: 0 }]);
     }
+
     const removeMaterial = (removeIndex:number) => {
         setSubFiles(subFiles.filter((_, index) => index !== removeIndex));
+    }
+
+    const handleVideoFile = () => {
+        // if (videoRef.current?.files && videoRef.current.files.length > 0) {
+        //     const validTypes = ["video/mp4", "video/webm"];
+        //     const file = videoRef.current.files[0];
+        //     if 
+        // }
     }
     /* End section */
     
@@ -418,8 +431,20 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                                     </div>
                                 )}
                                 {type === "video" && (
-                                    <div className="lesson-video-container">
-                                        Video
+                                    <div className="lesson-video-container mt-4">
+                                        <div className="lesson-video-card">
+                                            <button
+                                                type="button"
+                                                onClick={() => videoRef.current?.click()}
+                                            >
+                                                Upload video
+                                            </button>
+                                            <input ref={videoRef} type="file" accept=".mp4, .webm" hidden/>
+                                        </div>
+                                        <div className="video-information-container">
+                                            <span>Accept file : .mp4, .webm</span><br />
+                                            <span>Max size : 600 Megabytes</span>
+                                        </div>
                                     </div>
                                 )}
                             </div>

@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { FaRegCircleUser, FaKey } from "react-icons/fa6";
 import { authentication } from "../../services/authorize.ts";
+import { loginFirebase } from "../../services/storage.ts";
 
 import 'animate.css';
 
@@ -36,6 +37,7 @@ export default function SigninForm() {
                 submitSignin().then((response) => {
                     const info = response as ResponseSuccess;
                     authentication(info.token);
+                    loginFirebase(signinForm.email, signinForm.password);
                     Swal.fire({
                         title: "เข้าสู่ระบบ",
                         text: info.message ?? "เกิดข้อผิดพลาดในการเข้าสู่ระบบ",

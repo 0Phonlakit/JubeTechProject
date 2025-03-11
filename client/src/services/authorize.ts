@@ -1,3 +1,6 @@
+import axios from "axios";
+import { logoutFirebase } from "./storage";
+
 // save token
 export const authentication = (token:string) => {
     if (typeof window !== "undefined") {
@@ -25,11 +28,41 @@ export const checkUser = () => {
     return false;
 }
 
-// logout
-export const logout = () => {
+// check role
+export const checkRole = async() => {
     if (typeof window !== "undefined") {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
-        window.location.href = "/";
+        if (sessionStorage.getItem("token")) {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/getRoleByUser`, {
+                    headers: {
+                        Authorization: `Bearer ${getToken()}`
+                    }
+                });
+                if (response.data.data.role_ids && response.data.data.role_ids.length > 0) {
+                    return response.data.data.role_ids.map((role:{_id:string,role_name:string}) => role.role_name);
+                } else {
+                    return [];
+                }
+            } catch (error) {
+                console.error("Something went wrong.");
+                return [];
+            }
+        }
+    }
+    return false;
+}
+
+// logout
+export const logout = async() => {
+    try {
+        await logoutFirebase();
+        if (typeof window !== "undefined") {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            window.location.href = "/";
+        }
+        return true;
+    } catch (error) {
+        return false;
     }
 }

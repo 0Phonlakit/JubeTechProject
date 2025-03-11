@@ -11,7 +11,7 @@ export interface Category {
         _id: string,
         name: string
     }[],
-    updatedAt: Date
+    updatedAt: Date | string
 }
 export interface ErrorResponse {
     path: (string | number)[],

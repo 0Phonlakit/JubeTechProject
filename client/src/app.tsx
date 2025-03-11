@@ -6,11 +6,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // Pages
 const UserTable = lazy(() => import("./pages/UserTable"));
 const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
-const Landing = lazy(() => import("./pages/landing"));
+const Landing = lazy(() => import("./pages/Landing"));
 const CourseManagement = lazy(() => import("./pages/CourseManagement"));
 const RoleManagement = lazy(() => import("./pages/RoleTable"));
 const PromotionManagement = lazy(() => import("./pages/PromotionTable"));
 const CategoryManagement = lazy(() => import("./pages/CategoryManagement"));
+const DashboardOverview = lazy(() => import("./pages/DashboardOverview"));
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
@@ -28,7 +29,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />}></Route>
           <Route path="/dashboard/user-management" element={<UserTable toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
-          <Route path="/dashboard" element={<TutorDashboard toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/dashboard/" element={<DashboardOverview toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/dashboard/tutor/statistic" element={<TutorDashboard toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/dashboard/course-management" element={<CourseManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/dashboard/category-management" element={<CategoryManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/dashboard/role-management" element={<RoleManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>

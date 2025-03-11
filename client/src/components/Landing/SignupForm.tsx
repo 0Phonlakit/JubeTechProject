@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import { authentication } from "../../services/authorize.ts";
 import { FaRegCircleUser, FaKey, FaRegEnvelope } from "react-icons/fa6";
+import { registerFirebase } from "../../services/storage.ts";
 
 import "animate.css";
 
@@ -71,6 +72,7 @@ export default function SignupForm() {
                     submitSignup().then((response) => {
                         const info = response as ResponseSuccessSignup;
                         authentication(info.token);
+                        registerFirebase(signupForm.email, signupForm.password);
                         Swal.fire({
                             title: "สถานะการสมัครสมาชิก",
                             text: info.message ?? "เกิดข้อผิดพลาดในการสมัครสมาชิก",

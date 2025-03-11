@@ -7,6 +7,11 @@ const {
   validateLength,
   validateUsername,
 } = require("../helpers/validation");
+const {
+  createUser:createFirebaseUser,
+  deleteUser:deleteFirebaseUser,
+  updateUser:updateFirebaseUser
+} = require("../services/auth_firebase");
 
 // Test Backend API
 const getApiMessage = (req, res) => {
@@ -71,6 +76,7 @@ const createUser = async (req, res) => {
     });
 
     await newUser.save();
+    await createFirebaseUser(email, password);
     res.status(201).json({ message: "User created successfully", user: newUser });
   } catch (error) {
     res.status(500).json({ message: "Error creating user", error: error.message });
@@ -94,6 +100,7 @@ const updateUser = async (req, res) => {
     }
 
     const user = await User.findById(req.params.id);
+    const oldEmail = user.email;
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -115,6 +122,7 @@ const updateUser = async (req, res) => {
     user.role_ids = role_ids.map(id => new mongoose.Types.ObjectId(id)) || user.role_ids;
 
     await user.save();
+    await updateFirebaseUser(oldEmail, email, password);
     res.status(200).json({ message: "User updated successfully", user });
   } catch (error) {
     res.status(500).json({ message: "Error updating user", error: error.message });
@@ -124,8 +132,10 @@ const updateUser = async (req, res) => {
 // Delete User
 const deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    if (!deletedUser) return res.status(404).json({ message: "User not found" });
+    const prepareUser = await User.findById(req.params.id).select("email").lean();
+    if (!prepareUser) return res.status(404).json({ message: "User not found" });
+    await deleteFirebaseUser(prepareUser.email);
+    await User.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(400).json({ message: "Error deleting user", error: err.message });

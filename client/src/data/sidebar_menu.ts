@@ -20,7 +20,7 @@ export interface Menu {
 export const menus:Menu[] = [
     { 
         title: "แผนภูมิภาพรวม",
-        href: "/dashboard",
+        href: "/dashboard/tutor/statistic",
         icon: FaHouse,
         order: 0,
         roles: ["Tutor"]

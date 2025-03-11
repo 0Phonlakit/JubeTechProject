@@ -110,8 +110,7 @@ export default function LessonManage() {
         if (state.editLesson && state.editLesson.sub_file.length > 0) {
             try {
                 console.log(state.editLesson.sub_file);
-                const fileDelete = await deleteFile(state.editLesson.sub_file);
-                console.log(fileDelete);
+                await deleteFile(state.editLesson.sub_file);
                 dispatch({ type: "CLEAR_EDIT", message: "" });
             } catch (error) {
                 console.error('Error deleting files:', error);

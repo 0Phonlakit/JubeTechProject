@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import Topbar from "./sections/Topbar";
 import Sidebar from "./sections/Sidebar";
-import { useEffect } from "react";
-import { IFToggleSidebar } from "../App";
+import { IFToggleSidebar } from "../app";
+import { checkUser } from "../services/authorize";
 
 import "../assets/css/dashboard/dashboard.css";
 
@@ -14,6 +15,7 @@ interface DashboardProp {
 export default function MainDashboard({ order, title, children, toggleSidebar, setToggleSidebar }:DashboardProp & IFToggleSidebar) {
     useEffect(() => { // Change Title
         document.title = title;
+        if (!checkUser()) window.location.href = "/";
     }, []);
 
     // Render

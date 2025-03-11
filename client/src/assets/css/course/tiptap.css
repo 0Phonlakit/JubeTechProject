@@ -93,6 +93,10 @@
         border-top: 1px solid gray;
         margin: 2rem 0;
     }
+
+    p {
+        font-size: 0.85rem;
+    }
 }
 
 .tiptap-title {
