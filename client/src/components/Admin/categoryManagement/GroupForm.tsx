@@ -1,31 +1,13 @@
-import Toast from 'react-bootstrap/Toast';
 import { useState, useEffect } from "react";
 import Skeleton from '@mui/material/Skeleton';
 import { useGroup, Group } from "../../../contexts/GroupContext";
-import ToastContainer from 'react-bootstrap/ToastContainer';
+import { ResponseMessage, ToastMessageContainer } from "../../ToastMessageContainer";
 import { BsSearch, BsPlusLg, BsPencilSquare, BsFillTrashFill, BsX, BsFillTrash3Fill, BsCheck } from "react-icons/bs";
 
 import "../../../assets/css/category/group-list.css";
 
 interface GroupState {
     name: string
-}
-
-interface ResponseMessage {
-    status: number,
-    message: string
-}
-
-const isUnknown = (status:number) => status < 200;
-const isSuccess = (status:number) => status >= 200 && status < 300;
-const isClientError = (status:number) => status >= 400 && status < 500;
-const isServerError = (status:number) => status >= 500 && status < 600;
-
-const alertStyle = {
-    width: "15px",
-    height: "15px",
-    marginRight: "10px",
-    borderRadius: "5px",
 }
 
 interface GroupFormProp {
@@ -62,10 +44,6 @@ export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
 
     const handleEditGroup = (key:string, value:string) => {
         setEditGroup(prevState => ({ ...prevState, [key]: value}));
-    }
-
-    const removeToast = (removeIndex:number) => {
-        setMessageList(messageList.filter((_, index) => index !== removeIndex));
     }
 
     const saveGroup = async(event: React.FormEvent) => {
@@ -117,7 +95,13 @@ export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
 
         if (state.response) {
             if (Array.isArray(state.response)) {
-                //
+                state.response.map((error) => {
+                    const response:ResponseMessage = {
+                        status: state.status,
+                        message: error.message + " , value : " + error.path
+                    }
+                    setMessageList([...messageList, response]);
+                });
             } else {
                 const response:ResponseMessage = {
                     status: state.status,
@@ -136,30 +120,7 @@ export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
     return (
         <div className="group-form">
             {messageList.length > 0 &&
-                <ToastContainer position="top-end" className="p-3" style={{ zIndex: 99 }}>
-                {messageList.map((alert, index) => (
-                    <Toast onClose={() => removeToast(index)} key={index}>
-                        <Toast.Header>
-                            {isUnknown(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "gray" }}></div>
-                            }
-                            {isSuccess(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "green" }}></div>
-                            }
-                            {isClientError(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                            }
-                            {isServerError(alert.status) &&
-                                <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                            }
-                            <p className='me-auto'>Group alert</p>
-                        </Toast.Header>
-                        <Toast.Body>
-                            <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>
-                        </Toast.Body>
-                    </Toast>
-                ))}
-            </ToastContainer>
+                <ToastMessageContainer messageList={messageList} setMessageList={setMessageList} />
             }
             <p className="group-title">Group List</p>
             <div className="group-options">

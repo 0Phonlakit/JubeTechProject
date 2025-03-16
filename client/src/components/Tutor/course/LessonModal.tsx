@@ -1,8 +1,3 @@
-import { Popover, Select } from "antd";
-import TiptapEditor from "./TiptapEditor";
-import { useState, useEffect, useRef } from "react";
-import { uploadFileWithProgress } from "../../../services/storage";
-import { CreateLesson, useLesson, IFSearchParam } from "../../../contexts/LessonContext";
 import {
     BsXLg,
     BsFillInfoCircleFill,
@@ -16,6 +11,14 @@ import {
     BsFileEarmarkImageFill,
     BsFileEarmarkZipFill
 } from "react-icons/bs";
+
+import ReactPlayer from "react-player/lazy";
+
+import { Popover, Select } from "antd";
+import TiptapEditor from "./TiptapEditor";
+import { useState, useEffect, useRef } from "react";
+import { uploadFileWithProgress, checkAuthFromFirebase } from "../../../services/storage";
+import { CreateLesson, useLesson, IFSearchParam } from "../../../contexts/LessonContext";
 
 interface ResponseMessage {
     status: number,
@@ -100,6 +103,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
     const { state, dispatch, updateLesson, createLesson, fetchLessonById } = useLesson();
     // state
     const [requestProcess, setRequestProcess] = useState<boolean>(false);
+    const [isRenderVideo, setIsRenderVideo] = useState<boolean>(false);
     const [subFiles, setSubFiles] = useState<subFileState[]>([]);
     const [lessonForm, setLessonForm] = useState<CreateLesson>({
         name: "",
@@ -109,12 +113,18 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
         duration: 0,
         isFreePreview: false,
     });
-    // ref
-    const videoRef = useRef<HTMLInputElement>(null);
     const { name, type, main_content } = lessonForm;
+
+    // video ref & state
+    const videoInputRef = useRef<HTMLInputElement>(null);
+    const [videoLink, setVideoLink] = useState<string>("");
+    const [fileName, setFileName] = useState<string>("");
+    const [sizeFile, setSizeFile] = useState<string>("");
+    const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [mainFile, setMainFile] = useState<File | string>("");
     // useEffect
     useEffect(() => {
-        if (editLesson.trim() !== "") {
+        if (editLesson.trim() !== "" && requestProcess === true) {
             fetchLessonById(editLesson);
             if (state.editLesson !== null) {
                 const lesson = state.editLesson;
@@ -127,8 +137,10 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                     isFreePreview: lesson.isFreePreview
                 });
             }
+            setRequestProcess(false);
         } else {
             dispatch({ type: "CLEAR_EDIT", message: "" });
+            setRequestProcess(false);
         }
 
         if (state.status >= 200 && state.status <= 300) {
@@ -149,7 +161,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
             addNewLesson();
             setRequestProcess(false);
         }
-    }, [editLesson, state.response, requestProcess]);
+    }, [editLesson, requestProcess, state.status]);
 
     /* Function section */
     const prepareAddLesson = async(event:React.FormEvent) => {
@@ -161,36 +173,70 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
             }
             setMessageList([...messageList, response]);
         } else {
-            for (let index = 0; index < subFiles.length; index++) {
-                const subfile = subFiles[index];
-                if (subfile.file instanceof File) {
-                    const fileName = new Date().getTime() + "_" + subfile.file.name;
-                    const newSubFile = "/course/course_file/" + fileName;
-                    await uploadFileWithProgress(subfile.file as File, "/course/course_file/", fileName, (currentProgress: number) => {
-                        handleSubfile(index, "progress", Number(currentProgress.toFixed(2)));
-                    });
-                    setLessonForm((prev) => ({
-                        ...prev,
-                        sub_file: [...prev.sub_file, newSubFile]
-                    }));
+            if (main_content.trim() !== "") {
+                const checkAuthFirebase = checkAuthFromFirebase();
+                if (checkAuthFirebase) {
+                    // sub file
+                    for (let index = 0; index < subFiles.length; index++) {
+                        const subfile = subFiles[index];
+                        if (subfile.file instanceof File) {
+                            const fileName = new Date().getTime() + "_" + subfile.file.name;
+                            const newSubFile = "/course/course_file/" + fileName;
+                            await uploadFileWithProgress(subfile.file as File, "/course/course_file/", fileName, (currentProgress: number) => {
+                                handleSubfile(index, "progress", Number(currentProgress.toFixed(2)));
+                            });
+                            setLessonForm((prev) => ({
+                                ...prev,
+                                sub_file: [...prev.sub_file, newSubFile]
+                            }));
+                        }
+                    }
+                    if (type === "video" && mainFile instanceof File) {
+                        setIsUploading(true);
+                        const splitContent = main_content.split("/course/course_file/");
+                        await uploadFileWithProgress(mainFile, "/course/course_file/", splitContent[1], (currentProgress: number) => {
+                            if (currentProgress >= 100) setIsUploading(false);
+                        });
+                        setVideoLink("");
+                        setFileName("");
+                        setSizeFile("");
+                        setMainFile("");
+                        setIsRenderVideo(false);
+                    }
+                    setRequestProcess(true);
+                } else {
+                    const response:ResponseMessage = {
+                        status: 401,
+                        message: "Unauthorize"
+                    }
+                    setMessageList([...messageList, response]);
                 }
+            } else {
+                const response:ResponseMessage = {
+                    status: 400,
+                    message: "Please, input your lecture or choose your video file"
+                }
+                setMessageList([...messageList, response]);
             }
-            setRequestProcess(true);
         }
     }
+
     const addNewLesson = async() => {
         await createLesson(lessonForm, searchLesson);
         await new Promise(resolve => setTimeout(resolve, 100));
     }
+
     const modifyLesson = () => {
         //
     }
+
     const handleLessonForm = (key:string, value:string | string[] | boolean) => {
         setLessonForm(prev => ({
             ...prev,
             [key]: value
         }));
     }
+
     const handleMaterials = (currentIndex:number, key:string, event:React.ChangeEvent<HTMLInputElement>) => {
         if (event.target && event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
@@ -200,13 +246,17 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                     message: "The file must be less than 50 Megabytes."
                 }
                 setMessageList([...messageList, response]);
-            } else if (!allowedFiles.includes(file.type)) {
+            } 
+            else if (!allowedFiles.includes(file.type))
+            {
                 const response:ResponseMessage = {
                     status: 400,
                     message: "Invalid file type. Please upload a valid file format."
                 }
                 setMessageList([...messageList, response]);
-            } else {
+            } 
+            else
+            {
                 setSubFiles((prev) => {
                     return prev.map((subfile, index) => (
                         (index === currentIndex ? { ...subfile, [key]: file, type: file.type } : subfile)
@@ -239,11 +289,39 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
     }
 
     const handleVideoFile = () => {
-        // if (videoRef.current?.files && videoRef.current.files.length > 0) {
-        //     const validTypes = ["video/mp4", "video/webm"];
-        //     const file = videoRef.current.files[0];
-        //     if 
-        // }
+        if (videoInputRef.current?.files && videoInputRef.current.files.length > 0) {
+            const validTypes = ["video/mp4", "video/webm"];
+            const maxSize = 700 * 1024 * 1024
+            const file = videoInputRef.current.files[0];
+            if (!validTypes.includes(file.type)) {
+                const response:ResponseMessage = {
+                    status: 400,
+                    message: "Invalid file type. Please upload a valid file format."
+                }
+                setMessageList([...messageList, response]);
+            }
+            else if (file.size > maxSize) {
+                const response:ResponseMessage = {
+                    status: 400,
+                    message: "The file must be less than 700 Megabytes."
+                }
+                setMessageList([...messageList, response]);
+            }
+            else
+            {
+                setMainFile(file);
+                setIsRenderVideo(true);
+                setFileName(file.name);
+                setSizeFile(bytesToMB(file.size))
+                setVideoLink(URL.createObjectURL(file));
+                const fileName = new Date().getTime() + "_" + file.name;
+                const mainContentFile = "/course/course_file/" + fileName;
+                handleLessonForm("main_content", mainContentFile);
+            }
+        } else {
+            setMainFile("");
+            setIsRenderVideo(false);
+        }
     }
     /* End section */
     
@@ -256,6 +334,14 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                         {editLesson.trim() !== "" ? <p>Update Lesson</p> : <p>Create Lesson</p>}
                         <button
                             onClick={() => {
+                                setLessonForm({
+                                    name: "",
+                                    type: "",
+                                    sub_file: [],
+                                    main_content: "",
+                                    duration: 0,
+                                    isFreePreview: false,
+                                });
                                 setEditLesson("");
                                 setShowModal(false);
                             }}
@@ -283,7 +369,9 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                                             <input
                                                 id="name"
                                                 type="text"
-                                                value={name}
+                                                value={editLesson.trim() !== "" ? state.editLesson?.name : name}
+                                                minLength={5}
+                                                maxLength={45}
                                                 placeholder="Input your name..."
                                                 className="form-control"
                                                 onChange={(event) => handleLessonForm("name", event.target.value)}
@@ -298,7 +386,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                                         <Select
                                             id="type"
                                             style={selectStle}
-                                            value={type}
+                                            value={editLesson.trim() !== "" ? state.editLesson?.type : type}
                                             placeholder="Select type of lesson..."
                                             options={[
                                                 { value: "", label: "None" },
@@ -432,19 +520,82 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                                 )}
                                 {type === "video" && (
                                     <div className="lesson-video-container mt-4">
-                                        <div className="lesson-video-card">
-                                            <button
-                                                type="button"
-                                                onClick={() => videoRef.current?.click()}
-                                            >
-                                                Upload video
-                                            </button>
-                                            <input ref={videoRef} type="file" accept=".mp4, .webm" hidden/>
-                                        </div>
-                                        <div className="video-information-container">
-                                            <span>Accept file : .mp4, .webm</span><br />
-                                            <span>Max size : 600 Megabytes</span>
-                                        </div>
+                                        {isRenderVideo
+                                            ?
+                                            (
+                                                <>
+                                                    <div className="lesson-video-card">
+                                                        {isUploading && (
+                                                            <div className="video-uploading">
+                                                                <div className="spinner-border text-dark" role="status">
+                                                                    <span className="visually-hidden">Loading...</span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        <ReactPlayer
+                                                            url={videoLink}
+                                                            controls
+                                                        />
+                                                    </div>
+                                                    <div className="video-information-container">
+                                                        <span>File name : {fileName}</span><br />
+                                                        <span>File size : {sizeFile} Megabytes</span><br />
+                                                        <button
+                                                            type="button"
+                                                            className="change-video-file"
+                                                            onClick={() => videoInputRef.current?.click()}
+                                                        >
+                                                            Change video file
+                                                        </button>
+                                                        <button
+                                                            className="cancel-upload-video"
+                                                            onClick={() => {
+                                                                setVideoLink("");
+                                                                setFileName("");
+                                                                setSizeFile("");
+                                                                setMainFile("");
+                                                                setIsRenderVideo(false);
+                                                                handleLessonForm("main_content", "");
+                                                            }}
+                                                        >
+                                                            <i><BsXLg /></i>
+                                                            Cancel
+                                                        </button>
+                                                        <input
+                                                            ref={videoInputRef}
+                                                            type="file"
+                                                            accept=".mp4, .webm"
+                                                            onChange={handleVideoFile}
+                                                            hidden
+                                                        />
+                                                    </div>
+                                                </>
+                                            )
+                                            :
+                                            (
+                                                <>
+                                                    <div className="lesson-video-card">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => videoInputRef.current?.click()}
+                                                        >
+                                                            Upload video
+                                                        </button>
+                                                        <input
+                                                            ref={videoInputRef}
+                                                            type="file"
+                                                            accept=".mp4, .webm"
+                                                            onChange={handleVideoFile}
+                                                            hidden
+                                                        />
+                                                    </div>
+                                                    <div className="video-information-container">
+                                                        <span>Accept file : .mp4, .webm</span><br />
+                                                        <span>Max size : 700 Megabytes</span>
+                                                    </div>
+                                                </>
+                                            )
+                                        }
                                     </div>
                                 )}
                             </div>

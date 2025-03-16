@@ -44,11 +44,13 @@ export const checkRole = async() => {
                     return [];
                 }
             } catch (error) {
+                window.location.href = "/"
                 console.error("Something went wrong.");
                 return [];
             }
         }
     }
+    window.location.href = "/"
     return false;
 }
 

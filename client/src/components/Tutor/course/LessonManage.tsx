@@ -1,10 +1,9 @@
 import LessonCard from "./LessonCard";
 import LessonModal from "./LessonModal";
-import Toast from 'react-bootstrap/Toast';
 import { useState, useEffect } from "react";
 import SkeletonLesson from "./SkeletonLesson";
-import ToastContainer from 'react-bootstrap/ToastContainer';
 import { deleteFile } from "../../../services/storage";
+import { ResponseMessage, ToastMessageContainer } from "../../ToastMessageContainer";
 import { useLesson, IFSearchParam, LessonCard as IFLessonCard } from "../../../contexts/LessonContext";
 import {
     BsSearch,
@@ -13,23 +12,6 @@ import {
 } from "react-icons/bs";
 
 import "../../../assets/css/course/lesson-manage.css";
-
-interface ResponseMessage {
-    status: number,
-    message: string
-}
-
-const isUnknown = (status:number) => status < 200;
-const isSuccess = (status:number) => status >= 200 && status < 300;
-const isClientError = (status:number) => status >= 400 && status < 500;
-const isServerError = (status:number) => status >= 500 && status < 600;
-
-const alertStyle = {
-    width: "15px",
-    height: "15px",
-    marginRight: "10px",
-    borderRadius: "5px",
-}
 
 export default function LessonManage() {
     // context
@@ -52,6 +34,7 @@ export default function LessonManage() {
         pageSize: 20
     });
     const { name } = searchLesson;
+
     // useEffect
     useEffect(() => {
         // trigger lesson
@@ -74,14 +57,24 @@ export default function LessonManage() {
             setDeleteLesson("");
         }
 
-        if (state.editLesson !== null) {
+        if (state.editLesson !== null && deleteLesson.trim() !== "" && editLesson === "") {
             removeFile();
+        }
+
+        if (state.editLesson !== null && editLesson.trim() !== "") {
+            setShowModal(true);
         }
 
         // trigger response
         if (state.response) {
             if (Array.isArray(state.response)) {
-                //
+                state.response.map((error) => {
+                    const response:ResponseMessage = {
+                        status: state.status,
+                        message: error.message + " , value : " + error.path
+                    }
+                    setMessageList([...messageList, response]);
+                });
             } else {
                 const response:ResponseMessage = {
                     status: state.status,
@@ -89,41 +82,62 @@ export default function LessonManage() {
                 }
                 setMessageList([...messageList, response]);
             }
-            setTimeout(() => {
-                setMessageList((prev) => prev.slice(1));
-            }, 3000);
         }
         dispatch({ type: "CLEAR_RESPONSE", message: "" });
     }, [state.lessons, searchLesson, state.response, requestProcess, state.editLesson]);
 
+    // useEffect(() => {
+    //     const fetchUniqueLesson = async() => {
+    //         console.log(1);
+    //         try {
+    //             await fetchLessonById(editLesson);
+    //         } catch (error) {
+    //             const response:ResponseMessage = {
+    //                 status: 0,
+    //                 message: "The lesson was not found."
+    //             }
+    //             setMessageList([...messageList, response]);
+    //         }
+    //         setRequestProcess(false);
+    //     }
+
+    //     if (editLesson.trim() !== "" && requestProcess === true) {
+    //         fetchUniqueLesson();
+    //     };
+    // }, [requestProcess]);
+
     /* Function section */
-    const removeToast = (removeIndex:number) => {
-        setMessageList(messageList.filter((_, index) => index !== removeIndex));
-    }
     const handleSearch = (key:string, value:string | number | Date) => {
         setSearchLesson((prev) => ({...prev, [key]:value}));
     }
+
     const clearSearch = () => {
         setSearchLesson({ name: "", type: "", isFreePreview: null, startDate: "", endDate: "", page: 1, pageSize: 20 });
     }
+
     const removeFile = async () => {
         if (state.editLesson && state.editLesson.sub_file.length > 0) {
             try {
-                console.log(state.editLesson.sub_file);
                 await deleteFile(state.editLesson.sub_file);
-                dispatch({ type: "CLEAR_EDIT", message: "" });
             } catch (error) {
                 console.error('Error deleting files:', error);
             }
-        } else {
-            dispatch({ type: "CLEAR_EDIT", message: "" });
         }
+        if (state.editLesson && state.editLesson.type === "video") {
+            try {
+                await deleteFile([state.editLesson.main_content]);
+            } catch (error) {
+                console.error('Error deleting files:', error);
+            }
+        }
+        dispatch({ type: "CLEAR_EDIT", message: "" });
         setRequestProcess(true);
     };
+
     const prepareRemoveLesson = async() => {
         if (deleteLesson !== "") {
             clearSearch();
-            fetchLessonById(deleteLesson);
+            await fetchLessonById(deleteLesson);
         } else {
             const response:ResponseMessage = {
                 status: 0,
@@ -132,10 +146,12 @@ export default function LessonManage() {
             setMessageList([...messageList, response]);
         }
     }
+
     const removeLessonById = async() => {
         await removeLesson(deleteLesson, searchLesson);
         await new Promise(resolve => setTimeout(resolve, 100));
     }
+    
     /* End section */
 
     // render
@@ -151,30 +167,7 @@ export default function LessonManage() {
                 searchLesson={searchLesson}
             />
             {messageList.length > 0 &&
-                <ToastContainer position="top-end" className="p-3" style={{ zIndex: 99 }}>
-                    {messageList.map((alert, index) => (
-                        <Toast onClose={() => removeToast(index)} key={index}>
-                            <Toast.Header>
-                                {isUnknown(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "gray" }}></div>
-                                }
-                                {isSuccess(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "green" }}></div>
-                                }
-                                {isClientError(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                                }
-                                {isServerError(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                                }
-                                <p className='me-auto'>Lesson alert</p>
-                            </Toast.Header>
-                            <Toast.Body>
-                                <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>
-                            </Toast.Body>
-                        </Toast>
-                    ))}
-                </ToastContainer>
+                <ToastMessageContainer messageList={messageList} setMessageList={setMessageList} />
             }
             <div className="search-lesson-container">
                 <div className="search-input">
@@ -191,7 +184,11 @@ export default function LessonManage() {
                         <i><BsFillFilterCircleFill size={19} /></i>
                         Advance filter
                     </button>
-                    <button id="create-lesson" onClick={() => setShowModal(!showModal)}>
+                    <button id="create-lesson" onClick={() => {
+                        setEditLesson("");
+                        setShowModal(!showModal);
+                        dispatch({ type: "CLEAR_EDIT", status: 0, message: "" });
+                    }}>
                         <i><BsFolderPlus size={19} /></i>
                         Add lesson
                     </button>
@@ -206,6 +203,7 @@ export default function LessonManage() {
                         <LessonCard
                             {...lesson}
                             key={index}
+                            setEditLesson={setEditLesson}
                             setDeleteLesson={setDeleteLesson}
                         />
                     ))}

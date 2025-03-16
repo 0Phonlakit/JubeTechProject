@@ -1,14 +1,12 @@
 import { Select } from 'antd';
-import Toast from 'react-bootstrap/Toast';
 import { useState, useEffect } from "react";
 import SkeletonCategory from './SkeletonCategory';
 import { useGroup } from "../../../contexts/GroupContext";
-import ToastContainer from 'react-bootstrap/ToastContainer';
+import { ResponseMessage, ToastMessageContainer } from '../../ToastMessageContainer';
 import { useCategory, CreateCategories, Category } from "../../../contexts/CategoryContext";
 import {
     BsSearch,
     BsPlus,
-    BsFillFilterCircleFill,
     BsFillTrashFill,
     BsPencilSquare,
     BsX,
@@ -22,23 +20,6 @@ interface IFEditCategory {
     category_id: string
     name: string,
     group_ids: string[],
-}
-
-interface ResponseMessage {
-    status: number,
-    message: string
-}
-
-const isUnknown = (status:number) => status < 200;
-const isSuccess = (status:number) => status >= 200 && status < 300;
-const isClientError = (status:number) => status >= 400 && status < 500;
-const isServerError = (status:number) => status >= 500 && status < 600;
-
-const alertStyle = {
-    width: "15px",
-    height: "15px",
-    marginRight: "10px",
-    borderRadius: "5px",
 }
 
 interface CategoryListProp {
@@ -82,7 +63,13 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
         }
         if (categoriesState.response) {
             if (Array.isArray(categoriesState.response)) {
-                //
+                categoriesState.response.map((error) => {
+                    const response:ResponseMessage = {
+                        status: categoriesState.status,
+                        message: error.message + " , value : " + error.path
+                    }
+                    setMessageList([...messageList, response]);
+                });
             } else {
                 const response:ResponseMessage = {
                     status: categoriesState.status,
@@ -113,10 +100,6 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
             ));
         });
     };
-
-    const removeToast = (removeIndex:number) => {
-        setMessageList(messageList.filter((_, index) => index !== removeIndex));
-    }
 
     const handleEditCategory = (key:string, value:string | string[]) => {
         setEditCategory(prevState => ({ ...prevState, [key]: value}));
@@ -174,30 +157,7 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
     return (
         <div className="category-list-container">
             {messageList.length > 0 &&
-                <ToastContainer position="top-end" className="p-3" style={{ zIndex: 99 }}>
-                    {messageList.map((alert, index) => (
-                        <Toast onClose={() => removeToast(index)} key={index}>
-                            <Toast.Header>
-                                {isUnknown(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "gray" }}></div>
-                                }
-                                {isSuccess(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "green" }}></div>
-                                }
-                                {isClientError(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                                }
-                                {isServerError(alert.status) &&
-                                    <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
-                                }
-                                <p className='me-auto'>Category alert</p>
-                            </Toast.Header>
-                            <Toast.Body>
-                                <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>
-                            </Toast.Body>
-                        </Toast>
-                    ))}
-                </ToastContainer>
+                <ToastMessageContainer messageList={messageList} setMessageList={setMessageList} />
             }
             {/* Option */}
             <div className="category-option-container">

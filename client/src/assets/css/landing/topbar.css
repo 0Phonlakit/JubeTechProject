@@ -56,6 +56,12 @@ nav.topbar {
     border: 2px solid #00000020;
     background-color: #FFFFFF;
     width: clamp(250px, 35vw, 450px);
+    height: 450px;
+    overflow-y: scroll;
+}
+
+.category-info::-webkit-scrollbar {
+    width: 4px;
 }
 
 .search-container {
@@ -193,6 +199,10 @@ nav.topbar {
     align-items: flex-start;
 }
 
+.main-category::-webkit-scrollbar {
+    width: 4px;
+}
+
 .main-category ul li {
     color: #464646;
     cursor: pointer;
@@ -225,7 +235,6 @@ nav.topbar {
     justify-content: flex-start;
     align-items: center;
     gap: 20px;
-    overflow-y: scroll;
 }
 
 .sub-category ul li {

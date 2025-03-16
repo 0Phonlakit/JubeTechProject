@@ -7,6 +7,7 @@ import { createContext, useContext, useReducer, useEffect } from "react";
 export interface LessonCard {
     _id: string,
     name: string,
+    sub_file: string[],
     type: "lecture" | "video",
     isFreePreview: boolean,
     updatedAt: Date

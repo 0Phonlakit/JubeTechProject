@@ -111,6 +111,15 @@ export const uploadFileWithProgress = async(file: File, path: string, fileName:s
     return false;
 }
 
+export const checkAuthFromFirebase = () => {
+    try {
+        if (auth.currentUser) return true;
+        return false;
+    } catch (error) {
+        return false;
+    }
+}
+
 // Delete File
 export const deleteFile = async(paths:string[]) => {
     try {
@@ -131,7 +140,6 @@ export const deleteFile = async(paths:string[]) => {
 }
 
 export const verifyUser = async() => {
-    console.log(auth.currentUser);
     try {
         const token = getToken();
         if (!token) return false;

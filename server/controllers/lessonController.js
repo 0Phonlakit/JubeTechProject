@@ -73,7 +73,7 @@ const getLessonByTutor = async(req, res) => {
         const lessons = await Lessons.find(filter)
             .skip(skip)
             .limit(parsePageSize)
-            .select("_id name type isFreePreview updatedAt")
+            .select("_id name sub_file type isFreePreview updatedAt")
             .lean();
         const total = await Lessons.countDocuments(filter);
         return res.status(200).json({ data: lessons, pagination: {
