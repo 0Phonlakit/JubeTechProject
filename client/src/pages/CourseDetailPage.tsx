@@ -122,14 +122,13 @@ const CourseDetailPage = () => {
   }
 
   return (
+    <CategoryProvider>
         <div className="course-detail-page">
-        <CategoryProvider>
         <Topbar
             modalStatus={showModal}
             setShowModal={setShowModal}
             setTypeModal={setTypeModal}
         />
-        </CategoryProvider>
         
         <div className="course-header">
             <div className="container">
@@ -326,7 +325,8 @@ const CourseDetailPage = () => {
             </div>
         </div>
         </div>
+    </CategoryProvider>
   );
 };
 
-export default CourseDetailPage;
+export default CourseDetailPage;n 
