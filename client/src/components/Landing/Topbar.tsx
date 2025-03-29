@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Carousel from 'react-bootstrap/Carousel';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { checkUser, checkRole } from "../../services/authorize.ts";
+import { checkRole, checkUser} from "../../services/authorize.ts";
 import { useCategory, Category } from "../../contexts/CategoryContext.tsx";
+import CartDropdown from "../Cart/CartDropdown";
 
 import "../../assets/css/landing/topbar.css";
-import { FaAngleDown, FaAngleRight, FaSistrix, FaCartShopping, FaNewspaper, FaBars } from "react-icons/fa6";
+import { FaAngleDown, FaAngleRight, FaSistrix, FaNewspaper, FaBars } from "react-icons/fa6";
 
 interface TopbarProp {
     modalStatus: boolean,
@@ -52,29 +53,13 @@ function ButtonContainer({ modalStatus, setShowModal, setTypeModal }:TopbarProp)
 }
 
 export default function Topbar({ modalStatus, setShowModal, setTypeModal }:TopbarProp) {
-    const { state:categoryState, fetchAllCategories } = useCategory();
     const [showOffcanvas, setShowOffCanvas] = useState<boolean>(false); // Canvas state
     const [showPopover, setShowPopover] = useState<boolean>(false); // Popover state
     const [carouselIndex, setCarouselIndex] = useState<number>(0); // Carousel state
-    const [isRender, setIsRender] = useState<boolean>(false);
-    const [currentCategory, setCurrentCategory] = useState<Category>({
-        _id: "",
-        name: "",
-        group_ids: [],
-        updatedAt: "",
-    });
-    const [roles, setRole] = useState<string[]>([]);
+    
+    // Data Section
 
-    useEffect(() => {
-        if (isRender === false) {
-            fetchAllCategories("");
-            setIsRender(true);
-        }
-        const prepareRole = async() => {
-            setRole(await checkRole());
-        }
-        if (checkUser()) prepareRole();
-    }, []);
+
 
     // Render
     return (
@@ -98,32 +83,59 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
                     >
                         <span>หมวดหมู่</span>
                     </MUIButton>
-                    {categoryState.categories.length > 0 && (
-                        <div
+                    <div
                         className="category-info"
                         style={{display: showPopover ? "flex" : "none"}}
                         onMouseLeave={() => setShowPopover(false)}
-                        >
-                            <div className="main-category">
-                                <p>ค้นหาหมวดหมู่ที่คุณสนใจ</p>
-                                <ul>
-                                    {categoryState.categories && categoryState.categories.map((category, index) => (
-                                        <li key={index} onMouseEnter={() => setCurrentCategory(category)}>
-                                            {category.name}
-                                            <i><FaAngleRight /></i>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="sub-category">
-                                <ul>
-                                    {currentCategory._id !== "" && currentCategory.group_ids.map((group, index) => (
-                                        <li key={index}>{group.name}</li>
-                                    ))}
-                                </ul>
-                            </div>
+                    >
+                        <div className="main-category">
+                            <p>ค้นหาหมวดหมู่ที่คุณสนใจ</p>
+                            <ul>
+                                <li>
+                                    Web Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Mobile Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Desktop Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    UX/UI Designer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    IOT Developer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Cybersecurity
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Data Science
+                                    <i><FaAngleRight /></i>
+                                </li>
+                                <li>
+                                    Prompt Engineer
+                                    <i><FaAngleRight /></i>
+                                </li>
+                            </ul>
                         </div>
-                    )}
+                        <div className="sub-category">
+                            <ul>
+                                <li>Javascript</li>
+                                <li>Typescript</li>
+                                <li>Java</li>
+                                <li>Python</li>
+                                <li>Kotlin</li>
+                                <li>React.js</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 {/* Search */}
                 <div className="search-container">
@@ -133,30 +145,21 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
             </div>
             {/* Right Section */}
             <div className="right-container">
+                
                 {/* Link */}
-                <a href="#">
-                    สมัครเป็นติวเตอร์
-                </a>
-                {roles.includes("Student") && (
-                    <a href="#">คอร์สเรียนของเรา</a>
+                {checkRole("Tutor") && (
+                    <a href="#">สมัครเป็นติวเตอร์</a>
+                )}
+                {checkRole("Student") && (
+                    <a href="/my-courses">คอร์สเรียนของเรา</a>
                 )}
                 {/* Cart */}
-                <a href="#"><i><FaCartShopping /></i></a>
+                <CartDropdown />
                 {/* Notification */}
                 <a href="#"><i><FaNewspaper /></i></a>
                 {checkUser()
                     ?
-                    <>
-                        {roles.includes("Admin") && (
-                            <a className="main-link" href="/dashboard">เข้าสู่ระบบแอดมิน</a>
-                        )}
-                        {roles.includes("Tutor") && (
-                            <a className="main-link" href="/dashboard">เข้าสู่การจัดการของติวเตอร์</a>
-                        )}
-                        {roles.includes("Student") && (
-                            <a className="main-link" href="/dashboard">เข้าสู่ระบบการเรียน</a>
-                        )}
-                    </>
+                    ""
                     :
                     <ButtonContainer
                         modalStatus={modalStatus}
@@ -164,7 +167,6 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
                         setTypeModal={setTypeModal}
                     />
                 }
-                {}
                 <div className="sidetab-container" onClick={() => setShowOffCanvas(true)}>
                     <i><FaBars /></i>
                 </div>
