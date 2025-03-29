@@ -47,8 +47,8 @@
   
   /* Course Header */
   .course-header {
-    background: linear-gradient(rgba(255, 255, 255, 0) 40%, rgb(232, 214, 254) 100%);
-    color: var(--text-color);
+    background:   #a906f5;
+    color: #fff;
     padding: 40px 0;
     margin-top: 60px;
   }
@@ -73,14 +73,14 @@
     font-weight: 700;
     margin-bottom: 16px;
     line-height: 1.2;
-    color: #242424;
+    color: #fff;
   }
   
   .course-description {
     font-size: 18px;
     margin-bottom: 16px;
     line-height: 1.6;
-    color: #242424;
+    color: #fff;
   }
   
   .course-meta {
@@ -91,29 +91,30 @@
     display: flex;
     align-items: center;
     margin-bottom: 8px;
+    
   }
   
   .rating-value {
-    font-weight: 700;
+    font-weight: 500;
     font-size: 16px;
     margin-right: 8px;
-    color: #e59819;
+    color: #fff;
   }
   
   .student-count {
     margin-left: 8px;
     font-size: 14px;
-    color: #242424;
+    color: #fff;
   }
   
   .course-instructor {
     font-size: 14px;
     margin-bottom: 8px;
-    color: #242424;
+    color: #fff;
   }
   
   .course-instructor a {
-    color: var(--accent-color);
+    color: #fff;
     text-decoration: none;
     font-weight: 700;
   }
@@ -127,7 +128,7 @@
     flex-wrap: wrap;
     gap: 16px;
     font-size: 14px;
-    color: #242424;
+    color: #fff;
   }
   
   .course-details-meta span {

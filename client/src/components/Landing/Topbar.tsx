@@ -5,9 +5,10 @@ import Carousel from 'react-bootstrap/Carousel';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { checkUser, checkRole } from "../../services/authorize.ts";
 import { useCategory, Category } from "../../contexts/CategoryContext.tsx";
+import CartDropdown from "../Cart/CartDropdown";
 
 import "../../assets/css/landing/topbar.css";
-import { FaAngleDown, FaAngleRight, FaSistrix, FaCartShopping, FaNewspaper, FaBars } from "react-icons/fa6";
+import { FaAngleDown, FaAngleRight, FaSistrix, FaNewspaper, FaBars } from "react-icons/fa6";
 
 interface TopbarProp {
     modalStatus: boolean,
@@ -133,15 +134,16 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
             </div>
             {/* Right Section */}
             <div className="right-container">
+                
                 {/* Link */}
-                <a href="#">
-                    สมัครเป็นติวเตอร์
-                </a>
+                {roles.includes("Tutor") && (
+                    <a href="#">สมัครเป็นติวเตอร์</a>
+                )}
                 {roles.includes("Student") && (
-                    <a href="#">คอร์สเรียนของเรา</a>
+                    <a href="/my-courses">คอร์สเรียนของเรา</a>
                 )}
                 {/* Cart */}
-                <a href="#"><i><FaCartShopping /></i></a>
+                <CartDropdown />
                 {/* Notification */}
                 <a href="#"><i><FaNewspaper /></i></a>
                 {checkUser()
