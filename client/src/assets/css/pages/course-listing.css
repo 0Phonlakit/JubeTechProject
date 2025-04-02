@@ -19,24 +19,24 @@
   }
   
   .course-listing-header {
-    background: #a906f5;
-    color: var(--white);
-    padding: 100px 0;
+    background: linear-gradient(rgba(255, 255, 255, 0) 40%, rgb(232, 214, 254) 100%);
+    color: #242424;
+    padding: 40px 0;
     text-align: center;
   }
   
   .course-listing-header h1 {
     font-size: 32px;
     font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--white);
+    margin-bottom: 10px;
+    color: #242424;
   }
   
   .course-listing-header p {
     font-size: 18px;
-    max-width: 500px;
+    max-width: 700px;
     margin: 0 auto;
-    color: var(--white);
+    color: #242424;
   }
   
   .container {

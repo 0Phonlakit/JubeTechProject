@@ -2,8 +2,6 @@ import './App.css';
 import { useState } from 'react';
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import MyCourses from './pages/MyCourses';
-import CartPage from './pages/CartPage';
 
 // Pages
 const UserTable = lazy(() => import("./pages/UserTable"));
@@ -41,8 +39,6 @@ function App() {
           <Route path="/dashboard/promotion-management" element={<PromotionManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/courses" element={<CourseListingPage />}></Route>
           <Route path="/courses/:slug" element={<CourseDetailPage />}></Route>
-          <Route path="/my-courses" element={<MyCourses />}></Route>
-          <Route path="/cart" element={<CartPage />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

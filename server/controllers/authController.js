@@ -39,13 +39,11 @@ async function signin(req, res) {
         // 1.check email
         const { email, password } = req.body;
         const user = await User.findOne({ email, status: true });
-
-        console.log({ user });
         if (!user) return res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
 
         // 2.check password
-        // const matched = await bcrypt.compare(password, user.password);
-        // if (!matched) return res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
+        const matched = await bcrypt.compare(password, user.password);
+        if (!matched) return res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
 
         // 3.check activated
         // const activated = Tokens.find({ for_email: email, isActive: true });

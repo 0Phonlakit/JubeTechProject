@@ -329,4 +329,4 @@ const CourseDetailPage = () => {
   );
 };
 
-export default CourseDetailPage;
+export default CourseDetailPage;n 
