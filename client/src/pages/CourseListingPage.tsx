@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Rating, FormControlLabel, Radio, RadioGroup, CircularProgress, Pagination } from "@mui/material";
+import { Rating, FormControlLabel, Radio, RadioGroup, CircularProgress, Pagination, Slider } from "@mui/material";
 import { FaFilter, FaSearch } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -8,7 +8,6 @@ import TestImage from "../assets/img/landing/course-test.png";
 import Topbar from "../components/Landing/Topbar";
 import { CategoryProvider } from "../contexts/CategoryContext";
 
-// Mock data - would be replaced with API calls
 const mockCourses = [
   {
     id: 1,
@@ -20,7 +19,7 @@ const mockCourses = [
     rating: 4.5,
     instructor: "อาจารย์ สมชาย ใจดี",
     student_enrolled: 1245,
-    duration: 42, // hours
+    duration: 42, 
     level: "intermediate",
     slug: "nodejs-2025-professional-web-development"
   },
@@ -34,7 +33,7 @@ const mockCourses = [
     rating: 4.7,
     instructor: "อาจารย์ มานี มีเงิน",
     student_enrolled: 2145,
-    duration: 38, // hours
+    duration: 38, 
     level: "intermediate",
     slug: "react-redux-professional-spa-development"
   },
@@ -48,7 +47,7 @@ const mockCourses = [
     rating: 4.3,
     instructor: "อาจารย์ สมศรี มีสุข",
     student_enrolled: 3245,
-    duration: 24, // hours
+    duration: 24, 
     level: "beginner",
     slug: "html-css-javascript-for-beginners"
   },
@@ -62,7 +61,7 @@ const mockCourses = [
     rating: 4.6,
     instructor: "อาจารย์ สมหมาย ใจดี",
     student_enrolled: 1845,
-    duration: 36, // hours
+    duration: 36, 
     level: "intermediate",
     slug: "react-native-mobile-application-development"
   },
@@ -76,7 +75,7 @@ const mockCourses = [
     rating: 4.8,
     instructor: "อาจารย์ สมชาย ใจดี",
     student_enrolled: 945,
-    duration: 48, // hours
+    duration: 48, 
     level: "expert",
     slug: "microservices-nodejs-docker"
   },
@@ -90,7 +89,7 @@ const mockCourses = [
     rating: 4.5,
     instructor: "อาจารย์ มานี มีเงิน",
     student_enrolled: 1545,
-    duration: 45, // hours
+    duration: 45, 
     level: "intermediate",
     slug: "mern-stack-web-application-development"
   },
@@ -104,7 +103,7 @@ const mockCourses = [
     rating: 4.4,
     instructor: "อาจารย์ สมศรี มีสุข",
     student_enrolled: 1145,
-    duration: 32, // hours
+    duration: 32, 
     level: "intermediate",
     slug: "progressive-web-application-development"
   },
@@ -118,7 +117,7 @@ const mockCourses = [
     rating: 4.3,
     instructor: "อาจารย์ สมหมาย ใจดี",
     student_enrolled: 1345,
-    duration: 36, // hours
+    duration: 36, 
     level: "intermediate",
     slug: "python-django-backend-development"
   }
@@ -135,6 +134,7 @@ const CourseListingPage = () => {
     duration: "",
     priceRange: ""
   });
+  const [priceRange, setPriceRange] = useState<number[]>([0, 2000]);
   const [showFilters, setShowFilters] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [typeModal, setTypeModal] = useState(0);
@@ -176,33 +176,15 @@ const CourseListingPage = () => {
         }
       }
       
-      if (filters.priceRange) {
-        switch(filters.priceRange) {
-          case "free":
-            filteredCourses = filteredCourses.filter(course => course.price === 0);
-            break;
-          case "paid":
-            filteredCourses = filteredCourses.filter(course => course.price > 0);
-            break;
-          case "0-500":
-            filteredCourses = filteredCourses.filter(course => course.price <= 500);
-            break;
-          case "500-1000":
-            filteredCourses = filteredCourses.filter(course => course.price > 500 && course.price <= 1000);
-            break;
-          case "1000-1500":
-            filteredCourses = filteredCourses.filter(course => course.price > 1000 && course.price <= 1500);
-            break;
-          case "1500+":
-            filteredCourses = filteredCourses.filter(course => course.price > 1500);
-            break;
-        }
-      }
+      // Filter by price range using the slider values
+      filteredCourses = filteredCourses.filter(
+        course => course.price >= priceRange[0] && course.price <= priceRange[1]
+      );
       
       setCourses(filteredCourses);
       setLoading(false);
     }, 500);
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, priceRange]);
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -217,11 +199,15 @@ const CourseListingPage = () => {
     setPage(1);
   };
 
+  const handlePriceChange = (_: Event, newValue: number | number[]) => {
+    setPriceRange(newValue as number[]);
+    setPage(1);
+  };
+
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
-  // Calculate pagination
   const indexOfLastCourse = page * coursesPerPage;
   const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
   const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
@@ -235,7 +221,7 @@ const CourseListingPage = () => {
             setShowModal={setShowModal}
             setTypeModal={setTypeModal}
         />
-        
+      
         <div className="course-listing-header">
             <div className="container">
             <h1>คอร์สเรียนทั้งหมด</h1>
@@ -291,9 +277,27 @@ const CourseListingPage = () => {
                 value={filters.level}
                 onChange={(e) => handleFilterChange('level', e.target.value)}
                 >
-                <FormControlLabel value="beginner" control={<Radio size="small" />} label="สำหรับผู้เริ่มต้น" />
-                <FormControlLabel value="intermediate" control={<Radio size="small" />} label="ระดับกลาง" />
-                <FormControlLabel value="expert" control={<Radio size="small" />} label="ระดับสูง" />
+                <FormControlLabel
+                style={{
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    fontFamily: 'Mitr, sans-serif !important'
+                }}
+                value="beginner" control={<Radio size="small" />} label="สำหรับผู้เริ่มต้น" />
+                <FormControlLabel 
+                style={{
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    fontFamily: 'Mitr, sans-serif !important'
+                }}
+                value="intermediate" control={<Radio size="small" />} label="ระดับกลาง" />
+                <FormControlLabel 
+                style={{
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    fontFamily: 'Mitr, sans-serif !important'
+                }}
+                value="expert" control={<Radio size="small" />} label="ระดับสูง" />
                 </RadioGroup>
             </div>
             
@@ -312,17 +316,46 @@ const CourseListingPage = () => {
             
             <div className="filter-group">
                 <h3>ราคา</h3>
-                <RadioGroup
-                value={filters.priceRange}
-                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-                >
-                <FormControlLabel value="free" control={<Radio size="small" />} label="คอร์สเรียนฟรี" />
-                <FormControlLabel value="paid" control={<Radio size="small" />} label="คอร์สเรียนมีค่าใช้จ่าย" />
-                <FormControlLabel value="0-500" control={<Radio size="small" />} label="0-500 บาท" />
-                <FormControlLabel value="500-1000" control={<Radio size="small" />} label="500-1000 บาท" />
-                <FormControlLabel value="1000-1500" control={<Radio size="small" />} label="1000-1500 บาท" />
-                <FormControlLabel value="1500+" control={<Radio size="small" />} label="1500+ บาท" />
-                </RadioGroup>
+                <div className="price-slider-container">
+                  <Slider
+                    value={priceRange}
+                    onChange={handlePriceChange}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={2000}
+                    step={100}
+                    marks={[
+                      { value: 0, label: '฿0' },
+                      { value: 500, label: '฿500' },
+                      { value: 1000, label: '฿1000' },
+                      { value: 1500, label: '฿1500' },
+                      { value: 2000, label: '฿2000' }
+                    ]}
+                    sx={{
+                      color: 'var(--purple-logo-primary)',
+                      '& .MuiSlider-thumb': {
+                        backgroundColor: 'var(--purple-logo-primary)',
+                      },
+                      '& .MuiSlider-track': {
+                        backgroundColor: 'var(--purple-logo-primary)',
+                      },
+                      '& .MuiSlider-rail': {
+                        backgroundColor: '#e0e0e0',
+                      },
+                      '& .MuiSlider-mark': {
+                        backgroundColor: '#bfbfbf',
+                      },
+                      '& .MuiSlider-markLabel': {
+                        fontSize: '0.75rem',
+                      }
+                    }}
+                  />
+                  <div className="price-range-display">
+                    <span>฿{priceRange[0]}</span>
+                    <span>ถึง</span>
+                    <span>฿{priceRange[1]}</span>
+                  </div>
+                </div>
             </div>
             
             <button 
@@ -334,6 +367,7 @@ const CourseListingPage = () => {
                     duration: "",
                     priceRange: ""
                 });
+                setPriceRange([0, 2000]);
                 }}
             >
                 รีเซ็ตตัวกรอง
@@ -394,17 +428,46 @@ const CourseListingPage = () => {
                 
                 <div className="filter-group">
                 <h3>ราคา</h3>
-                <RadioGroup
-                    value={filters.priceRange}
-                    onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-                >
-                    <FormControlLabel value="free" control={<Radio size="small" />} label="คอร์สเรียนฟรี" />
-                    <FormControlLabel value="paid" control={<Radio size="small" />} label="คอร์สเรียนมีค่าใช้จ่าย" />
-                    <FormControlLabel value="0-500" control={<Radio size="small" />} label="0-500 บาท" />
-                    <FormControlLabel value="500-1000" control={<Radio size="small" />} label="500-1000 บาท" />
-                    <FormControlLabel value="1000-1500" control={<Radio size="small" />} label="1000-1500 บาท" />
-                    <FormControlLabel value="1500+" control={<Radio size="small" />} label="1500+ บาท" />
-                </RadioGroup>
+                <div className="price-slider-container">
+                  <Slider
+                    value={priceRange}
+                    onChange={handlePriceChange}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={2000}
+                    step={100}
+                    marks={[
+                      { value: 0, label: '฿0' },
+                      { value: 500, label: '฿500' },
+                      { value: 1000, label: '฿1000' },
+                      { value: 1500, label: '฿1500' },
+                      { value: 2000, label: '฿2000' }
+                    ]}
+                    sx={{
+                      color: 'var(--purple-logo-primary)',
+                      '& .MuiSlider-thumb': {
+                        backgroundColor: 'var(--purple-logo-primary)',
+                      },
+                      '& .MuiSlider-track': {
+                        backgroundColor: 'var(--purple-logo-primary)',
+                      },
+                      '& .MuiSlider-rail': {
+                        backgroundColor: '#e0e0e0',
+                      },
+                      '& .MuiSlider-mark': {
+                        backgroundColor: '#bfbfbf',
+                      },
+                      '& .MuiSlider-markLabel': {
+                        fontSize: '0.75rem',
+                      }
+                    }}
+                  />
+                  <div className="price-range-display">
+                    <span>฿{priceRange[0]}</span>
+                    <span>ถึง</span>
+                    <span>฿{priceRange[1]}</span>
+                  </div>
+                </div>
                 </div>
                 
                 <button 
@@ -416,6 +479,7 @@ const CourseListingPage = () => {
                     duration: "",
                     priceRange: ""
                     });
+                    setPriceRange([0, 2000]);
                 }}
                 >
                 รีเซ็ตตัวกรอง

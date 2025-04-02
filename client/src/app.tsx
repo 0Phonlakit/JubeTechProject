@@ -14,6 +14,8 @@ const CategoryManagement = lazy(() => import("./pages/CategoryManagement"));
 const DashboardOverview = lazy(() => import("./pages/DashboardOverview"));
 const CourseListingPage = lazy(() => import("./pages/CourseListingPage"));
 const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));
+const MyCourses = lazy(() => import("./pages/MyCourses"));
+const CartPage = lazy(() => import("./pages/CartPage"));
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
@@ -39,6 +41,8 @@ function App() {
           <Route path="/dashboard/promotion-management" element={<PromotionManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/courses" element={<CourseListingPage />}></Route>
           <Route path="/courses/:slug" element={<CourseDetailPage />}></Route>
+          <Route path="/my-courses" element={<MyCourses />}></Route>
+          <Route path="/cart" element={<CartPage />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

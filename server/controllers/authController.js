@@ -39,6 +39,7 @@ async function signin(req, res) {
         // 1.check email
         const { email, password } = req.body;
         const user = await User.findOne({ email, status: true });
+
         if (!user) return res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
 
         // 2.check password
