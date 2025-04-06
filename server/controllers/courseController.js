@@ -253,30 +253,34 @@ const getCourseBySlug = async(req, res) => {
 
 const getCourseById = async(req, res) => {
     try {
-        // check course id
+        // check req
+        const { _id } = req.verify_user;
         const { course_id } = req.params;
         if (!course_id) return res.status(404).json({ message: "The course was not found." });
         // query course
-        const course = await Courses.findById(course_id)
-            .populate({
-                path: "group_ids",
-                select: "_id name"
-            })
-            .populate({
-                path: "instructor",
-                select: "firstname lastname"
-            })
-            .populate({
-                path: "section_ids",
-                select: "_id title lesson_ids",
-                populate: {
-                    path: "lesson_ids",
-                    select: "_id name type duration order isFreePreview"
-                }
-            })
-            .populate({ path: "pretest", select: "title -_id" })
-            .populate({ path: "posttest", select: "title -_id" })
-            .lean();
+        const course = await Courses.find({
+            _id: new mongoose.Types.ObjectId(course_id),
+            createdBy: new mongoose.Types.ObjectId(_id)
+        })
+        .populate({
+            path: "group_ids",
+            select: "_id name"
+        })
+        .populate({
+            path: "instructor",
+            select: "firstname lastname"
+        })
+        .populate({
+            path: "section_ids",
+            select: "_id title lesson_ids",
+            populate: {
+                path: "lesson_ids",
+                select: "_id name type duration order isFreePreview"
+            }
+        })
+        .populate({ path: "pretest", select: "title -_id" })
+        .populate({ path: "posttest", select: "title -_id" })
+        .lean();
         return res.status(200).json({ data: course });
     } catch (err) {
         console.error({ position: "Get Course By Id", error: err });

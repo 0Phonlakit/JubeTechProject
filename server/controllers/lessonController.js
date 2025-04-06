@@ -35,7 +35,6 @@ const createLesson = async(req, res) => {
             return res.status(400).json({ message: modifyDetail });
         }
         // create lesson
-        console.log(req.body);
         await Lessons.create({
             ...req.body,
             main_content: HTMLsanitization(req.body.main_content),

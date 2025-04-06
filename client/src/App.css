@@ -23,3 +23,39 @@
 .swal2-popup {
     pointer-events: all;
 }
+
+.preload-web {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    background-color: #FFFFFF;
+}
+
+.dots {
+    width: 13.4px;
+    height: 13.4px;
+    background: #b547ff;
+    color: #ce47ff;
+    border-radius: 50%;
+    box-shadow: 22.4px 0,-22.4px 0;
+    animation: dots-u8fzftmd 1s infinite linear alternate;
+}
+    
+@keyframes dots-u8fzftmd {
+    0% {
+    box-shadow: 22.4px 0,-22.4px 0;
+    }
+
+    33% {
+    box-shadow: 22.4px 0,-22.4px 0 rgba(71,75,255,0.13);
+    background: rgba(71,75,255,0.13);
+    }
+
+    66% {
+    box-shadow: 22.4px 0 rgba(71,75,255,0.13),-22.4px 0;
+    background: rgba(71,75,255,0.13);
+    }
+}

@@ -27,7 +27,7 @@ export const GroupReducer = (state:GroupState, action:IFAction) => {
                 const filterGroups = state.groups.filter(group => !action.ids?.includes(group._id));
                 return { ...state, groups: filterGroups, loading: false, response: action.message, status: action.status };
             }
-            return { ...state, loading: false, response: action.message, status: action.status }
+            return { ...state, loading: false, response: action.message, status: action.status };
         case "FETCH_ERROR":
             return { ...state, loading: false, response: action.message, status: action.status };
         case "CLEAR_RESPONSE":

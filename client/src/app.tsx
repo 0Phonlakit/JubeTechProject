@@ -29,7 +29,7 @@ function App() {
       v7_startTransition: true,
       v7_relativeSplatPath: true
     }}>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div className="preload-web"><div className="dots">.</div></div>}>
         <Routes>
           <Route path="/" element={<Landing />}></Route>
           <Route path="/dashboard/user-management" element={<UserTable toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
