@@ -15,7 +15,7 @@ export default function CategoryManagement({ toggleSidebar, setToggleSidebar }:I
     const [startGroup, setStartGroup] = useState<boolean>(false);
 
     return (
-        <MainDashboard title="Category Management" order={3} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} >
+        <MainDashboard title="Category Management" title_sidebar="จัดการหมวดหมู่" toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} >
             <CategoryProvider>
                 <GroupProvider>
                     <div className={"category-manage-container " + (toggleCategory ? "active-toggle" : "")}>

@@ -137,7 +137,7 @@ export default function PromotionTable({ toggleSidebar, setToggleSidebar }:IFTog
         <MainDashboard title="Promotion Management"
           toggleSidebar={toggleSidebar}
           setToggleSidebar={setToggleSidebar}
-          order={5}
+          title_sidebar="จัดการโปรโมชั่น"
           >
             <div className='promotion-from-container'>
                 <Breadcrumb>

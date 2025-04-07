@@ -14,7 +14,7 @@ export default function DashboardOverview({ toggleSidebar, setToggleSidebar }:IF
             title="Tutor Dashboard"
             toggleSidebar={toggleSidebar}
             setToggleSidebar={setToggleSidebar}
-            order={90}
+            title_sidebar="ภาพรวมแดชบอร์ด"
         >
             <div></div>
         </MainDashboard>

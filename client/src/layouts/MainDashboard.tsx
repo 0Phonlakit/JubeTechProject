@@ -8,11 +8,11 @@ import "../assets/css/dashboard/dashboard.css";
 
 interface DashboardProp {
     title: string,
-    order: number,
+    title_sidebar: string,
     children: React.ReactNode,
 }
 
-export default function MainDashboard({ order, title, children, toggleSidebar, setToggleSidebar }:DashboardProp & IFToggleSidebar) {
+export default function MainDashboard({ title_sidebar, title, children, toggleSidebar, setToggleSidebar }:DashboardProp & IFToggleSidebar) {
     useEffect(() => { // Change Title
         document.title = title;
         if (!checkUser()) window.location.href = "/";
@@ -21,7 +21,7 @@ export default function MainDashboard({ order, title, children, toggleSidebar, s
     // Render
     return (
         <div className={"main-dashboard " + (toggleSidebar ? "active-sidebar" : null)}>
-            <Sidebar order={order} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
+            <Sidebar title_sidebar={title_sidebar} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />
             <div className="main-dashboard-content">
                 <Topbar title={title} />
                 <div className="sub-dashboard-content">

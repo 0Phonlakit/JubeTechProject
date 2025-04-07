@@ -141,7 +141,7 @@ export default function RoleTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
     <MainDashboard title="Role Management"
       toggleSidebar={toggleSidebar}
       setToggleSidebar={setToggleSidebar}
-      order={4}
+      title_sidebar="จัดการบทบาท"
       >
       <div className='role-form-container'>
         <Breadcrumb>

@@ -9,12 +9,12 @@ import Logo from "../../assets/img/jubetech_logo.png";
 import { checkRole } from "../../services/authorize.ts";
 
 interface SidebarProp {
-    order: number,
+    title_sidebar: string,
     toggleSidebar: boolean,
     setToggleSidebar: (value: boolean | ((prev: boolean) => boolean)) => void,
 }
 
-export default function Sidebar({ order, toggleSidebar, setToggleSidebar }:SidebarProp) {
+export default function Sidebar({ title_sidebar, toggleSidebar, setToggleSidebar }:SidebarProp) {
     const [currentUserRole, setCurrentUserRole] = useState<string[]>([]);
     const [filteredMenus, setFilteredMenus] = useState<Menu[]>([]);
     const [isRender, setIsRender] = useState(false);
@@ -58,7 +58,7 @@ export default function Sidebar({ order, toggleSidebar, setToggleSidebar }:Sideb
                                 {filteredMenus.map((menu:Menu, index) => (
                                     <Link to={menu.href} key={index}>
                                         <li 
-                                            className={toggleSidebar ? "active-link " + (order === index ? "active-order" : "") : "normal-link " + (order === index ? "active-order" : "")}
+                                            className={toggleSidebar ? "active-link " + (title_sidebar === menu.title ? "active-order" : "") : "normal-link " + (title_sidebar === menu.title ? "active-order" : "")}
                                         >
                                             <i><menu.icon size={15} /></i>
                                             <span hidden={!toggleSidebar}>{menu.title}</span>

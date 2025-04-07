@@ -10,7 +10,7 @@ import "../assets/css/course/course.css";
 export default function CourseManagement({ toggleSidebar, setToggleSidebar }:IFToggleSidebar) {
     const [tabManage, setTabManage] = useState(0);
     return (
-        <MainDashboard title="Course Management" order={1} toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar}>
+        <MainDashboard title="Course Management" title_sidebar="จัดการคอร์สเรียน" toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar}>
             <LessonProvider>
                 <div className="course-manage-container">
                     <ul className="nav nav-underline">

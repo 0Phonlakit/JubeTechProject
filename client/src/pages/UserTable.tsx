@@ -159,7 +159,7 @@ export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
       title="User Management"
       toggleSidebar={toggleSidebar}
       setToggleSidebar={setToggleSidebar}
-      order={2}
+      title_sidebar="จัดการผู้ใช้งาน"
     >
       <div className='user-form-container'>
         <Breadcrumb className='breadcrumb1'>
