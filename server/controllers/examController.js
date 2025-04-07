@@ -44,22 +44,25 @@ const getManyExams = async(req, res) => {
         const { _id } = req.verify_user;
         if (!_id) return res.status(404).json({ message: "The user was not found." });
         // query exam
-        const { page = 1, pageSize = 10, sortField = "title", sortOrder = "ascend" } = req.query;
+        const filter = {};
+        filter.createdBy = new mongoose.Types.ObjectId(_id);
+        const { page = 1, pageSize = 10, sortField = "title", sortOrder = "ascend", title = "" } = req.query;
         const skip = (page - 1) * pageSize;
         const sort = { [sortField]: sortOrder === "descend" ? -1 : 1 };
+        if (title) filter.title = { $regex: title, $options: "i" };
         const [results, total] = await Promise.all([
-            Exams.find({ createdBy: new mongoose.Types.ObjectId(_id) })
-            .select("_id title description updatedAt")
+            Exams.find(filter)
+            .select("_id title description updatedAt question_ids")
             .sort(sort)
             .skip(skip)
             .limit(Number(pageSize))
             .lean(),
-            Exams.countDocuments()
+            Exams.countDocuments(filter)
         ]);
         return res.status(200).json({ data: results, pagination: { total, page, pageSize, totalPage: Math.ceil(total / pageSize) } });
-    } catch (error) {
+    } catch (err) {
         console.error({ position: "Get many exams", error: err });
-        return res.status(500).jsonn({ message: "Something went wrong." });
+        return res.status(500).json({ message: "Something went wrong." });
     }
 }
 
@@ -107,7 +110,7 @@ const updateExam = async(req, res) => {
             _id: new mongoose.Types.ObjectId(exam_id),
             createdBy: new mongoose.Types.ObjectId(_id)
         });
-        if (!check_owner) return res.status(403).json({ message: "The exam must be updated by the owner." });
+        if (!check_exam) return res.status(403).json({ message: "The exam must be updated by the owner." });
         // update exam
         const { question_ids } = req.body;
         await Exams.findByIdAndUpdate(exam_id, {
@@ -127,7 +130,7 @@ const deleteExam = async(req, res) => {
     try {
         // check req
         const { _id } = req.verify_user;
-        const { exam_id } = req.verify_user;
+        const { exam_id } = req.params;
         if (!_id) return res.status(404).json({ message: "The user was not found." });
         if (!exam_id) return res.status(404).json({ message: "The exam was not found." });
         // check owner

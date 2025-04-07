@@ -101,7 +101,6 @@ export const GroupProvider = ({ children }:{ children:React.ReactNode }) => {
 
     const updateGroup = async(group_id:string, name:string) => {
         try {
-            console.log(group_id, name);
             dispatch({ type: "FETCH_START", payload: null, message: "", status: 0 });
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/group/update/${group_id}`,
                 { name },

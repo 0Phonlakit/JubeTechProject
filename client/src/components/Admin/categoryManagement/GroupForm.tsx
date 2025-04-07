@@ -57,7 +57,7 @@ export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
                 status: 0,
                 message: "The group was not found."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         }
     }
 
@@ -100,14 +100,14 @@ export default function GroupForm({ startGroup, setStartGroup }:GroupFormProp) {
                         status: state.status,
                         message: error.message + " , value : " + error.path
                     }
-                    setMessageList([...messageList, response]);
+                    setMessageList(prev => [...prev, response]);
                 });
             } else {
                 const response:ResponseMessage = {
                     status: state.status,
                     message: state.response
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             }
             state.response = "";
             setTimeout(() => {

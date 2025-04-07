@@ -24,10 +24,11 @@ export const ExamReducer = (state:IFInitialExam, action:IFAction) => {
                     exams: action.payload,
                     loading: false,
                     response: action.message ?? "Fetch exam successfully.",
-                    status: action.status ?? 0
+                    status: action.status ?? 0,
+                    pagination: action.pagination ?? null
                 };
             }
-            return { ...state, exams: [], loading: false, response: action.message ?? "Fetch exam successfully.", status: action.status ?? 0 };
+            return { ...state, exams: [], loading: false, response: action.message ?? "Fetch exam successfully.", status: action.status ?? 0, pagination: null };
         case "FETCH_ERROR":
             return {
                 ...state,
