@@ -10,6 +10,7 @@ import { Table } from 'antd';
 import Swal from "sweetalert2";
 import { v4 as uuidv4 } from "uuid";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CreateExamModal from "./CreateExamModal";
 import { useExam } from "../../../contexts/ExamContext";
 import type { SorterResult } from 'antd/es/table/interface';
@@ -42,6 +43,9 @@ interface ExamTableProp {
 }
 
 export default function ExamTable({ startExam, setStartExam }:ExamTableProp) {
+    // dom
+    const navigate = useNavigate();
+
     // context
     const { state, fetchManyExams, deleteExam } = useExam();
 
@@ -209,7 +213,7 @@ export default function ExamTable({ startExam, setStartExam }:ExamTableProp) {
             key: "action",
             render: (_, record) => (
                 <div className="exam-action-container">
-                    <button className="edit-question" type="button" onClick={(e) => modifyExam((e.target as any).value)} value={record._id}>
+                    <button className="edit-question" type="button" onClick={(e) => navigate(`/dashboard/exam/${(e.target as any).value}/questions`)} value={record._id}>
                         Edit questions
                         <i><BsPencil size={16} /></i>
                     </button>

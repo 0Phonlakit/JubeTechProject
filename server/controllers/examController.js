@@ -23,6 +23,9 @@ const createExam = async(req, res) => {
             }));
             return res.status(400).json({ message: modifyDetail });
         }
+        // check duplicate
+        const check_exam = await Exams.findOne({ title: req.body.title });
+        if (check_exam) return res.status(409).json({ message: "The exam with this title already exists." })
         // create exam
         const { question_ids } = req.body;
         await Exams.create({
@@ -116,7 +119,6 @@ const updateExam = async(req, res) => {
         await Exams.findByIdAndUpdate(exam_id, {
             ...req.body,
             question_ids: question_ids.map((question_id) => new mongoose.Types.ObjectId(question_id)),
-            createdBy: new mongoose.Types.ObjectId(_id),
             updatedBy: new mongoose.Types.ObjectId(_id)
         });
         return res.status(200).json({ message: "The exam was updated successfuly." });
@@ -148,10 +150,40 @@ const deleteExam = async(req, res) => {
     }
 }
 
+// question
+const getQuestionFromExamId = async(req, res) => {
+    try {
+        // check req
+        const { _id } = req.verify_user;
+        const { exam_id } = req.params;
+        if (!_id) return res.status(404).json({ message: "The user was not found." });
+        if (!exam_id) return res.status(404).json({ message: "The exam was not found." });
+        // check owner
+        const check_exam = await Exams.findOne({
+            _id: new mongoose.Types.ObjectId(exam_id),
+            createdBy: new mongoose.Types.ObjectId(_id)
+        });
+        if (!check_exam) return res.status(403).json({ message: "The exam must be queried by the owner." });
+        // query question
+        const questions = await Exams.findById(exam_id)
+            .select("question_ids")
+            .populate({
+                path: "question_ids",
+                select: "_id question type choices test_case has_solution solution updatedAt"
+            })
+            .lean();
+        return res.status(200).json({ data: questions });
+    } catch (err) {
+        console.error({ position: "Get question from exam id", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
 module.exports = {
     createExam,
     getManyExams,
     getExamById,
     updateExam,
-    deleteExam
+    deleteExam,
+    getQuestionFromExamId
 }
