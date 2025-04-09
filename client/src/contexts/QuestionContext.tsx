@@ -7,6 +7,7 @@ import { createContext, useContext, useReducer, useEffect } from "react";
 export interface Question {
     _id: string,
     question: string,
+    question_image: string,
     type: "multiple_choice" | "coding" | "open_ended",
     choices: string[],
     test_case: string[],
@@ -22,6 +23,7 @@ export interface ErrorResponse {
 
 export interface IFCreateQuestion {
     question: string,
+    question_image: string,
     type: "multiple_choice" | "coding" | "open_ended",
     choices: string[],
     test_case: string[],
@@ -66,12 +68,12 @@ export const QuestionProvider = ({ children }:{ children:React.ReactNode }) => {
     const fetchQuestionFromExamId = async(message:string = "", exam_id:string) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/exam/${exam_id}/question/all`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/exam/id/${exam_id}`, {
                 headers: {
                     Authorization: `Bearer ${getToken()}`
                 }
             });
-            dispatch({ type: "FETCH_SUCCESS", payload: response.data.data.question_ids, message, status: response.status });
+            dispatch({ type: "FETCH_SUCCESS", payload: response.data.data[0].question_ids, message, status: response.status });
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status as number });

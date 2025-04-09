@@ -6,6 +6,7 @@ const Exams = require("../models/Exam");
 
 const ExamBlueprint = Joi.object({
     title: Joi.string().trim().max(50).required(),
+    random_question: Joi.boolean().required(),
     description: Joi.string().trim().max(300).required(),
     question_ids: Joi.array().items(Joi.string()),
 });
@@ -55,7 +56,7 @@ const getManyExams = async(req, res) => {
         if (title) filter.title = { $regex: title, $options: "i" };
         const [results, total] = await Promise.all([
             Exams.find(filter)
-            .select("_id title description updatedAt question_ids")
+            .select("_id title random_question description updatedAt question_ids")
             .sort(sort)
             .skip(skip)
             .limit(Number(pageSize))
@@ -83,10 +84,10 @@ const getExamById = async(req, res) => {
         })
         .populate({
             path: "question_ids",
-            select: "_id question type  choices test_case has_solution solution"
+            select: "_id question question_image type choices test_case has_solution solution"
         })
         .lean();
-        return res.status(200).json({ data: [exam] });
+        return res.status(200).json({ data: exam });
     } catch (err) {
         console.error({ position: "Get exam by id", error: err });
         return res.status(500).json({ message: "Something went wrong." });
@@ -150,40 +151,10 @@ const deleteExam = async(req, res) => {
     }
 }
 
-// question
-const getQuestionFromExamId = async(req, res) => {
-    try {
-        // check req
-        const { _id } = req.verify_user;
-        const { exam_id } = req.params;
-        if (!_id) return res.status(404).json({ message: "The user was not found." });
-        if (!exam_id) return res.status(404).json({ message: "The exam was not found." });
-        // check owner
-        const check_exam = await Exams.findOne({
-            _id: new mongoose.Types.ObjectId(exam_id),
-            createdBy: new mongoose.Types.ObjectId(_id)
-        });
-        if (!check_exam) return res.status(403).json({ message: "The exam must be queried by the owner." });
-        // query question
-        const questions = await Exams.findById(exam_id)
-            .select("question_ids")
-            .populate({
-                path: "question_ids",
-                select: "_id question type choices test_case has_solution solution updatedAt"
-            })
-            .lean();
-        return res.status(200).json({ data: questions });
-    } catch (err) {
-        console.error({ position: "Get question from exam id", error: err });
-        return res.status(500).json({ message: "Something went wrong." });
-    }
-}
-
 module.exports = {
     createExam,
     getManyExams,
     getExamById,
     updateExam,
     deleteExam,
-    getQuestionFromExamId
 }

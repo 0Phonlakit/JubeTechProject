@@ -6,6 +6,7 @@ const Questions = require("../models/Question");
 
 const QuestionBlueprint = Joi.object({
     question: Joi.string().trim().required(),
+    question_image: Joi.string().allow("").optional(),
     type: Joi.string().valid("multiple_choice", "coding", "open_ended").required(),
     choices: Joi.array().items(Joi.string()),
     test_case: Joi.array().items(Joi.string()),

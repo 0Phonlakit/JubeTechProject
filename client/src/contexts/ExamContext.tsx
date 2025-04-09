@@ -9,6 +9,7 @@ export interface Exam {
     _id: string,
     title: string,
     description: string,
+    random_question: boolean,
     updatedAt: Date | string,
     question_ids: string[],
 }
@@ -42,6 +43,7 @@ export interface IFInitialExam {
 export interface IFCreateExam {
     title: string,
     description: string,
+    random_question: boolean,
     question_ids: string[],
 }
 
