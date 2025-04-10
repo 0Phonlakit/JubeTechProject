@@ -10,7 +10,6 @@ const CourseSchema = new Schema({
     point: { type: Number, required: true, default: 0 },
     objectives: [{ type: String, maxlength: 100, required: true }],
     group_ids: [{ type: mongoose.Types.ObjectId, ref: "Categories", required: true }],
-    section_ids: [{ type: mongoose.Types.ObjectId, ref: "Sections", default: [] }],
     status: { type: String, enum: ["draft", "published", "archived"], default: "draft", required: true },
     rating: { type: Number, default: 0 }, // by student
     instructor: { type: mongoose.Types.ObjectId, ref: "User", required: true },
@@ -21,7 +20,8 @@ const CourseSchema = new Schema({
     useCertificate: { type: Boolean, required: true },
     duration: { type: Number, required: true },
     level: { type: String, enum: ["beginner", "intermediate", "expert"], required: true },
-    slug: { type: String, required: true, lowercase: true, unique: true }, // from server
+    slug: { type: String, required: true, lowercase: true, unique: true },
+    section_ids: [{ type: mongoose.Types.ObjectId, ref: "Sections", default: [] }],
     createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
     updatedBy: { type: mongoose.Types.ObjectId, ref: "User", required: true }
 }, { timestamps: true });

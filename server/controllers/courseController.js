@@ -1,27 +1,29 @@
 // Joi vlaidate
 const Joi = require("joi");
 // other
-const { v4:uuidv4 } = require("uuid");
 const slugify = require("slugify");
+const { v4:uuidv4 } = require("uuid");
 // schema
 const mongoose = require("mongoose");
 const Courses = require("../models/Course");
+const Lessons = require("../models/Lesson");
+const Sections = require("../models/Section");
 
 const CourseBlueprint = Joi.object({
     // Required section
     thumbnail: Joi.string().trim().required(),
     title: Joi.string().trim().min(10).max(150).required(),
     usePoint: Joi.boolean().required(),
-    price: Joi.number().integer().min(200).max(2000).required(),
-    point: Joi.number().integer().min(100).max(1000).required(),
+    price: Joi.number().integer().min(200).max(2000).allow(0).required(),
+    point: Joi.number().integer().min(100).max(1000).allow(0).required(),
     objectives: Joi.array().items(Joi.string().trim().max(100).required()).required(),
     status: Joi.string().valid("draft", "published", "archived").required(),
     useCertificate: Joi.boolean().required(),
     duration: Joi.number().integer().required(),
     level: Joi.string().valid("beginner", "intermediate", "expert").required(),
     // Optional section
-    pretest: Joi.string(),
-    posttest: Joi.string(),
+    pretest: Joi.string().allow("").optional(),
+    posttest: Joi.string().allow("").optional(),
     description: Joi.string().max(500),
     note: Joi.string().trim().max(7000),
     group_ids: Joi.array().items(Joi.string().trim()),
@@ -223,7 +225,7 @@ const getCourseBySlug = async(req, res) => {
         const { slug } = req.params;
         if (!slug) return res.status(404).json({ message: "The course was not found." });
         // query course
-        const course = await Courses.findOne({ slug, status: "published" })
+        const course = await Courses.find({ slug, status: "published" })
             .select("_id thumbnail title description usePoint price point objectives group_ids section_ids status rating instructor student_enrolled useCertificate pretest posttest duration level note slug updatedAt")
             .populate({
                 path: "group_ids",

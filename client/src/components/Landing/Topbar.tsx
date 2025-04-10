@@ -138,10 +138,10 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
                     สมัครเป็นติวเตอร์
                 </a>
                 {roles.includes("Student") && (
-                    <a href="#">คอร์สเรียนของเรา</a>
+                    <a href="/my-courses">คอร์สเรียนของเรา</a>
                 )}
                 {/* Cart */}
-                <a href="#"><i><FaCartShopping /></i></a>
+                <a href="/cart"><i><FaCartShopping /></i></a>
                 {/* Notification */}
                 <a href="#"><i><FaNewspaper /></i></a>
                 {checkUser()
