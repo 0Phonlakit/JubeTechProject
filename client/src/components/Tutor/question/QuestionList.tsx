@@ -673,8 +673,8 @@ export default function QuestionList({ examId, searchQuestion, isUpdate, setIsUp
                                             <div className="question-dropdown">
                                                 <ul>
                                                     <li onClick={async() => {
-                                                        const filterData:IFCreateQuestion = questionData.filter(quest => quest._id === question._id).map(({ question, question_image, type, choices, test_case, has_solution, solution }) => ({
-                                                            question, question_image, type, choices, test_case, has_solution, solution
+                                                        const filterData:IFCreateQuestion = questionData.filter(quest => quest._id === question._id).map(({ question, type, choices, test_case, has_solution, solution }) => ({
+                                                            question, question_image: "", type, choices, test_case, has_solution, solution
                                                         }))[0]!;
                                                         await createQuestion(examId, filterData);
                                                         setCurrentDropdown("");
