@@ -6,14 +6,22 @@ import {
     BsGrid3X2GapFill
 } from "react-icons/bs";
 
+import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { Popover, Select } from "antd";
 import { useState, useEffect } from "react";
+import Spinner from 'react-bootstrap/Spinner';
+import { useNavigate } from "react-router-dom";
 import { ReactSortable } from "react-sortablejs";
 import QuestionSkeleton from "./QuestionSkeleton";
+import { getToken } from "../../../services/authorize";
 import UploadImageQuestion from "./UploadImageQuestion";
-import { useQuestion, Question } from "../../../contexts/QuestionContext";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { fetchFileFromStorage, deleteFile } from "../../../services/storage";
+import { ResponseMessage, ToastMessageContainer } from "../../ToastMessageContainer";
+import { useQuestion, Question, IFCreateQuestion } from "../../../contexts/QuestionContext";
 
+import NoImage from "../../../assets/img/no image.jpg"
 import "../../../assets/css/question/question-list.css";
 
 interface QuestionData extends Question {
@@ -22,12 +30,22 @@ interface QuestionData extends Question {
 }
 
 interface QuestionListProp {
-    examId: string
+    examId: string,
+    searchQuestion:string,
+    isUpdate: boolean,
+    toggleBackModal: boolean,
+    setIsUpdate: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface SelectType {
     label: string,
     value: string
+}
+
+interface ProgrammingLanguage {
+    id: number,
+    name: string,
+    is_archived: boolean
 }
 
 const questionType:SelectType[] = [
@@ -49,51 +67,97 @@ const questionType:SelectType[] = [
     }
 ];
 
-const codeLanguage:SelectType[] = [
-    {
-        label: "None",
-        value: ""
-    },
-    {
-        label: "Python",
-        value: "python"
-    },
-    {
-        label: "C",
-        value: "c"
-    },
-    {
-        label: "C++",
-        value: "c++"
-    },
-    {
-        label: "Javascript",
-        value: "javascript"
-    }
-];
+interface IFImageQuestion {
+    name: string,
+    file: File
+}
 
-export default function QuestionList({ examId }:QuestionListProp) {
+interface IFPreviewImage {
+    _id: number | string,
+    path: string,
+    url: string
+}
+
+export default function QuestionList({ examId, searchQuestion, isUpdate, setIsUpdate, toggleBackModal }:QuestionListProp) {
     // context
-    const { state, fetchQuestionFromExamId } = useQuestion();
+    const { state, fetchQuestionFromExamId, deleteQuestion, updateQuestion, updateOneQuestion, createQuestion } = useQuestion();
+
+    // navigate
+    const navigate = useNavigate();
+
+    // firebase
+    const auth = getAuth();
 
     // state
     const [isRender, setIsRender] = useState<boolean>(false);
+    const [isDelete, setIsDelete] = useState<boolean>(false);
+    const [deleteFocus, setDeleteFocus] = useState<string>("");
+    const [updateFocus, setUpdateFocus] = useState<string>("");
     const [currentFocus, setCurrentFocus] = useState<string>("");
+    const [updateOnce, setUpdateOnce] = useState<boolean>(false);
+    const [prepareImage, setPrepareImage] = useState<boolean>(false);
     const [currentDropdown, setCurrentDropdown] = useState<string>("");
+    const [languageData, setLanguageData] = useState<SelectType[]>([]);
     const [questionData, setQuestionData] = useState<QuestionData[]>([]);
+    const [messageList, setMessageList] = useState<ResponseMessage[]>([]);
+    const [uploadImages, setUploadImages] = useState<IFImageQuestion[]>([]);
+    const [previewImages, setPreviewImages] = useState<IFPreviewImage[]>([]);
+    const [duplicateData, setDuplicateData] = useState<QuestionData>({
+        id: "",
+        name: "",
+        _id: "",
+        question: "",
+        question_image: "",
+        type: "open_ended",
+        choices: [],
+        test_case: [],
+        has_solution: false,
+        solution: "",
+        updatedAt: ""
+    });
 
     // effect
     useEffect(() => {
         setIsRender(false);
-        if (examId) {
-            fetchQuestionFromExamId("", examId);
-            setIsRender(true);
-        }
+        const trackauth = onAuthStateChanged(auth, (user) => {
+            if (user && examId.trim() !== "") {
+                fetchLanguage();
+                fetchQuestionFromExamId("", examId);
+            }
+        });
+    
+        return () => trackauth();
     }, [examId]);
 
     useEffect(() => {
-        if (state.questions.length > 0) {
-            setQuestionData(state.questions.map((question) => {
+        if (state.questions.length > 0 && searchQuestion.trim() === "") {
+            setQuestionData(state.questions.map((question, _index) => {
+                if (question.question_image.trim() !== "") {
+                    setPreviewImages((prev) => [...prev, {
+                        _id: question._id,
+                        path: question.question_image,
+                        url: ""
+                    }]);
+                }
+                return {
+                    ...question,
+                    id: uuidv4(),
+                    name: question.question
+                }
+            }));
+            setPrepareImage(true);
+        } else {
+            setQuestionData([]);
+            setPrepareImage(true);
+        }
+    }, [state.questions]);
+
+    useEffect(() => {
+        if (searchQuestion.trim() !== "") {
+            const filterData = questionData.filter(
+                question => question.question.toLowerCase().includes(searchQuestion.toLowerCase())
+            );
+            setQuestionData(filterData.map(question => {
                 return {
                     ...question,
                     id: uuidv4(),
@@ -101,9 +165,60 @@ export default function QuestionList({ examId }:QuestionListProp) {
                 }
             }));
         } else {
-            setQuestionData([]);
+            setQuestionData(state.questions.map((question) => {
+                return {
+                    ...question,
+                    id: uuidv4(),
+                    name: question.question
+                }
+            }));
         }
-    }, [state.questions]);
+    }, [searchQuestion]);
+
+    useEffect(() => {
+        if (state.response) {
+            if (Array.isArray(state.response)) {
+                state.response.map((error) => {
+                    const response:ResponseMessage = {
+                        status: state.status,
+                        message: error.message + " , value : " + error.path
+                    }
+                    setMessageList(prev => [...prev, response]);
+                });
+            } else {
+                const response:ResponseMessage = {
+                    status: state.status,
+                    message: state.response
+                }
+                setMessageList(prev => [...prev, response]);
+            }
+            setTimeout(() => {
+                setMessageList((prev) => prev.slice(1));
+            }, 2000);
+        }
+    }, [state.response]);
+
+    useEffect(() => {
+        const processEffect = async () => {
+            const allUrlsReady = previewImages.every(img => img.url && img.url.trim() !== "");
+            if (previewImages.length > 0 && !allUrlsReady) {
+                await prepareRenderImage();
+            } else if (!prepareImage || previewImages.length === 0) {
+                setIsRender(true);
+            }
+
+            if (isUpdate) {
+                await modifyAllQuestion();
+            }
+
+            if (updateOnce && updateFocus.trim() !== "") {
+                await modifyOneData();
+            } else if (!updateOnce) {
+                setUpdateFocus("");
+            }
+        };
+        processEffect();
+    }, [prepareImage, updateOnce, isUpdate, previewImages]);
 
     // dom
     document.addEventListener("mousemove", (e) => {
@@ -138,6 +253,18 @@ export default function QuestionList({ examId }:QuestionListProp) {
         setQuestionData((prev) => {
             return prev.map((question) => (question._id === target ? { ...question, [key]:value } : question));
         });
+
+        if (key === "type") {
+            setQuestionData((prev) => {
+                return prev.map((question) => (question._id === target ? {...question} : question));
+            });
+        }
+
+        if (key === "type" && value === "open_ended") {
+            setQuestionData((prev) => {
+                return prev.map((question) => (question._id === target ? {...question, has_solution: false} : question));
+            });
+        }
     }
 
     const handleChoice = (target:string, currentIndex:number, value:string) => {
@@ -161,12 +288,12 @@ export default function QuestionList({ examId }:QuestionListProp) {
         );
     }
 
-    const handleCase = (target:string, currentIndex:number, value:string) => {
+    const handleCase = (target:string, currentIndex:number, type:string, value:string) => {
         setQuestionData(prev =>
             prev.map(question => {
                 if (question._id === target) {
                     const updatedCase = question.test_case.map((testcase, index) =>
-                    index === currentIndex ? value : testcase
+                    index === currentIndex ? {...testcase, [type]: value} : testcase
                     );
                     return {
                     ...question,
@@ -203,7 +330,7 @@ export default function QuestionList({ examId }:QuestionListProp) {
         const currentData = questionData.filter((question) => question._id === target);
         if (currentData[0].test_case.length < 4) {
             setQuestionData((prev) => {
-                return prev.map((question) => (question._id === target ? { ...question, test_case: [...question.test_case, ""] } : question));
+                return prev.map((question) => (question._id === target ? { ...question, test_case: [...question.test_case, { stdin: "", stdout: "" }] } : question));
             });
         }
     }
@@ -217,14 +344,112 @@ export default function QuestionList({ examId }:QuestionListProp) {
             });
         }
     }
+
+    const fetchLanguage = async() => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/coding/languages/all`, {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
+            if (response.data.data) {
+                setLanguageData(
+                    response.data.data
+                    .filter((language: ProgrammingLanguage) => ![1, 2, 46, 3, 47, 44, 25, 89, 43].includes(language.id))
+                    .map((language: ProgrammingLanguage) => ({
+                        label: language.name,
+                        value: language.id.toString()
+                    }))
+                );
+                setLanguageData((prev) => ([...prev, { label: "None", value: "" }]));
+            } else {
+                setLanguageData([]);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const response:ResponseMessage = {
+                    status: error.response?.status ?? 0,
+                    message: error.response?.data.message ?? "Something went wrong."
+                }
+                setMessageList(prev => [...prev, response]);
+            } else {
+                const response:ResponseMessage = {
+                    status: 404,
+                    message: "Something went wrong."
+                }
+                setMessageList(prev => [...prev, response]);
+            }
+        }
+    }
+
+    const prepareRenderImage = async () => {
+        const updatedImages = await Promise.all(previewImages
+            .filter((value, index, self) => 
+                index === self.findIndex((t) => (
+                    t._id === value._id
+                ))
+            ).map(async (preview_image) => {
+                const fileurl = await fetchFileFromStorage(preview_image.path);
+                return {
+                    ...preview_image,
+                    url: fileurl
+                };
+            })
+        );
+        setPreviewImages([...updatedImages]);
+        setPrepareImage(false);
+    };
+
+    const modifyOneData = async() => {
+        const updateData = questionData.find(
+            question => question._id === updateFocus
+        );
+        const filterData:Question = {
+            _id: updateData!._id,
+            question: updateData!.question,
+            question_image: updateData!.question_image,
+            type: updateData!.type,
+            choices: updateData!.choices,
+            test_case: updateData!.test_case,
+            has_solution: updateData!.has_solution,
+            solution: updateData!.solution,
+            updatedAt: updateData!.updatedAt
+        }
+        await updateOneQuestion(filterData, examId);
+        setUpdateOnce(false);
+    }
+
+    const modifyAllQuestion = async() => {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        const filterQuestion: Question[] = questionData.map(({ _id, question, question_image, type, choices, test_case, has_solution, solution, updatedAt }) => ({
+            _id, question, question_image, type, choices, test_case, has_solution, solution, updatedAt
+        }));
+        await updateQuestion(filterQuestion, examId);
+        setIsUpdate(false);
+    }
+
+    const uniquePreviews = previewImages.filter(
+        (value, index, self) =>
+            index === self.findIndex((obj) => obj._id === value._id)
+    );
     
     // render
     return (
         <>
+            {isUpdate && (
+                <div className="preload-update-question">
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                </div>
+            )}
+            {messageList.length > 0 &&
+                <ToastMessageContainer messageList={messageList} setMessageList={setMessageList} />
+            }
             {isRender ?
                 <>
                     <div className="question-list-container">
-                        <div>
+                        <div className="side-question-container">
                             <ReactSortable className="side-question-list" list={questionData} setList={setQuestionData}>
                                 {questionData.map((question, index) => (
                                     <div
@@ -261,7 +486,7 @@ export default function QuestionList({ examId }:QuestionListProp) {
                         </div>
                         <div className="question-list-content">
                             <ReactSortable list={questionData} setList={setQuestionData} className="question-list-content" handle=".drag-position">
-                                {questionData.map((question) => (
+                                {questionData.map((question, index) => (
                                     <div
                                         id={question.id}
                                         key={question.id}
@@ -303,9 +528,50 @@ export default function QuestionList({ examId }:QuestionListProp) {
                                                     <span>{question.question.length}</span>
                                                 </div>
                                                 <div className="question-manage-image">
-                                                    <UploadImageQuestion />
+                                                    {question.question_image.trim() !== "" ? (
+                                                        <>
+                                                            {uniquePreviews.map((preview) => {
+                                                                if (preview._id === question._id) {
+                                                                    return (
+                                                                        <div className="preview-img" key={preview._id}>
+                                                                            <img
+                                                                                className="preview-question-img"
+                                                                                src={preview.url.trim() !== "" ? preview.url : NoImage}
+                                                                            />
+                                                                            <button
+                                                                                className="remove-preview-img"
+                                                                                onClick={async () => {
+                                                                                    await deleteFile([state.questions[index].question_image]);
+                                                                                    const removePrepare = previewImages.filter(prepare_img => prepare_img._id !== question._id);
+                                                                                    setPreviewImages([...removePrepare]);
+                                                                                    setUpdateFocus(question._id);
+                                                                                    handleQuestion(question._id, "question_image", "");
+                                                                                    setUpdateOnce(true);
+                                                                                }}
+                                                                            >
+                                                                                <i><BsTrash3 size={18} /></i>
+                                                                                Remove image
+                                                                            </button>
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                                return null;
+                                                            })}
+                                                        </>
+                                                    ) : (
+                                                        <UploadImageQuestion
+                                                            currentIndex={index}
+                                                            questionId={question._id}
+                                                            previewImages={previewImages}
+                                                            setUpdateOnce={setUpdateOnce}
+                                                            setUpdateFocus={setUpdateFocus}
+                                                            handleQuestion={handleQuestion}
+                                                            setPreviewImages={setPreviewImages}
+                                                        />
+                                                    )}
                                                 </div>
                                             </div>
+                                            <hr />
                                             <div className="main-body-question">
                                                 {question.type === "multiple_choice" && (
                                                     <>
@@ -352,34 +618,52 @@ export default function QuestionList({ examId }:QuestionListProp) {
                                                                 </label>
                                                                 <Select
                                                                     id="code-language"
-                                                                    options={codeLanguage}
-                                                                    defaultValue={codeLanguage.some((code) => code.value === question.solution) ? question.solution : ""}
+                                                                    options={languageData}
+                                                                    value={languageData.some((code) => String(code.value) === question.solution) ? question.solution : ""}
                                                                     onChange={(selected) => handleQuestion(question._id, "solution", selected)}
                                                                 />
                                                             </div>
                                                             {question.test_case.map((testcase, index) => (
                                                                 <div className="case-info" key={index}>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={testcase}
-                                                                        onChange={(e) => handleCase(question._id, index, e.target.value)}
-                                                                    />
+                                                                    {question.solution !== "82" && (
+                                                                        <div className="stdin-input">
+                                                                            <label htmlFor={"stdin-inp" + index}>stdin : </label>
+                                                                            <input
+                                                                                id={"stdin-inp" + index}
+                                                                                type="text"
+                                                                                value={testcase.stdin}
+                                                                                onChange={(e) => handleCase(question._id, index, "stdin", e.target.value)}
+                                                                            />
+                                                                        </div>
+                                                                    )}
+                                                                    <div className="stdout-input">
+                                                                    <label htmlFor={"stdout-inp" + index}>stdout : </label>
+                                                                        <input
+                                                                            id={"stdout-inp" + index}
+                                                                            type="text"
+                                                                            value={testcase.stdout}
+                                                                            onChange={(e) => handleCase(question._id, index, "stdout", e.target.value)}
+                                                                        />
+                                                                    </div>
                                                                     <button
                                                                         type="button"
+                                                                        className="delete-case-btn"
                                                                         onClick={() => removeCase(question._id, index)}
                                                                     >
-                                                                        <i><BsTrash3 size={17} /></i>
+                                                                        <i><BsTrash3 size={18} /></i>
                                                                     </button>
                                                                 </div>
                                                             ))}
-                                                            <button
-                                                                className="create-case-btn"
-                                                                type="button"
-                                                                onClick={() => addCase(question._id)}
-                                                            >
-                                                                <i><BsPlus size={18} /></i>
-                                                                Add case
-                                                            </button>
+                                                            {Number(question.solution) > 0 && (
+                                                                <button
+                                                                    className="create-case-btn"
+                                                                    type="button"
+                                                                    onClick={() => addCase(question._id)}
+                                                                >
+                                                                    <i><BsPlus size={18} /></i>
+                                                                    Add case
+                                                                </button>
+                                                            )}
                                                         </form>
                                                     </>
                                                 )}
@@ -388,11 +672,23 @@ export default function QuestionList({ examId }:QuestionListProp) {
                                         {currentDropdown === question._id && (
                                             <div className="question-dropdown">
                                                 <ul>
-                                                    <li>
+                                                    <li onClick={async() => {
+                                                        const filterData:IFCreateQuestion = questionData.filter(quest => quest._id === question._id).map(({ question, question_image, type, choices, test_case, has_solution, solution }) => ({
+                                                            question, question_image, type, choices, test_case, has_solution, solution
+                                                        }))[0]!;
+                                                        await createQuestion(examId, filterData);
+                                                        setCurrentDropdown("");
+                                                    }}>
                                                         <i><BsCopy /></i>
                                                         <span>duplicate</span>
                                                     </li>
-                                                    <li>
+                                                    <li onClick={async() => {
+                                                        await deleteFile([state.questions[index].question_image]);
+                                                        const removePrepare = previewImages.filter(prepare_img => prepare_img._id !== question._id);
+                                                        setPreviewImages([...removePrepare]);
+                                                        await deleteQuestion(question._id, examId);
+                                                        setCurrentDropdown("");
+                                                    }}>
                                                         <i><BsTrash3 /></i>
                                                         <span>delete</span>
                                                     </li>

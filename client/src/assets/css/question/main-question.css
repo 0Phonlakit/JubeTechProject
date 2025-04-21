@@ -62,18 +62,18 @@
     right: 15px;
 }
 
-.question-option button {
+.question-option button.save-question {
     color: #FFFFFF;
     border: none;
-    font-size: 0.8rem;
-    padding: 4px 10px;
+    font-size: 0.85rem;
+    padding: 5px 14px;
     border-radius: 5px;
     background-color: transparent;
     background-color: blueviolet;
     transition: 0.3s all;
 }
 
-.question-option button:hover {
+.question-option button.save-question:hover {
     background-color: #a655f3;
     transition: 0.3s all;
 }
@@ -98,4 +98,39 @@
     font-size: 0.65rem;
     border-radius: 5px;
     border: 1px solid #cdcdcd;
+}
+
+.question-option {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.create-question-btn {
+    display: flex;
+    gap: 4px;
+    color: #a655f3;
+    font-size: 0.8rem;
+    padding: 5px 14px;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #a655f3;
+    background-color: transparent;
+    transition: 0.5s all;
+}
+
+.create-question-btn:hover {
+    color: #FFFFFF;
+    background-color: #a655f3;
+    transition: 0.5s all;
+}
+
+.search-question-input input {
+    width: 200px;
+    outline: none;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    border: 1px solid #d1d1d1;
 }

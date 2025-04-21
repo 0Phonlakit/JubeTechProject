@@ -75,10 +75,6 @@ export default function QuestionSkeleton() {
                         </div>
                     </div>
                     <div className="question-manage-body">
-                        <div className="question-manage-info">
-                            <Skeleton variant="rounded" width={120} height={20} />
-                            <Skeleton variant="rounded" width={700} height={200} />
-                        </div>
                         <div className="question-manage-image">
                             <Skeleton variant="rounded" width={240} height={225} />
                         </div>
@@ -95,10 +91,6 @@ export default function QuestionSkeleton() {
                         </div>
                     </div>
                     <div className="question-manage-body">
-                        <div className="question-manage-info">
-                            <Skeleton variant="rounded" width={120} height={20} />
-                            <Skeleton variant="rounded" width={700} height={200} />
-                        </div>
                         <div className="question-manage-image">
                             <Skeleton variant="rounded" width={240} height={225} />
                         </div>
@@ -115,10 +107,6 @@ export default function QuestionSkeleton() {
                         </div>
                     </div>
                     <div className="question-manage-body">
-                        <div className="question-manage-info">
-                            <Skeleton variant="rounded" width={120} height={20} />
-                            <Skeleton variant="rounded" width={700} height={200} />
-                        </div>
                         <div className="question-manage-image">
                             <Skeleton variant="rounded" width={240} height={225} />
                         </div>

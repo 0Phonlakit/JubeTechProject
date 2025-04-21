@@ -7,19 +7,26 @@
     overflow-y: scroll;
 }
 
-.side-question-list {
-    user-select: none;
+.side-question-container {
     width: 100%;
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 15px 10px;
+    background-color: #f2f2f2;
+    border-right: 1px solid #d6d6d6;
+}
+
+.side-question-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.side-question-list {
+    user-select: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    padding: 15px 10px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    background-color: #f2f2f2;
-    border-right: 1px solid #d6d6d6;
 }
 
 .side-question-list::-webkit-scrollbar {
@@ -104,8 +111,10 @@
 
 .question-info-input {
     display: flex;
+    justify-content: space-between;
     gap: 10px;
     padding: 10px 0;
+    margin-bottom: 20px !important;
 }
 
 .question-manage-info {
@@ -277,10 +286,6 @@ form.input-choice, form.code-input {
     background-color: #fdf9ff;
 }
 
-.code-input input {
-    width: 65%;
-}
-
 .input-choice button, .code-input button {
     border: none;
     background-color: transparent;
@@ -303,5 +308,144 @@ form.input-choice, form.code-input {
 }
 
 .select-code .ant-select {
-    width: 180px;
+    width: 240px;
+}
+
+.delete-case-btn i {
+    margin-top: 20px;
+}
+
+.code-input label {
+    font-size: 0.85rem;
+    font-family: "Poppins", sans-serif;
+}
+
+.stdin-input, .stdout-input {
+    width: 40%;
+    min-width: 300px;
+}
+
+.preview-img {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.remove-preview-img {
+    color: #2d2d2d;
+    padding: 3px 15px;
+    border-radius: 5px;
+    border: 1px solid #2d2d2d;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    gap: 5px;
+}
+
+.preview-question-img {
+    width: 300px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0px 0px 1px 1px #00000015;
+}
+
+.main-body-question {
+    padding-top: 5px;
+}
+
+.preload-update-question {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    background-color: #f3f3f3a4;
+}
+
+.confirm-back-modal {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: #00000071;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm-back-content {
+    min-width: 300px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+}
+
+.confirm-back-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px !important;
+}
+
+.confirm-back-header button {
+    border: none;
+    background-color: transparent;
+}
+
+.confirm-back-header span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #353434;
+}
+
+.confirm-back-body span {
+    font-size: 0.85rem;
+    color: rgb(124, 124, 124);
+}
+
+.confirm-back-btn {
+    margin-top: 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.confirm-back-btn button {
+    font-size: 0.85rem;
+    padding: 2px 13px;
+    border-radius: 5px;
+}
+
+.cancel-update-question {
+    border: 1px solid #373737;
+    background-color: #FFFFFF;
+    transition: 0.3s all;
+}
+
+.cancel-update-question:hover {
+    background-color: #f5f5f5;
+    transition: 0.3s all;
+}
+
+.confirm-update-question {
+    border: none;
+    color: #FFFFFF;
+    padding: 3px 13px !important;
+    background-color: #a200e7;
+    transition: 0.3s all;
+}
+
+.confirm-update-question:hover {
+    background-color: #ab03f3;
+    transition: 0.3s all;
 }

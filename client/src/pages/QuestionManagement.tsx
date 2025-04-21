@@ -14,6 +14,9 @@ export default function QuestionManagement() {
 
     // state
     const [examId, setExamId] = useState<string>("");
+    const [isUpdate, setIsUpdate] = useState<boolean>(false);
+    const [searchQuestion, setSearchQuestion] = useState<string>("");
+    const [toggleBackModal, setToggleBackModal] = useState<boolean>(false);
 
     // effect
     useEffect(() => {
@@ -28,8 +31,21 @@ export default function QuestionManagement() {
         <ExamProvider>
             <QuestionProvider>
                 <div className="main-question-container">
-                    <QuestionTopbar examId={examId} />
-                    <QuestionList examId={examId} />
+                    <QuestionTopbar
+                        examId={examId}
+                        toggleBackModal={toggleBackModal}
+                        setToggleBackModal={setToggleBackModal}
+                        searchQuestion={searchQuestion}
+                        setIsUpdate={setIsUpdate}
+                        setSearchQuestion={setSearchQuestion}
+                    />
+                    <QuestionList
+                        examId={examId}
+                        toggleBackModal={toggleBackModal}
+                        isUpdate={isUpdate}
+                        setIsUpdate={setIsUpdate}
+                        searchQuestion={searchQuestion}
+                    />
                 </div>
             </QuestionProvider>
         </ExamProvider>

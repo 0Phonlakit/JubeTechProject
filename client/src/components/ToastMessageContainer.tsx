@@ -27,9 +27,9 @@ export interface ResponseMessage {
 export function ToastMessageContainer({ messageList, setMessageList }:ToastProp) {
     // effect
     useEffect(() => {
-        setTimeout(() => {
-            setMessageList((prev) => prev.slice(1));
-        }, 3000);
+        // setTimeout(() => {
+        //     setMessageList((prev) => prev.slice(1));
+        // }, 8000);
     }, [messageList]);
 
     // function

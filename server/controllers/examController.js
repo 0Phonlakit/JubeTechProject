@@ -3,6 +3,7 @@ const Joi = require("joi");
 // schema
 const mongoose = require("mongoose");
 const Exams = require("../models/Exam");
+const Questions = require("../models/Question");
 
 const ExamBlueprint = Joi.object({
     title: Joi.string().trim().max(50).required(),
@@ -142,6 +143,7 @@ const deleteExam = async(req, res) => {
             createdBy: new mongoose.Types.ObjectId(_id)
         });
         if (!check_exam) return res.status(403).json({ message: "The exam must be deleted by the owner." });
+        await Questions.deleteMany({ _id: { $in: check_exam.question_ids } });
         // delete exam
         await Exams.findByIdAndDelete(exam_id);
         return res.status(200).json({ message: "The exam was deleted successfully." });

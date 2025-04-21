@@ -92,6 +92,8 @@ export default function ExamTable({ startExam, setStartExam }:ExamTableProp) {
                     total: state.pagination?.total
                 }
             })
+        } else {
+            setData([]);
         }
     }, [state.exams]);
 
