@@ -11,5 +11,6 @@ export default defineConfig({
   },
   build: {
     minify: 'esbuild',
+     outDir: 'dist',
   }
 })
