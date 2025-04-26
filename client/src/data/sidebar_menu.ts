@@ -3,61 +3,67 @@ import {
     FaBookOpenReader,
     FaUser,
     FaSitemap,
-    FaUserPlus
+    FaUserPlus,
+    FaFilePen
 } from "react-icons/fa6";
 
 import { IconType } from "react-icons";
-import { MdDiscount } from "react-icons/md";
+import { MdDiscount, MdLeaderboard } from "react-icons/md";
 
 export interface Menu {
     title: string,
     href: string,
-    order: number,
     icon: IconType,
     roles: string[]
 }
 
 export const menus:Menu[] = [
     { 
-        title: "แผนภูมิภาพรวม",
+        title: "แผนภูมิภาพรวมสำหรับติวเตอร์",
         href: "/dashboard/tutor/statistic",
         icon: FaHouse,
-        order: 0,
         roles: ["Tutor"]
     },
     {
         title: "จัดการคอร์สเรียน",
         href: "/dashboard/course-management",
         icon: FaBookOpenReader,
-        order: 1,
         roles: ["Tutor"]
     },
     {
+        title: "ภาพรวม",
+        href: "/dashboard/admin/dashboard-overview",
+        icon: MdLeaderboard,
+        roles: ["Admin"]
+    },
+    {
         title: "จัดการผู้ใช้งาน",
-        href: "/dashboard/user-management",
+        href: "/dashboard/admin/user-management",
         icon: FaUser,
-        order: 2,
         roles: ["Admin"]
     },
     {
         title: "จัดการหมวดหมู่",
-        href: "/dashboard/category-management",
+        href: "/dashboard/admin/category-management",
         icon: FaSitemap,
-        order: 3,
         roles: ["Admin"]
     },
     {
         title: "จัดการบทบาท",
-        href: "/dashboard/role-management",
+        href: "/dashboard/admin/role-management",
         icon: FaUserPlus,
-        order: 4,
         roles: ["Admin"]
     },
     {
         title: "จัดการโปรโมชั่น",
-        href: "/dashboard/promotion-management",
-        icon: MdDiscount ,
-        order: 5,
+        href: "/dashboard/admin/promotion-management",
+        icon: MdDiscount,
         roles: ["Admin"]
     },
+    {
+        title: "จัดการแบบทดสอบ",
+        href: "/dashboard/exam-management",
+        icon: FaFilePen,
+        roles: ["Tutor"]
+    }
 ]

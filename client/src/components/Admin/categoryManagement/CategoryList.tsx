@@ -68,14 +68,14 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
                         status: categoriesState.status,
                         message: error.message + " , value : " + error.path
                     }
-                    setMessageList([...messageList, response]);
+                    setMessageList(prev => [...prev, response]);
                 });
             } else {
                 const response:ResponseMessage = {
                     status: categoriesState.status,
                     message: categoriesState.response
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             }
             setTimeout(() => {
                 setMessageList((prev) => prev.slice(1));
@@ -117,7 +117,7 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
                 status: 0,
                 message: "The category was not found."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         }
     }
 
@@ -134,7 +134,7 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
                 status: 0,
                 message: "The category was not found."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         }
     }
 
@@ -148,7 +148,7 @@ export default function CategoryList({ startCategory, setStartCategory }:Categor
                 status: 0,
                 message: "The category was not found."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         }
     }
     /* End Section */

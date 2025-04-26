@@ -73,14 +73,14 @@ export default function LessonManage() {
                         status: state.status,
                         message: error.message + " , value : " + error.path
                     }
-                    setMessageList([...messageList, response]);
+                    setMessageList(prev => [...prev, response]);
                 });
             } else {
                 const response:ResponseMessage = {
                     status: state.status,
                     message: state.response
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             }
         }
         dispatch({ type: "CLEAR_RESPONSE", message: "" });
@@ -96,7 +96,7 @@ export default function LessonManage() {
     //                 status: 0,
     //                 message: "The lesson was not found."
     //             }
-    //             setMessageList([...messageList, response]);
+    //             setMessageList(prev => [...prev, response]);
     //         }
     //         setRequestProcess(false);
     //     }
@@ -143,7 +143,7 @@ export default function LessonManage() {
                 status: 0,
                 message: "The lesson was not found."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         }
     }
 

@@ -171,7 +171,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                 status: 400,
                 message: "Please select the type of lesson."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         } else {
             if (main_content.trim() !== "") {
                 const checkAuthFirebase = checkAuthFromFirebase();
@@ -209,14 +209,14 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                         status: 401,
                         message: "Unauthorize"
                     }
-                    setMessageList([...messageList, response]);
+                    setMessageList(prev => [...prev, response]);
                 }
             } else {
                 const response:ResponseMessage = {
                     status: 400,
                     message: "Please, input your lecture or choose your video file"
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             }
         }
     }
@@ -245,7 +245,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                     status: 400,
                     message: "The file must be less than 50 Megabytes."
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             } 
             else if (!allowedFiles.includes(file.type))
             {
@@ -253,7 +253,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                     status: 400,
                     message: "Invalid file type. Please upload a valid file format."
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             } 
             else
             {
@@ -268,7 +268,7 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                 status: 400,
                 message: "The file was not found."
             }
-            setMessageList([...messageList, response]);
+            setMessageList(prev => [...prev, response]);
         }
     }
 
@@ -298,14 +298,14 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
                     status: 400,
                     message: "Invalid file type. Please upload a valid file format."
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             }
             else if (file.size > maxSize) {
                 const response:ResponseMessage = {
                     status: 400,
                     message: "The file must be less than 700 Megabytes."
                 }
-                setMessageList([...messageList, response]);
+                setMessageList(prev => [...prev, response]);
             }
             else
             {

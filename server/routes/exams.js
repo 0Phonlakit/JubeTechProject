@@ -4,7 +4,8 @@ const {
     getManyExams,
     getExamById,
     updateExam,
-    deleteExam
+    deleteExam,
+    getQuestionFromExamId
 } = require("../controllers/examController");
 const { verifyToken, verifyRole } = require("../middlewares/auth");
 
@@ -12,6 +13,7 @@ const router = express.Router();
 
 // private access
 router.get("/exam/all", verifyToken, verifyRole(["Tutor"]), getManyExams);
+router.get("/exam/:exam_id/question/all", verifyToken, verifyRole(["Tutor"]), getQuestionFromExamId);
 router.post("/exam/create", verifyToken, verifyRole(["Tutor"]), createExam);
 router.get("/exam/id/:exam_id", verifyToken, verifyRole(["Tutor"]), getExamById);
 router.put("/exam/update/:exam_id", verifyToken, verifyRole(["Tutor"]), updateExam);
