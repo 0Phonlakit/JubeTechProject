@@ -5,7 +5,6 @@ const {
     getExamById,
     updateExam,
     deleteExam,
-    getQuestionFromExamId
 } = require("../controllers/examController");
 const { verifyToken, verifyRole } = require("../middlewares/auth");
 

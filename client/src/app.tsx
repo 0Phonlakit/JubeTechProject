@@ -48,7 +48,7 @@ function App() {
           <Route path="/my-courses" element={<MyCourses />}></Route>
           <Route path="/cart" element={<CartPage />}></Route>
           <Route path="/dashboard/exam-management" element={<ExamManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
-          <Route path="/dashboard/exam/:exam_id/questions" element={<QuestionManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/dashboard/exam/:exam_id/questions" element={<QuestionManagement />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

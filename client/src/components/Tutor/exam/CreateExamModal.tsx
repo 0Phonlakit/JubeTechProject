@@ -24,12 +24,13 @@ export default function CreateExamModal({ showExamModal, setShowExamModal, editE
     const [examForm, setExamForm] = useState<IFCreateExam>({
         title: "",
         description: "",
+        random_question: false,
         question_ids: []
     });
-    const { title, description } = examForm;
+    const { title, description, random_question } = examForm;
 
     // function
-    const handleExamForm = (target:string, value:string) => {
+    const handleExamForm = (target:string, value:string | boolean) => {
         setExamForm((prev) => ({...prev, [target]: value}));
     }
 
@@ -50,8 +51,11 @@ export default function CreateExamModal({ showExamModal, setShowExamModal, editE
         setExamForm({
             title: "",
             description: "",
+            random_question: false,
             question_ids: []
         });
+        const check = document.getElementById("random-question") as HTMLInputElement;
+        check.checked = false;
     }
 
     // effect
@@ -60,6 +64,8 @@ export default function CreateExamModal({ showExamModal, setShowExamModal, editE
             const current_data = state.exams.filter((exam) => exam._id === editExamId);
             handleExamForm("title", current_data[0].title);
             handleExamForm("description", current_data[0].description);
+            const check = document.getElementById("random-question") as HTMLInputElement;
+            if (current_data[0].random_question) check.checked = true;
         }
     }, [editExamId]);
 
@@ -108,6 +114,20 @@ export default function CreateExamModal({ showExamModal, setShowExamModal, editE
                                         placeholder="Enter your description about exam..."
                                     ></textarea>
                                     <span>{description.length} / 300</span>
+                                </div>
+                                <div className="check-random">
+                                    <input
+                                        type="checkbox"
+                                        id="random-question"
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                handleExamForm("random_question", true);
+                                            } else {
+                                                handleExamForm("random_question", false);
+                                            }
+                                        }}
+                                    />
+                                    <label htmlFor="random-question">Random Question</label>
                                 </div>
                                 <button type="submit">
                                     <i><BsPlus size={18} /></i>

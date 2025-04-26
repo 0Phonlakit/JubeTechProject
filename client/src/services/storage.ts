@@ -43,7 +43,6 @@ initializeAppCheck(app, {
     isTokenAutoRefreshEnabled: true,
 });
 
-
 // Upload File Function
 export const uploadFile = async(file:File, path:string, fileName:string) => {
     try {
@@ -66,17 +65,17 @@ export const uploadFile = async(file:File, path:string, fileName:string) => {
 }
 
 // Fetch File
-export const fetchFileFromStorage = async(path:string, fileName:string) => {
+export const fetchFileFromStorage = async(path:string) => {
     try {
-        if (!auth.currentUser) return false;
+        if (!auth.currentUser) return "";
         if (await verifyUser()) {
-            const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}/${fileName}`);
+            const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}`);
             const url = await getDownloadURL(fileRef);
             return url;
         }
-        return false;
+        return "";
     } catch (error) {
-        return false;
+        return "";
     }
 }
 

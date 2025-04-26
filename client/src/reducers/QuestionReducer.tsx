@@ -21,7 +21,7 @@ export const QuestionReducer = (state:IFInitialQuestion, action:IFAction) => {
                     status: action.status ?? 0
                 };
             }
-            return {...state, questions: [], response: "", status: 0 };
+            return {...state, questions: [], response: "", status: 0, loading: false };
         case "FETCH_ERROR":
             return {
                 ...state,

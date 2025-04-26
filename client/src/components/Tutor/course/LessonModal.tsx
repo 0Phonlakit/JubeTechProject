@@ -117,11 +117,11 @@ export default function LessonModal({ showModal, setShowModal, editLesson, setEd
 
     // video ref & state
     const videoInputRef = useRef<HTMLInputElement>(null);
-    const [videoLink, setVideoLink] = useState<string>("");
     const [fileName, setFileName] = useState<string>("");
     const [sizeFile, setSizeFile] = useState<string>("");
-    const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [videoLink, setVideoLink] = useState<string>("");
     const [mainFile, setMainFile] = useState<File | string>("");
+    const [isUploading, setIsUploading] = useState<boolean>(false);
     // useEffect
     useEffect(() => {
         if (editLesson.trim() !== "" && requestProcess === true) {
