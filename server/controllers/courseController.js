@@ -5,6 +5,7 @@ const slugify = require("slugify");
 const { v4:uuidv4 } = require("uuid");
 // schema
 const mongoose = require("mongoose");
+const User = require("../models/User");
 const Courses = require("../models/Course");
 const Lessons = require("../models/Lesson");
 const Sections = require("../models/Section");
@@ -82,68 +83,24 @@ const getCoursesByTutor = async(req, res) => {
         const { _id } = req.verify_user;
         if (!_id) return res.status(404).json({ message: "The user was not found." });
         // request
-        const { title, rating, duration, group_ids, minPrice, maxPrice, minPoint, maxPoint, sort, page = 1, pageSize = 20, useCertificate } = req.query;
-        // check page and pageSize
-        const parsePage = parseInt(page);
-        const parsePageSize = parseInt(pageSize);
-        if (isNaN(parsePage) || isNaN(parsePageSize)) return res.status(400).json({ message: "The page or pageSize has an invalid format." });
-        // prepare filter
-        let filter = {};
-        filter.createdBy = new mongoose.Types.ObjectId(_id)
+        const filter = {};
+        filter.createdBy = new mongoose.Types.ObjectId(_id);
+        const { title = "", sortField = "createdAt", sortOrder = "ascend", page = 1, pageSize = 12 } = req.query;
+        const skip = (page - 1) * pageSize;
+        const sort = { [sortField]: sortOrder === "descend" ? -1 : 1 };
         if (title) filter.title = { $regex: title, $options: "i" };
-        if (rating) filter.rating = { $gte: Number(rating || 0) };
-        if (duration) filter.duration = { $gte: Number(duration || 0) };
-        if (useCertificate) filter.useCertificate = useCertificate;
-        if (group_ids) filter.group_ids = { $elemMatch: { $in: group_ids.split(",") } };
-        if (minPrice || maxPrice) {
-            filter.price = {};
-            if (minPrice) filter.price.$gte = Number(minPrice || 0);
-            if (maxPrice) filter.price.$lte = Number(maxPrice || 0);
-        }
-        if (minPoint || maxPoint) {
-            filter.point = {};
-            if (minPoint) filter.point.$gte = Number(minPoint || 0);
-            if (maxPoint) filter.point.$lte = Number(maxPoint || 0);
-        }
-        const sortOptions = {};
-        if (sort) {
-            const fields = sort.split(",");
-            fields.forEach(field => {
-                const order = field.startsWith("-") ? -1 : 1;
-                const key = field.replace("-", "");
-                sortOptions[key] = order;
-            });
-        } else {
-            sortOptions.updatedAt = -1;
-        }
-        const skip = (parsePage - 1) * parsePageSize;
-        const courses = await Courses.find(filter)
-            .populate({
-                path: "group_ids",
-                select: "_id name"
-            })
-            .populate({
-                path: "instructor",
-                select: "firstname lastname -_id"
-            })
-            .populate({
-                path: "section_ids",
-                select: "_id title lesson_ids",
-                populate: {
-                    path: "lesson_ids",
-                    select: "_id name type duration order isFreePreview"
-                }
-            })
-            .populate({ path: "pretest", select: "title -_id" })
-            .populate({ path: "posttest", select: "title -_id" })
-            .sort(sortOptions)
-            .skip(skip)
-            .limit(parsePageSize)
-            .lean();
-        const total = await Courses.countDocuments(filter);
-        return res.status(200).json({ data: courses, pagination: {
-            total, page:parsePage , pageSize:parsePageSize, totalPages: Math.ceil(total/parsePageSize) 
-        } });
+        const [results, total] = await Promise.all([
+            Courses.find(filter)
+            .select("_id thumbnail title description price group_ids status rating instructor level slug createdAt")
+            .populate({ path: "group_ids", select: "name -_id"  })
+            .populate({ path: "instructor", select: "firstname lastname -_id" })
+            .sort(sort)
+            .skip(Number(skip))
+            .limit(Number(pageSize))
+            .lean(),
+            Courses.countDocuments(filter)
+        ]);
+        return res.status(200).json({ data: results, pagination: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) } });
     } catch (err) {
         console.error({ position: "Get Courses By Tutor", error: err });
         return res.status(500).json({ message: "Something went wrong." });

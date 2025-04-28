@@ -141,3 +141,10 @@
     color: #FFFFFF;
     background-color: #f73636;
 }
+
+.ant-table-wrapper.css-dev-only-do-not-override-19lec04 {
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 1px 1px #00000010;
+    background-color: #FFFFFF;
+}

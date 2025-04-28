@@ -107,7 +107,7 @@
     width: 100%;
     outline: none;
     border-radius: 5px;
-    border: 1px solid rgb(202, 202, 202);
+    border: 1px solid #cacaca;
 }
 
 .manual-input textarea {
@@ -140,7 +140,7 @@
 .check-random input {
     width: 15px;
     height: 15px;
-    accent-color: rgb(206, 60, 255);
+    accent-color: #ce3cff;
 }
 
 .check-random label {

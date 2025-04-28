@@ -19,7 +19,7 @@ export interface Menu {
 
 export const menus:Menu[] = [
     { 
-        title: "แผนภูมิภาพรวมสำหรับติวเตอร์",
+        title: "แผนภูมิภาพรวมติวเตอร์",
         href: "/dashboard/tutor/statistic",
         icon: FaHouse,
         roles: ["Tutor"]
