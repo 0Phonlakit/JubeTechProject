@@ -21,7 +21,7 @@ export default function TutorDashboard({ toggleSidebar, setToggleSidebar }:IFTog
             title="Tutor Dashboard"
             toggleSidebar={toggleSidebar}
             setToggleSidebar={setToggleSidebar}
-            title_sidebar="แผนภูมิภาพรวมสำหรับติวเตอร์"
+            title_sidebar="แผนภูมิภาพรวมติวเตอร์"
         >
             <CardList />
             <EnrollGraph />

@@ -2,6 +2,7 @@ import axios from "axios";
 import { getToken } from "../services/authorize";
 import { CourseReducer, IFAction } from "../reducers/CourseReducer";
 import { createContext, useContext, useReducer, useEffect } from "react";
+import { IFSearchCourse as SearchCourseProp } from "../components/Tutor/course/CourseManage";
 
 /* Interface & Type Section */
 export interface CourseCard {
@@ -9,24 +10,19 @@ export interface CourseCard {
     thumbnail: string,
     title: string,
     description: string,
-    usePoint: boolean,
     price: number,
-    point: number,
     group_ids: {
-        _id: string,
         name: string
     }[],
+    status: string,
     rating: number,
     instructor: {
         firstname: string,
         lastname: string
     },
-    student_enrolled: number,
-    useCertificate: boolean,
-    slug: string,
-    duration: number,
     level: string,
-    updatedAt: Date,
+    slug: string,
+    createdAt: string | Date
 }
 export interface CourseDetail extends CourseCard {
     objectives: string[],
@@ -107,13 +103,13 @@ export interface IFCourseContext {
     state: IFInitialCourse,
     dispatch: React.Dispatch<IFAction>,
     fetchAllCourses: (message:string) => Promise<void>,
-    fetchCourseByTutor: (message:string, searchCourse:IFSearchCourse) => Promise<void>,
+    fetchCourseByTutor: (message:string, searchCourse:SearchCourseProp) => Promise<void>,
     paginationCourse: (message:string, searchCourse:IFSearchCourse) => Promise<void>,
     fetchCourseBySlug: (message:string, slug:string) => Promise<void>,
     fetchCourseById: (course_id:string) => Promise<void>,
-    createCourse: (course:CreateCourse, searchCourse:IFSearchCourse) => Promise<void>,
-    updateCourse: (course_id:string, course:CreateCourse, searchCourse:IFSearchCourse) => Promise<void>,
-    deleteCourse: (course_id:string, searchCourse:IFSearchCourse) => Promise<void>
+    createCourse: (course:CreateCourse, searchCourse:SearchCourseProp) => Promise<void>,
+    updateCourse: (course_id:string, course:CreateCourse, searchCourse:SearchCourseProp) => Promise<void>,
+    deleteCourse: (course_id:string, searchCourse:SearchCourseProp) => Promise<void>
 }
 /* End Section */
 
@@ -150,7 +146,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
         }
     }
 
-    const fetchCourseByTutor = async(message:string = "", searchCourse:IFSearchCourse) => {
+    const fetchCourseByTutor = async(message:string = "", searchCourse:SearchCourseProp) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/course/tutor`, {
@@ -159,7 +155,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
                     Authorization: `Bearer ${getToken()}`
                 }
             });
-            dispatch({ type: "FETCH_SUCCESS", payload: { fullCourses: response.data.data }, message: message, status: response.status, pagination: response.data.pagination });
+            dispatch({ type: "FETCH_SUCCESS", payload: { courseLists: response.data.data }, message: message, status: response.status, pagination: response.data.pagination });
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status  })
@@ -217,7 +213,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
         }
     }
 
-    const createCourse = async(course:CreateCourse, searchCourse:IFSearchCourse) => {
+    const createCourse = async(course:CreateCourse, searchCourse:SearchCourseProp) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/course/create`, { ...course }, {
@@ -235,7 +231,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
         }
     }
 
-    const updateCourse = async(course_id:string, course:CreateCourse, searchCourse:IFSearchCourse) => {
+    const updateCourse = async(course_id:string, course:CreateCourse, searchCourse:SearchCourseProp) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/course/update/${course_id}`, {...course}, {
@@ -253,7 +249,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
         }
     }
 
-    const deleteCourse = async(course_id:string, searchCourse:IFSearchCourse) => {
+    const deleteCourse = async(course_id:string, searchCourse:SearchCourseProp) => {
         try {
             dispatch({ type: "FETCH_START", message: "", status: 0 });
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/course/delete/${course_id}`, {

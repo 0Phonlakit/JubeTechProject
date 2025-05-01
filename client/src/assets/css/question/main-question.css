@@ -80,10 +80,10 @@
 
 /* side question */
 .side-question-index {
-    padding: 2px 10px;
-    font-size: 0.9rem;
+    padding: 2px 9px;
+    font-size: 0.75rem;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 3px;
     font-family: "Mitr", sans-serif;
     background-color: #e3e3e3;
 }

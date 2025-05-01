@@ -9,7 +9,7 @@ const CourseSchema = new Schema({
     price: { type: Number, required: true, default: 0 },
     point: { type: Number, required: true, default: 0 },
     objectives: [{ type: String, maxlength: 100, required: true }],
-    group_ids: [{ type: mongoose.Types.ObjectId, ref: "Categories", required: true }],
+    group_ids: [{ type: mongoose.Types.ObjectId, ref: "Groups", required: true }],
     status: { type: String, enum: ["draft", "published", "archived"], default: "draft", required: true },
     rating: { type: Number, default: 0 }, // by student
     instructor: { type: mongoose.Types.ObjectId, ref: "User", required: true },

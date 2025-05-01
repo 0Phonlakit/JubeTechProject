@@ -263,7 +263,7 @@ export default function ExamTable({ startExam, setStartExam }:ExamTableProp) {
                 columns={columns}
                 pagination={tableParams.pagination}
                 expandable={{
-                    expandedRowRender: (record) => <p style={{ margin: 0, padding: "10px" }}>{"Exam description : " + record.description}</p>,
+                    expandedRowRender: (record) => <p style={{ margin: 0, padding: "10px", color: "#9d9d9e" }}>{"Exam description : " + record.description}</p>,
                     rowExpandable: (record) => record.description.trim().length > 0
                 }}
                 loading={state.loading}

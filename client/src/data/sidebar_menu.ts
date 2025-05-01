@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa6";
 
 import { IconType } from "react-icons";
-import { MdDiscount } from "react-icons/md";
+import { MdDiscount, MdLeaderboard } from "react-icons/md";
 
 export interface Menu {
     title: string,
@@ -19,7 +19,7 @@ export interface Menu {
 
 export const menus:Menu[] = [
     { 
-        title: "แผนภูมิภาพรวมสำหรับติวเตอร์",
+        title: "แผนภูมิภาพรวมติวเตอร์",
         href: "/dashboard/tutor/statistic",
         icon: FaHouse,
         roles: ["Tutor"]
@@ -31,26 +31,32 @@ export const menus:Menu[] = [
         roles: ["Tutor"]
     },
     {
+        title: "ภาพรวม",
+        href: "/dashboard/admin/dashboard-overview",
+        icon: MdLeaderboard,
+        roles: ["Admin"]
+    },
+    {
         title: "จัดการผู้ใช้งาน",
-        href: "/dashboard/user-management",
+        href: "/dashboard/admin/user-management",
         icon: FaUser,
         roles: ["Admin"]
     },
     {
         title: "จัดการหมวดหมู่",
-        href: "/dashboard/category-management",
+        href: "/dashboard/admin/category-management",
         icon: FaSitemap,
         roles: ["Admin"]
     },
     {
         title: "จัดการบทบาท",
-        href: "/dashboard/role-management",
+        href: "/dashboard/admin/role-management",
         icon: FaUserPlus,
         roles: ["Admin"]
     },
     {
         title: "จัดการโปรโมชั่น",
-        href: "/dashboard/promotion-management",
+        href: "/dashboard/admin/promotion-management",
         icon: MdDiscount,
         roles: ["Admin"]
     },

@@ -100,7 +100,7 @@
 
 .lesson-card {
     display: flex;
-    height: 135px;
+    max-height: 135px;
     flex-direction: column;
     padding: 10px 25px;
     border-radius: 5px;
