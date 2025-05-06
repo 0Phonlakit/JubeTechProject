@@ -43,10 +43,8 @@ export interface CourseDetail extends CourseCard {
     pretest: { title: string } | null,
     posttest: { title: string } | null
 }
-export interface FullCourse extends CourseDetail {
-    createdBy: string,
-    updatedBy: string,
-    createdAt: string
+export interface FullCourse extends CreateCourse {
+    //
 }
 export interface IFInitialCourse {
     courses: CourseCard[],

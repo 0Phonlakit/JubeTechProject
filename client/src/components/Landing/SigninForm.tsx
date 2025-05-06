@@ -34,10 +34,10 @@ export default function SigninForm() {
             html: "ระบบกำลังทำการตรวจสอบข้อมูล",
             didOpen: () => {
                 Swal.showLoading();
-                submitSignin().then((response) => {
+                submitSignin().then(async(response) => {
                     const info = response as ResponseSuccess;
                     authentication(info.token);
-                    loginFirebase(signinForm.email, signinForm.password);
+                    await loginFirebase(signinForm.email, signinForm.password);
                     Swal.fire({
                         title: "เข้าสู่ระบบ",
                         text: info.message ?? "เกิดข้อผิดพลาดในการเข้าสู่ระบบ",

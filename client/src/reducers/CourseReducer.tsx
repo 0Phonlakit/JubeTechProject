@@ -1,4 +1,4 @@
-import { CourseCard, CourseDetail, FullCourse, ResponseError, IFInitialCourse } from "../contexts/CourseContext"
+import { CourseCard, CourseDetail, FullCourse, ResponseError, IFInitialCourse, CreateCourse } from "../contexts/CourseContext"
 
 export interface IFAction {
     type: string,
@@ -74,6 +74,8 @@ export const CourseReducer = (state:IFInitialCourse, action:IFAction) => {
             }
         case "CLEAR_RESPONSE":
             return { ...state, response: "" };
+        case "CLEAR_EDIT":
+            return {...state, course_edit: null};
         default:
             return state;
     }

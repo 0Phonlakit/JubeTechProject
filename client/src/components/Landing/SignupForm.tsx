@@ -69,10 +69,10 @@ export default function SignupForm() {
                 html: "ระบบกำลังทำการตรวจสอบข้อมูล",
                 didOpen: () => {
                     Swal.showLoading();
-                    submitSignup().then((response) => {
+                    submitSignup().then(async(response) => {
                         const info = response as ResponseSuccessSignup;
                         authentication(info.token);
-                        registerFirebase(signupForm.email, signupForm.password);
+                        await registerFirebase(signupForm.email, signupForm.password);
                         Swal.fire({
                             title: "สถานะการสมัครสมาชิก",
                             text: info.message ?? "เกิดข้อผิดพลาดในการสมัครสมาชิก",

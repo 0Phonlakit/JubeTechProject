@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { fetchFileFromStorage } from "../../../services/storage";
 import { useCourse, CourseCard } from "../../../contexts/CourseContext";
+import { ResponseMessage, ToastMessageContainer } from "../../ToastMessageContainer";
 
 import "../../../assets/css/course/course-manage.css";
 import NoImage from "../../../assets/img/no image.jpg";
@@ -132,7 +133,7 @@ const CourseCardInfo = ({ course, course_image }:{ course:CourseCard, course_ima
                     {course.instructor ? `${course.instructor.firstname} ${course.instructor.lastname}` : ""}
                 </div>
                 <div className="course-card-footer">
-                    <span className="price">{course.price.toLocaleString()} ฿</span>
+                    <span className="price">{course.price > 0 ? course.price.toLocaleString() + "฿" : "Free"}</span>
                     <button className="see-detail">
                         See detail
                     </button>
@@ -160,8 +161,10 @@ export default function CourseManage() {
     const [isRender, setIsRender] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
     const { title, page, sortField, sortOrder } = searchCourse;
+    const [editCourseId, setEditCourseId] = useState<string>("");
     const [prepareCourse, setPrepareCourse] = useState<boolean>(true);
     const [courseImages, setCourseImages] = useState<CourseImage[]>([]);
+    const [messageList, setMessageList] = useState<ResponseMessage[]>([]);
 
 
     // effect
@@ -197,6 +200,29 @@ export default function CourseManage() {
             prepareImages();
         }
     }, [courseImages]);
+
+    useEffect(() => {
+            if (state.response) {
+                if (Array.isArray(state.response)) {
+                    state.response.map((error) => {
+                        const response:ResponseMessage = {
+                            status: state.status,
+                            message: error.message + " , value : " + error.path
+                        }
+                        setMessageList(prev => [...prev, response]);
+                    });
+                } else {
+                    const response:ResponseMessage = {
+                        status: state.status,
+                        message: state.response
+                    }
+                    setMessageList(prev => [...prev, response]);
+                }
+                setTimeout(() => {
+                    setMessageList((prev) => prev.slice(1));
+                }, 2000);
+            }
+        }, [state.response]);
 
     // function
     const handleSearchCourse = (target:string, value:string | number) => {
@@ -241,9 +267,15 @@ export default function CourseManage() {
     // render
     return (
         <div className="course-manage-container">
+            {messageList.length > 0 &&
+                <ToastMessageContainer messageList={messageList} setMessageList={setMessageList} />
+            }
             <CourseModal
                 showModal={showModal}
+                editCourseId={editCourseId}
                 setShowModal={setShowModal}
+                searchCourse={searchCourse}
+                setEditCourseId={setEditCourseId}
             />
             {isRender ?
                 <>

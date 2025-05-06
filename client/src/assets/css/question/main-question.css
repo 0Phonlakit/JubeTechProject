@@ -13,6 +13,8 @@
     font-family: "Poppins", sans-serif;
 }
 
+.main-question-container *::-webkit-scrollbar
+
 .question-manage-topbar {
     position: relative;
     padding: 0 10px;

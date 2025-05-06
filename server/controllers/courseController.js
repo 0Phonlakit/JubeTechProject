@@ -13,11 +13,11 @@ const Sections = require("../models/Section");
 const CourseBlueprint = Joi.object({
     // Required section
     thumbnail: Joi.string().trim().required(),
-    title: Joi.string().trim().min(10).max(150).required(),
+    title: Joi.string().trim().min(3).max(150).required(),
     usePoint: Joi.boolean().required(),
-    price: Joi.number().integer().min(200).max(2000).allow(0).required(),
+    price: Joi.number().integer().min(0).max(2000).allow(0).required(),
     point: Joi.number().integer().min(100).max(1000).allow(0).required(),
-    objectives: Joi.array().items(Joi.string().trim().max(100).required()).required(),
+    objectives: Joi.array().items(Joi.any()).optional(),
     status: Joi.string().valid("draft", "published", "archived").required(),
     useCertificate: Joi.boolean().required(),
     duration: Joi.number().integer().required(),
@@ -25,8 +25,8 @@ const CourseBlueprint = Joi.object({
     // Optional section
     pretest: Joi.string().allow("").optional(),
     posttest: Joi.string().allow("").optional(),
-    description: Joi.string().max(500),
-    note: Joi.string().trim().max(7000),
+    description: Joi.string().min(5).max(500),
+    note: Joi.string().trim().max(7000).allow("").optional(),
     group_ids: Joi.array().items(Joi.string().trim()),
     section_ids: Joi.array().items(Joi.string().trim()),
 });
@@ -221,24 +221,7 @@ const getCourseById = async(req, res) => {
             _id: new mongoose.Types.ObjectId(course_id),
             createdBy: new mongoose.Types.ObjectId(_id)
         })
-        .populate({
-            path: "group_ids",
-            select: "_id name"
-        })
-        .populate({
-            path: "instructor",
-            select: "firstname lastname"
-        })
-        .populate({
-            path: "section_ids",
-            select: "_id title lesson_ids",
-            populate: {
-                path: "lesson_ids",
-                select: "_id name type duration order isFreePreview"
-            }
-        })
-        .populate({ path: "pretest", select: "title -_id" })
-        .populate({ path: "posttest", select: "title -_id" })
+        .select("thumbnail title usePoint price point objectives status useCertificate duration level pretest posttest description note group_ids section_ids")
         .lean();
         return res.status(200).json({ data: course });
     } catch (err) {

@@ -15,11 +15,14 @@ import {
     BsFillPlusCircleFill,
 } from "react-icons/bs";
 
+import Spinner from 'react-bootstrap/Spinner';
+import { IFSearchCourse } from "./CourseManage";
 import { useState, useEffect, useRef } from "react";
 import { Select, message, InputNumber } from "antd";
 import { useGroup } from "../../../contexts/GroupContext";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { useCourse, CreateCourse } from "../../../contexts/CourseContext";
+import { fetchFileFromStorage, uploadFile, deleteFile } from "../../../services/storage";
 
 import "../../../assets/css/course/course-modal.css";
 import NoImage from "../../../assets/img/no image.jpg"
@@ -27,6 +30,9 @@ import NoImage from "../../../assets/img/no image.jpg"
 interface IFModalProp {
     showModal: boolean,
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+    editCourseId: string,
+    setEditCourseId: React.Dispatch<React.SetStateAction<string>>,
+    searchCourse: IFSearchCourse
 }
 
 interface CreateCourseCardProp {
@@ -110,17 +116,19 @@ export const CreateCourseCard = ({ thumbnail, title, description, level, price, 
     )
 }
 
-export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
+export default function CourseModal({ showModal, setShowModal, editCourseId, setEditCourseId, searchCourse }:IFModalProp) {
     // firebase
     const auth = getAuth();
 
     // context
     const { state:groupState, fetchAllGroups } = useGroup();
+    const { state:courseState, updateCourse, createCourse, fetchCourseById, dispatch } = useCourse();
 
     // ref
     const inputFileRef = useRef<HTMLInputElement | null>(null);
 
     // state
+    const [isUpdate, setIsUpdate] = useState<boolean>(false);
     const [isRender, setIsRender] = useState<boolean>(false);
     const [createData, setCreateData] = useState<CreateCourse>({
         thumbnail: "",
@@ -140,7 +148,7 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
         group_ids: [],
         section_ids: []
     });
-    const { thumbnail, title, description, price, level, group_ids, duration } = createData;
+    const { thumbnail, title, description, price, level, group_ids, duration, useCertificate, usePoint, point } = createData;
     const [thumbnailImage, setThumbnailImage] = useState<IFThumbnailImage>({
         file: null,
         url: ""
@@ -154,12 +162,17 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
             if (!user) {
                 alert("Unauthenticate on firebase.");
             } else {
-                fetchAllGroups("");
+                (async() => {
+                    await fetchAllGroups("");
+                    if (editCourseId.trim() !== "") {
+                        await fetchCourseById(editCourseId);
+                    }
+                })();
             }
         });
     
         return () => trackauth();
-    }, []);
+    }, [editCourseId]);
 
     useEffect(() => {
         if (groupState.groups.length > 0) {
@@ -170,6 +183,43 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
         }
         setIsRender(true);
     }, [groupState.groups]);
+
+    useEffect(() => {
+        if (courseState.course_detail !== null) {
+            (async() => {
+                const editCourse = courseState.course_edit;
+                const thumbnailUrl = await fetchFileFromStorage(editCourse?.thumbnail ?? "");
+                setThumbnailImage({ file: null, url: thumbnailUrl });
+                setCreateData({
+                    thumbnail: editCourse?.thumbnail ?? "",
+                    title: editCourse?.title ?? "",
+                    usePoint: editCourse?.usePoint ?? false,
+                    price: editCourse?.price ?? 0,
+                    point: editCourse?.point ?? 0,
+                    objectives: editCourse?.objectives ?? [],
+                    status: editCourse?.status ?? "draft",
+                    useCertificate: editCourse?.useCertificate ?? true,
+                    duration: editCourse?.duration ?? 1,
+                    level: editCourse?.level ?? "beginner",
+                    pretest: editCourse?.pretest ?? "",
+                    posttest: editCourse?.posttest ?? "",
+                    description: editCourse?.description ?? "",
+                    note: editCourse?.note ?? "",
+                    group_ids: editCourse?.group_ids ?? [],
+                    section_ids: editCourse?.section_ids ?? [],
+                });
+            })();
+        }
+    }, [courseState.course_edit]);
+
+    useEffect(() => {
+        if (isUpdate) {
+            (async() => {
+                await updateCourse(editCourseId, createData, searchCourse);
+                setIsUpdate(false);
+            })();
+        }
+    }, [isUpdate]);
 
     // function
     const handleCreateCourse = (target:string, value: boolean | string | number | string[]) => {
@@ -199,23 +249,89 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
         }
     }
 
+    const handleSubmitForm = async(e:React.FormEvent, type: string) => {
+        e.preventDefault();
+        // validate data
+        let validate = true;
+        if (createData.thumbnail.trim() === "") {
+            alertErrorMessage("Please, upload your image file to update.");
+            validate = false;
+        }
+        if (createData.group_ids.length === 0) {
+            alertErrorMessage("Please, select your group.");
+            validate = false;
+        }
+        if (validate) {
+            switch (type) {
+                case "create":
+                    const createThumbnail = createData.thumbnail.split("/course/course_image/")[1];
+                    await uploadFile(thumbnailImage.file as File, "/course/course_image", createThumbnail);
+                    await createCourse(createData, searchCourse);
+                    clearForm();
+                    setShowModal(false);
+                    break;
+                case "update":
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    const alertErrorMessage = (error_msg:string) => message.error(error_msg);
+
+    const clearForm = () => {
+        setCreateData({
+            thumbnail: "",
+            title: "",
+            usePoint: false,
+            price: 200,
+            point: 0,
+            objectives: [],
+            status: "draft",
+            useCertificate: true,
+            duration: 1,
+            level: "beginner",
+            pretest: "",
+            posttest: "",
+            description: "",
+            note: "",
+            group_ids: [],
+            section_ids: []
+        });
+    }
+
     // render
     return (
         <div className={"course-modal-container " + (showModal ? "active-modal" : "")}>
             <div className={"main-course-modal " + (showModal ? "active-modal" : "")}>
                 {isRender ?
-                    <>
+                    <form
+                        onSubmit={(e) => {
+                            editCourseId.trim() !== "" ?
+                            handleSubmitForm(e, "update") :
+                            handleSubmitForm(e, "create")
+                        }}
+                    >
                         <div className="course-modal-header">
                             <button
+                                type="button"
                                 className="close-course-modal"
-                                onClick={() => setShowModal(!showModal)}
+                                onClick={() => {
+                                    setEditCourseId("");
+                                    dispatch({ type: "CLEAR_EDIT", message: "", status: 0 });
+                                    setShowModal(!showModal);
+                                }}
                             >
                                 <i><BsX size={23} /></i>
                             </button>
-                            <span>Create New Course</span>
-                            <button className="submit-create-course">
+                            <span>{editCourseId.trim() !== "" ? "Update Course" : "Create New Course"}</span>
+                            <button
+                                type="submit"
+                                className="submit-create-course"
+                            >
                                 <i><BsPlus size={19} /></i>
-                                Create
+                                {editCourseId.trim() !== "" ? "Update" : "Create"}
                             </button>
                         </div>
                         <div className="course-modal-body">
@@ -231,17 +347,30 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
                                                 onChange={handleFileChange}
                                                 hidden
                                             />
-                                            <button onClick={() => inputFileRef.current?.click()}>
+                                            <button
+                                                type="button"
+                                                onClick={() => inputFileRef.current?.click()}
+                                            >
                                                 <i><BsImages size={13} /></i>
                                                 Upload
                                             </button>
                                         </>
                                         :
                                         <div className="preview-course-thumbnail">
-                                            <button onClick={() => {
-                                                handleCreateCourse("thumbnail", "");
-                                                setThumbnailImage({ file: null, url: "" });
-                                            }}>
+                                            <button
+                                                type="button"
+                                                onClick={async() => {
+                                                    if (editCourseId.trim() === "") {
+                                                        handleCreateCourse("thumbnail", "");
+                                                        setThumbnailImage({ file: null, url: "" });
+                                                    } else {
+                                                        await deleteFile([courseState.course_edit?.thumbnail ?? ""]);
+                                                        setThumbnailImage({ file: null, url: "" });
+                                                        handleCreateCourse("thumbnail", "");
+                                                        setIsUpdate(true);
+                                                    }
+                                                }}
+                                            >
                                                 <i><BsTrash size={11} /></i>
                                                 Remove
                                             </button>
@@ -259,10 +388,11 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
                                     <input
                                         type="text"
                                         value={title}
-                                        minLength={5}
-                                        maxLength={60}
+                                        minLength={3}
+                                        maxLength={150}
                                         id="course-title"
                                         onChange={(e) => handleCreateCourse("title", e.target.value)}
+                                        required
                                     />
                                 </div>
                                 <div className="group-course-input">
@@ -302,6 +432,7 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
                                             id="course-duraion"
                                             style={{ fontSize: "0.85rem" }}
                                             onChange={(value) => handleCreateCourse("duration", value ?? 0)}
+                                            required
                                         />
                                     </div>
                                     <div className="course-level-input">
@@ -324,24 +455,80 @@ export default function CourseModal({ showModal, setShowModal }:IFModalProp) {
                                         Description : 
                                     </label>
                                     <textarea
+                                        minLength={5}
                                         maxLength={500}
                                         value={description}
                                         id="course-description"
                                         placeholder="Enter your course description..."
                                         onChange={(e) => handleCreateCourse("description", e.target.value)}
+                                        required
                                     ></textarea>
                                     <span>{description.length} / 500</span>
                                 </div>
+                                <div className="course-number">
+                                    <div className="course-price-input">
+                                        <label htmlFor="course-price">Price : </label>
+                                        <InputNumber
+                                            min={0}
+                                            max={2000}
+                                            type="number"
+                                            value={price}
+                                            onChange={(value) => handleCreateCourse("price", Number(value))}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="course-point-input">
+                                        <div className="check-point">
+                                            <input
+                                                type="checkbox"
+                                                checked={usePoint}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        handleCreateCourse("point", 100);
+                                                        handleCreateCourse("usePoint", true);
+                                                    } else {
+                                                        handleCreateCourse("point", 0);
+                                                        handleCreateCourse("usePoint", false);
+                                                    }
+                                                }}
+                                            />
+                                            <label htmlFor="course-point">Can use point ? </label>
+                                        </div>
+                                        {usePoint && (
+                                            <InputNumber
+                                                min={100}
+                                                max={1000}
+                                                type="number"
+                                                value={point}
+                                                onChange={(value) => handleCreateCourse("point", Number(value))}
+                                                required
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                                 <div className="d-flex flex-wrap mt-2 gap-4">
-                                    <div className="course-certificate-inputt">
-                                    
+                                    <div className="course-certificate-input">
+                                        <input
+                                            type="checkbox"
+                                            checked={useCertificate}
+                                            onChange={(e) => {
+                                                e.target.checked ?
+                                                handleCreateCourse("useCertificate", true) :
+                                                handleCreateCourse("useCertificate", false);
+                                            }}
+                                        />
+                                        <label htmlFor="">Select if the student should receive a certificate.</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </>
+                    </form>
                     :
-                    ""
+                    <div className="preload-course-modal">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    </div>
                 }
             </div>
         </div>

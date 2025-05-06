@@ -3,6 +3,10 @@
     font-family: "Poppins", sans-serif;
 }
 
+.course-manage-container p {
+    margin: 0;
+}
+
 .course-option-container, .search-course-container {
     display: flex;
     align-items: center;
@@ -83,6 +87,7 @@
     margin-top: 40px;
     grid-row-gap: 50px;
     grid-column-gap: 0px;
+    place-items: center;
     grid-template-columns: repeat(4, 1fr);
 }
 
@@ -96,6 +101,7 @@
     background-color: #FFFFFF;
     border: 1px solid #d8d8d8;
     overflow: hidden;
+    align-self: start;
 }
 
 .course-card-image {
@@ -263,6 +269,6 @@ div.author {
 
 .course-pagination-container span {
     font-size: 0.9rem;
-    color: rgb(92, 92, 92);
+    color: #5c5c5c;
     font-family: "Mitr", sans-serif;
 }
