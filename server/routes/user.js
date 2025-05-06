@@ -6,7 +6,8 @@ const {
   updateUser,
   deleteUser,
   getApiMessage,
-  getRoleByUserId
+  getRoleByUserId,
+  getPersonalInfo
 } = require("../controllers/userManagement"); 
 const { verifyToken } = require("../middlewares/auth"); 
 
@@ -23,6 +24,7 @@ router.post("/createUser", createUser);
 router.get("/getUser/:id", getUserById);
 router.put("/updateUser/:id", updateUser);
 router.delete("/deleteUser/:id", deleteUser);
+router.get("/user/personal", verifyToken, getPersonalInfo);
 router.get("/getRoleByUser", verifyToken, getRoleByUserId);
 
 module.exports = router;
