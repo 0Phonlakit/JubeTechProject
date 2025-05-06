@@ -19,7 +19,7 @@ const QuestionBlueprint = Joi.object({
     question: Joi.string().trim().required(),
     question_image: Joi.string().allow("").optional(),
     type: Joi.string().valid("multiple_choice", "coding", "open_ended").required(),
-    choices: Joi.array().items(Joi.string()),
+    choices: Joi.array().items(Joi.any()),
     test_case: Joi.array().items(TestcaseBlueprint),
     has_solution: Joi.boolean(),
     solution: Joi.string().allow("").optional(),
