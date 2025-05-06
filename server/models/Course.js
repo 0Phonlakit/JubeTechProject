@@ -15,8 +15,8 @@ const CourseSchema = new Schema({
     instructor: { type: mongoose.Types.ObjectId, ref: "User", required: true },
     student_enrolled: { type: Number, default: 0 }, // by student
     note: { type: String, maxlength: 7000 },
-    pretest: { type: mongoose.Types.ObjectId, ref: "Exams" },
-    posttest: { type: mongoose.Types.ObjectId, ref: "Exams" },
+    pretest: { type: mongoose.Schema.Types.Mixed, ref: "Exams" },
+    posttest: { type: mongoose.Schema.Types.Mixed, ref: "Exams" },
     useCertificate: { type: Boolean, required: true },
     duration: { type: Number, required: true },
     level: { type: String, enum: ["beginner", "intermediate", "expert"], required: true },

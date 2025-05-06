@@ -180,10 +180,6 @@ export default function LessonManage() {
                     <i><BsSearch size={15} /></i>
                 </div>
                 <div className="option-btn-container">
-                    <button id="filter-lesson">
-                        <i><BsFillFilterCircleFill size={19} /></i>
-                        Advance filter
-                    </button>
                     <button id="create-lesson" onClick={() => {
                         setEditLesson("");
                         setShowModal(!showModal);

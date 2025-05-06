@@ -12,7 +12,7 @@ const Sections = require("../models/Section");
 
 const CourseBlueprint = Joi.object({
     // Required section
-    thumbnail: Joi.string().trim().required(),
+    thumbnail: Joi.string().trim().required().allow(""),
     title: Joi.string().trim().min(3).max(150).required(),
     usePoint: Joi.boolean().required(),
     price: Joi.number().integer().min(0).max(2000).allow(0).required(),
@@ -65,8 +65,8 @@ const createCourse = async(req, res) => {
             section_ids: section_ids.map(section_id => new mongoose.Types.ObjectId(section_id)),
             instructor: new mongoose.Types.ObjectId(_id),
             slug: generateSlug,
-            pretest: pretest ? new mongoose.Types.ObjectId(pretest) : null,
-            posttest: posttest ? new mongoose.Types.ObjectId(posttest) : null,
+            pretest: pretest ? new mongoose.Types.ObjectId(pretest) : "",
+            posttest: posttest ? new mongoose.Types.ObjectId(posttest) : "",
             createdBy: new mongoose.Types.ObjectId(_id),
             updatedBy: new mongoose.Types.ObjectId(_id),
         });
@@ -217,7 +217,7 @@ const getCourseById = async(req, res) => {
         const { course_id } = req.params;
         if (!course_id) return res.status(404).json({ message: "The course was not found." });
         // query course
-        const course = await Courses.find({
+        const course = await Courses.findOne({
             _id: new mongoose.Types.ObjectId(course_id),
             createdBy: new mongoose.Types.ObjectId(_id)
         })
@@ -286,9 +286,11 @@ const updateCourse = async(req, res) => {
 
 const deleteCourse = async(req, res) => {
     try {
-        // check course id
+        // check request
+        const { _id } = req.verify_user;
         const { course_id } = req.params;
         if (!course_id) return res.status(404).json({ message: "The course was not found." });
+        if (!_id) return res.status(404).json({ message: "The user was not found." });
         // check owner
         const check_owner = await Courses.findOne({
             _id: new mongoose.Types.ObjectId(course_id),

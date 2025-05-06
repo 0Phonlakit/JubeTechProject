@@ -1,25 +1,29 @@
 import { Popover } from "antd";
 import { LessonCard as IFLessonCard } from "../../../contexts/LessonContext";
-import { BsBookHalf, BsCameraVideoFill, BsPencilSquare, BsFillTrashFill, BsFillFolderFill } from "react-icons/bs";
+import { BsBookHalf, BsCameraVideoFill, BsFillTrashFill, BsFillFolderFill } from "react-icons/bs";
 
 interface LessonCardProp {
     setEditLesson: React.Dispatch<React.SetStateAction<string>>,
     setDeleteLesson: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function LessonCard({ _id, name, type, sub_file,  isFreePreview, updatedAt, setDeleteLesson, setEditLesson }:IFLessonCard & LessonCardProp) {
+export default function LessonCard({ _id, name, type, sub_file,  isFreePreview, updatedAt, setDeleteLesson }:IFLessonCard & LessonCardProp) {
     return (
         <div className="lesson-card">
-            <div className="card-option-container">
-                <button onClick={() => setEditLesson(_id)}>
-                    <i><BsPencilSquare /></i>
-                </button>
-                <button onClick={() => setDeleteLesson(_id)}>
-                    <i><BsFillTrashFill /></i>
-                </button>
-            </div>
             <Popover placement="right" content={<span>{name}</span>} title="ℹ️ Full lesson name.">
-                <p className="title-name">{name.length > 20 ? name.substring(0, 20) + "..." : name}</p>
+                <div className="d-flex align-items-center justify-content-between">
+                <p
+                    className="title-name"
+                    style={{ margin: "0" }}
+                >
+                    {name.length > 20 ? name.substring(0, 20) + "..." : name}
+                </p>
+                <div className="card-option-container">
+                    <button onClick={() => setDeleteLesson(_id)}>
+                        <i><BsFillTrashFill /></i>
+                    </button>
+                </div>
+                </div>
             </Popover>
             <div className="condition-info">
                 <span className={"type " + (type === "lecture" ? "active-lecture" : "active-video")}>

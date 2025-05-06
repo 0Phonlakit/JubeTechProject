@@ -219,7 +219,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
                     Authorization: `Bearer ${getToken()}`
                 }
             });
-            fetchCourseByTutor(response.data.message, searchCourse);
+            await fetchCourseByTutor(response.data.message, searchCourse);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status  })
@@ -237,7 +237,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
                     Authorization: `Bearer ${getToken()}`
                 }
             });
-            fetchCourseByTutor(response.data.message, searchCourse);
+            await fetchCourseByTutor(response.data.message, searchCourse);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status  })
@@ -255,7 +255,7 @@ export const CourseProvider = ({ children }:{ children:React.ReactNode }) => {
                     Authorization: `Bearer ${getToken()}`
                 }
             });
-            fetchCourseByTutor(response.data.message, searchCourse);
+            await fetchCourseByTutor(response.data.message, searchCourse);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 dispatch({ type: "FETCH_ERROR", message: error.response?.data.message, status: error.response?.status  })

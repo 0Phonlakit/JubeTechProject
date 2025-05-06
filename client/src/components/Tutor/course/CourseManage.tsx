@@ -1,18 +1,26 @@
 import {
     BsPlus,
+    BsCopy,
     BsGear,
     BsSearch,
+    BsBookHalf,
     BsBookFill,
     BsFillPenFill,
     BsChevronLeft,
+    BsPencilSquare,
     BsChevronRight,
-    BsFillStarFill
+    BsFillStarFill,
+    BsFillTrash3Fill
 } from "react-icons/bs";
 
+import axios from "axios";
+import { message } from "antd";
 import CourseModal from "./CourseModal";
-import { useEffect, useState } from "react";
+import Spinner from 'react-bootstrap/Spinner';
+import React, { useEffect, useState } from "react";
+import { getToken } from "../../../services/authorize";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { fetchFileFromStorage } from "../../../services/storage";
+import { deleteFile, fetchFileFromStorage } from "../../../services/storage";
 import { useCourse, CourseCard } from "../../../contexts/CourseContext";
 import { ResponseMessage, ToastMessageContainer } from "../../ToastMessageContainer";
 
@@ -39,6 +47,25 @@ interface CourseImage {
     _id: string,
     path: string,
     url: string,
+}
+
+interface CourseCardProp {
+    course: CourseCard,
+    course_image: CourseImage[],
+    showOption: string,
+    setShowOption: React.Dispatch<React.SetStateAction<string>>,
+    setEditCourseId: React.Dispatch<React.SetStateAction<string>>,
+    setShowModal: React.Dispatch<React.SetStateAction<boolean>>,
+    searchCourse: IFSearchCourse,
+    deleteCourseId: string,
+    setDeleteCourseId: React.Dispatch<React.SetStateAction<string>>,
+}
+
+interface IFDeleteCourseModal {
+    deleteCourseId: string,
+    setDeleteCourseId: React.Dispatch<React.SetStateAction<string>>,
+    searchCourse: IFSearchCourse,
+    setIsRender: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const CourseTopOption = ({ title, sortField, sortOrder, handleSearchCourse, setShowModal }:IFCourseTopOption) => {
@@ -81,21 +108,39 @@ const CourseTopOption = ({ title, sortField, sortOrder, handleSearchCourse, setS
     )
 }
 
-const CourseSkeleton = () => {
-    return (
-        <div className="course-list-container">
-
-        </div>
-    )
-}
-
-const CourseCardInfo = ({ course, course_image }:{ course:CourseCard, course_image:CourseImage[] }) => {
+const CourseCardInfo = ({ course, course_image, showOption, setShowOption, setShowModal, setEditCourseId, searchCourse, setDeleteCourseId }:CourseCardProp) => {
+    // props
     const filterImage = course_image.filter(image => image._id === course._id);
     const urlImage = filterImage.length > 0 ? filterImage[0].url : "";
+
+    // context
+    const { createCourse } = useCourse();
+
+    // function
+    const duplicateCourse = async(course_id:string) => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/course/id/${course_id}`, {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
+            if (response.data.data) {
+                const courseInfo = { ...response.data.data, title: response.data.data.title + " " + new Date().toLocaleString(), thumbnail: "" };
+                delete courseInfo._id;
+                await createCourse(courseInfo, searchCourse);
+            };
+        } catch (error) {
+            if (axios.isAxiosError(error)) message.error("Error from duplicate course.");
+        }
+    }
+
     return (
         <div className="course-card-container">
             <div className="course-card-image">
-                <button>
+                <button onClick={() => {
+                    if (showOption === course._id) setShowOption("");
+                    else setShowOption(course._id);
+                }}>
                     <i><BsGear size={18} /></i>
                 </button>
                 <img
@@ -139,6 +184,75 @@ const CourseCardInfo = ({ course, course_image }:{ course:CourseCard, course_ima
                     </button>
                 </div>
             </div>
+            {showOption === course._id && (
+                <div
+                    onMouseLeave={() => setShowOption("")}
+                    className="course-option-list"
+                >
+                    <ul>
+                        <li>
+                            <i><BsBookHalf size={13} /></i>
+                            Manage section
+                        </li>
+                        <li
+                            onClick={() => {
+                                setEditCourseId(course._id);
+                                setShowModal(true);
+                            }}
+                        >
+                            <i><BsPencilSquare size={13} /></i>
+                            Edit course
+                        </li>
+                        <li onClick={() => duplicateCourse(course._id)}>
+                            <i><BsCopy size={13} /></i>
+                            Duplicate
+                        </li>
+                        <li onClick={() => setDeleteCourseId(course._id)}>
+                            <i><BsFillTrash3Fill size={13} /></i>
+                            Delete course
+                        </li>
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+}
+
+const DeleteCourseModal = ({ deleteCourseId, setDeleteCourseId, searchCourse, setIsRender }:IFDeleteCourseModal) => {
+    // context
+    const { deleteCourse } = useCourse();
+
+    // function
+    const prepareRemoveCourse = async() => {
+        setIsRender(false);
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/course/id/${deleteCourseId}`, {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
+            if (response.data.data) {
+                const currentCourse = response.data.data;
+                if (currentCourse.thumbnail.trim() !== "") await deleteFile([currentCourse.thumbnail]);
+                await deleteCourse(deleteCourseId, searchCourse);
+            }
+            setDeleteCourseId("");
+            setIsRender(true);
+        } catch (error) {
+            if (axios.isAxiosError(error)) message.error("Error from delete course.");
+        }
+    }
+
+    return (
+        <div className={"confirm-delete-course " + (deleteCourseId.trim() !== "" ? "active-confirm" : "")}>
+            <div className={"confirm-delete-card " + (deleteCourseId.trim() !== "" ? "active-confirm" : "")}>
+                <p>Are you absolutely sure to delete course?</p>
+                <span>This action cannot be undone. This will permanently delete your course and remove your data from our servers.</span>
+                <div className="confirm-btn-course">
+                    <button onClick={() => setDeleteCourseId("")}>Cancel</button>
+                    <button onClick={prepareRemoveCourse}>Continue</button>
+                </div>
+            </div>
         </div>
     );
 }
@@ -158,10 +272,12 @@ export default function CourseManage() {
         page: 1,
         pageSize: 12
     });
+    const [showOption, setShowOption] = useState<string>("");
     const [isRender, setIsRender] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
     const { title, page, sortField, sortOrder } = searchCourse;
     const [editCourseId, setEditCourseId] = useState<string>("");
+    const [deleteCourseId, setDeleteCourseId] = useState<string>("");
     const [prepareCourse, setPrepareCourse] = useState<boolean>(true);
     const [courseImages, setCourseImages] = useState<CourseImage[]>([]);
     const [messageList, setMessageList] = useState<ResponseMessage[]>([]);
@@ -195,9 +311,17 @@ export default function CourseManage() {
     }, [state.courses]);
 
     useEffect(() => {
-        const allUrlsReady = courseImages.every(course => course.url && course.url.trim() !== "");
+        const allUrlsReady = courseImages.every(img => {
+            const matchedCourse = state.courses.find(course => course._id === img._id);
+            if (matchedCourse?.thumbnail && matchedCourse.thumbnail.trim() !== "") {
+                return img.url && img.url.trim() !== "";
+            }
+            return true;
+        });
         if (courseImages.length > 0 && !allUrlsReady) {
             prepareImages();
+        } else {
+            setIsRender(true);
         }
     }, [courseImages]);
 
@@ -233,7 +357,6 @@ export default function CourseManage() {
         setPrepareCourse(true);
         await fetchCourseByTutor("", searchCourse);
         setPrepareCourse(false);
-        setIsRender(true);
     }
 
     const changePage = (type:string) => {
@@ -257,16 +380,33 @@ export default function CourseManage() {
     }
 
     const prepareImages = async() => {
-        const modifyUrl = await Promise.all(courseImages.map(async(course) => {
-            const newUrl = course.path.trim() !== "" ? await fetchFileFromStorage(course.path) : "";
-            return { ...course, url: newUrl };
-        }))
-        setCourseImages(modifyUrl);
+        if (courseImages.length === 0) {
+            setIsRender(true);
+            return;
+        }
+        const newCourseImages = await Promise.all(courseImages.map(async (course) => {
+            if (course.url && course.url.trim() !== "") return course;
+            if (course.path && course.path.trim() !== "") {
+                const newUrl = await fetchFileFromStorage(course.path);
+                if (newUrl && newUrl.trim() !== "") {
+                    return { ...course, url: newUrl };
+                }
+            }
+            return course;
+        }));
+        setCourseImages(newCourseImages);
+        setIsRender(true);
     }
 
     // render
     return (
         <div className="course-manage-container">
+            <DeleteCourseModal
+                setIsRender={setIsRender}
+                deleteCourseId={deleteCourseId}
+                setDeleteCourseId={setDeleteCourseId}
+                searchCourse={searchCourse}
+            />
             {messageList.length > 0 &&
                 <ToastMessageContainer messageList={messageList} setMessageList={setMessageList} />
             }
@@ -287,7 +427,24 @@ export default function CourseManage() {
                         handleSearchCourse={handleSearchCourse}
                     />
                     {prepareCourse ?
-                        <CourseSkeleton />
+                        <div
+                            style={{
+                                position: "fixed",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "#00000020",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                zIndex: "100000"
+                            }}
+                        >
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        </div>
                         :
                         <>
                             <div className="course-list-container">
@@ -295,7 +452,14 @@ export default function CourseManage() {
                                     <CourseCardInfo
                                         key={index}
                                         course={course}
+                                        showOption={showOption}
                                         course_image={courseImages}
+                                        setShowModal={setShowModal}
+                                        searchCourse={searchCourse}
+                                        deleteCourseId={deleteCourseId}
+                                        setDeleteCourseId={setDeleteCourseId}
+                                        setShowOption={setShowOption}
+                                        setEditCourseId={setEditCourseId}
                                     />
                                 ))}
                             </div>
@@ -320,7 +484,24 @@ export default function CourseManage() {
                     }
                 </>
                 :
-                ""
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "#00000020",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: "100000"
+                    }}
+                >
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                </div>
             }
         </div>
     );

@@ -185,11 +185,11 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
     }, [groupState.groups]);
 
     useEffect(() => {
-        if (courseState.course_detail !== null) {
+        if (courseState.course_edit !== null) {
             (async() => {
                 const editCourse = courseState.course_edit;
                 const thumbnailUrl = await fetchFileFromStorage(editCourse?.thumbnail ?? "");
-                setThumbnailImage({ file: null, url: thumbnailUrl });
+                setThumbnailImage({ file: null, url: thumbnailUrl ?? "" });
                 setCreateData({
                     thumbnail: editCourse?.thumbnail ?? "",
                     title: editCourse?.title ?? "",
@@ -217,6 +217,7 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
             (async() => {
                 await updateCourse(editCourseId, createData, searchCourse);
                 setIsUpdate(false);
+                setIsRender(true);
             })();
         }
     }, [isUpdate]);
@@ -264,13 +265,24 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
         if (validate) {
             switch (type) {
                 case "create":
+                    setIsRender(false);
                     const createThumbnail = createData.thumbnail.split("/course/course_image/")[1];
                     await uploadFile(thumbnailImage.file as File, "/course/course_image", createThumbnail);
                     await createCourse(createData, searchCourse);
                     clearForm();
+                    setIsRender(true);
                     setShowModal(false);
                     break;
                 case "update":
+                    setIsRender(false);
+                    const updateThumbnail = createData.thumbnail.split("/course/course_image/")[1];
+                    await uploadFile(thumbnailImage.file as File, "/course/course_image", updateThumbnail);
+                    await updateCourse(editCourseId, createData, searchCourse);
+                    dispatch({ type: "CLEAR_EDIT", message: "", status: 0 });
+                    clearForm();
+                    setEditCourseId("");
+                    setIsRender(true);
+                    location.reload();
                     break;
                 default:
                     break;
@@ -364,10 +376,13 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
                                                         handleCreateCourse("thumbnail", "");
                                                         setThumbnailImage({ file: null, url: "" });
                                                     } else {
+                                                        setIsRender(false);
                                                         await deleteFile([courseState.course_edit?.thumbnail ?? ""]);
-                                                        setThumbnailImage({ file: null, url: "" });
-                                                        handleCreateCourse("thumbnail", "");
-                                                        setIsUpdate(true);
+                                                        setTimeout(() => {
+                                                            setThumbnailImage({ file: null, url: "" });
+                                                            handleCreateCourse("thumbnail", "");
+                                                            setIsUpdate(true);
+                                                        }, 2000);
                                                     }
                                                 }}
                                             >
