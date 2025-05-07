@@ -42,6 +42,33 @@ const createSections = async(req, res) => {
     }
 }
 
+const createOneSection = async(req, res) => {
+    try {
+        // check request
+        const { _id } = req.verify_user;
+        const { error } = SectionBlueprint.validate(req.body, { abortEarly: false });
+        if (!_id) return res.status(400).json({ message: "The user was not found." });
+        if (error && error.details) {
+            const modifyDetail = error.details.map(err => ({
+                path: err.path,
+                message: err.message
+            }));
+            return res.status(400).json({ message: modifyDetail });
+        }
+        // create section
+        const section = await Sections.create({
+            ...req.body,
+            lesson_ids: req.body.lesson_ids.map(lesson_id => new mongoose.Types.ObjectId(lesson_id)),
+            createdBy: new mongoose.Types.ObjectId(_id),
+            updatedBy: new mongoose.Types.ObjectId(_id)
+        });
+        return res.status(200).json({ data: section, message: "The section was created successfully." });
+    } catch (err) {
+        console.error({ position: "Create one section", error: err });
+        return res.status(500).json({ message: "Error occurred during section creation." });
+    }
+}
+
 const getSectionById = async(req, res) => {
     try {
         // check user id
@@ -120,5 +147,6 @@ module.exports = {
     createSections,
     getSectionById,
     updateSection,
-    deleteSection
+    deleteSection,
+    createOneSection
 }

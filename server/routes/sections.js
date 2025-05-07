@@ -1,7 +1,11 @@
 const express = require("express");
-// const {  } = require("../controllers/sectionController");
+const {
+    createOneSection
+} = require("../controllers/sectionController");
+const { verifyToken, verifyRole } = require("../middlewares/auth");
+
 const router = express.Router();
 
-// router.post("/section/create", createSection);
+router.post("/section/create", verifyToken, verifyRole(["Tutor"]), createOneSection);
 
 module.exports = router;

@@ -201,8 +201,8 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
                     useCertificate: editCourse?.useCertificate ?? true,
                     duration: editCourse?.duration ?? 1,
                     level: editCourse?.level ?? "beginner",
-                    pretest: editCourse?.pretest ?? "",
-                    posttest: editCourse?.posttest ?? "",
+                    pretest: editCourse?.pretest ?? null,
+                    posttest: editCourse?.posttest ?? null,
                     description: editCourse?.description ?? "",
                     note: editCourse?.note ?? "",
                     group_ids: editCourse?.group_ids ?? [],
@@ -282,7 +282,8 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
                     clearForm();
                     setEditCourseId("");
                     setIsRender(true);
-                    location.reload();
+                    setShowModal(false);
+                    // location.reload();
                     break;
                 default:
                     break;
