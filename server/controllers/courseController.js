@@ -23,8 +23,8 @@ const CourseBlueprint = Joi.object({
     duration: Joi.number().integer().required(),
     level: Joi.string().valid("beginner", "intermediate", "expert").required(),
     // Optional section
-    pretest: Joi.string().allow("").optional(),
-    posttest: Joi.string().allow("").optional(),
+    pretest: Joi.string().allow(null).optional(),
+    posttest: Joi.string().allow(null).optional(),
     description: Joi.string().min(5).max(500),
     note: Joi.string().trim().max(7000).allow("").optional(),
     group_ids: Joi.array().items(Joi.string().trim()),
@@ -306,22 +306,26 @@ const deleteCourse = async(req, res) => {
     }
 }
 
-// const getSubCourseData = async(req, res) => {
-//     try {
-//         // check request
-//         const { _id } = req.verify_user;
-//         const { course_id } = req.params;
-//         if (!_id) return res.status(400).json({ message: "The user was not found." });
-//         if (!course_id) return res.status(400).json({ message: "The course was not found." });
-//         // query course
-//         const course = await Courses.findById(course_id)
-//             .select("thumbnail title description objectives group_ids status note pretest posttest section_ids")
-
-//     } catch (err) {
-//         console.error({ position: "Delete Course", error: err });
-//         return res.status(500).json({ message: "Something went wrong." });
-//     }
-// }
+const getSubCourseData = async(req, res) => {
+    try {
+        // check request
+        const { _id } = req.verify_user;
+        const { course_id } = req.params;
+        if (!_id) return res.status(400).json({ message: "The user was not found." });
+        if (!course_id) return res.status(400).json({ message: "The course was not found." });
+        // query course
+        const course = await Courses.findById(course_id)
+            .select("thumbnail title description objectives group_ids status note pretest posttest section_ids")
+            .populate({ path: "group_ids", select: "name -_id" })
+            .populate({ path: "pretest", select: "_id title description random_question" })
+            .populate({ path: "section_ids", select: "_id title", populate: { path: "lesson_ids" } })
+            .lean()
+        return res.status(200).json({ data: course });
+    } catch (err) {
+        console.error({ position: "Delete Course", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
 
 module.exports = {
     createCourse,
@@ -331,5 +335,6 @@ module.exports = {
     getCourseBySlug,
     getCourseById,
     updateCourse,
-    deleteCourse
+    deleteCourse,
+    getSubCourseData
 }
