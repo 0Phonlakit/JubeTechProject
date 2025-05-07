@@ -190,7 +190,7 @@ const CourseCardInfo = ({ course, course_image, showOption, setShowOption, setSh
                     className="course-option-list"
                 >
                     <ul>
-                        <li>
+                        <li onClick={() => location.href = "/dashboard/course/sub/" + course._id}>
                             <i><BsBookHalf size={13} /></i>
                             Manage section
                         </li>

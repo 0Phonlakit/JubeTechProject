@@ -65,8 +65,8 @@ const createCourse = async(req, res) => {
             section_ids: section_ids.map(section_id => new mongoose.Types.ObjectId(section_id)),
             instructor: new mongoose.Types.ObjectId(_id),
             slug: generateSlug,
-            pretest: pretest ? new mongoose.Types.ObjectId(pretest) : "",
-            posttest: posttest ? new mongoose.Types.ObjectId(posttest) : "",
+            pretest: pretest ? new mongoose.Types.ObjectId(pretest) : null,
+            posttest: posttest ? new mongoose.Types.ObjectId(posttest) : null,
             createdBy: new mongoose.Types.ObjectId(_id),
             updatedBy: new mongoose.Types.ObjectId(_id),
         });
@@ -305,6 +305,23 @@ const deleteCourse = async(req, res) => {
         return res.status(500).json({ message: "Something went wrong." });
     }
 }
+
+// const getSubCourseData = async(req, res) => {
+//     try {
+//         // check request
+//         const { _id } = req.verify_user;
+//         const { course_id } = req.params;
+//         if (!_id) return res.status(400).json({ message: "The user was not found." });
+//         if (!course_id) return res.status(400).json({ message: "The course was not found." });
+//         // query course
+//         const course = await Courses.findById(course_id)
+//             .select("thumbnail title description objectives group_ids status note pretest posttest section_ids")
+
+//     } catch (err) {
+//         console.error({ position: "Delete Course", error: err });
+//         return res.status(500).json({ message: "Something went wrong." });
+//     }
+// }
 
 module.exports = {
     createCourse,

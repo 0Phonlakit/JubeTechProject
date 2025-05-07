@@ -19,6 +19,7 @@ const MyCourses = lazy(() => import("./pages/MyCourses"));
 const CartPage = lazy(() => import("./pages/CartPage"));
 const ExamManagement = lazy(() => import("./pages/ExamManagement"));
 const QuestionManagement = lazy(() => import("./pages/QuestionManagement"));
+const SubCourseManagement = lazy(() => import("./pages/SubCourseManagement.tsx"));
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
@@ -49,6 +50,7 @@ function App() {
           <Route path="/cart" element={<CartPage />}></Route>
           <Route path="/dashboard/exam-management" element={<ExamManagement toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/dashboard/exam/:exam_id/questions" element={<QuestionManagement />}></Route>
+          <Route path="/dashboard/course/sub/:course_id" element={<SubCourseManagement />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
