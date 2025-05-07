@@ -55,7 +55,7 @@ export function ToastMessageContainer({ messageList, setMessageList }:ToastProp)
                         {isServerError(alert.status) &&
                             <div style={{ ...alertStyle, backgroundColor: "red" }}></div>
                         }
-                        <p className='me-auto'>Lesson alert</p>
+                        <p className='me-auto'>System Alert</p>
                     </Toast.Header>
                     <Toast.Body>
                         <p style={{ fontSize: "0.75rem" }}>{alert.message}</p>
