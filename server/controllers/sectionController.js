@@ -178,9 +178,13 @@ const attachLessonInSection = async(req, res) => {
             _id: new mongoose.Types.ObjectId(section_id),
             createdBy: new mongoose.Types.ObjectId(_id)
         });
-        section.lesson_ids = [...section.lesson_ids, new mongoose.Types.ObjectId(lesson_id)];
-        await section.save();
-        return res.status(200).json({ message: "The lesson was attached from section successfully." });
+        if (section) {
+            section.lesson_ids = [...section.lesson_ids, new mongoose.Types.ObjectId(lesson_id)];
+            await section.save();
+            return res.status(200).json({ message: "The lesson was attached from section successfully." });
+        } else {
+            return res.status(500).json({ message: "Error from attach lesson from section." });
+        }
     } catch (err) {
         console.error({ position: "Attach lesson in section", error: err });
         return res.status(500).json({ message: "Something went wrong." });

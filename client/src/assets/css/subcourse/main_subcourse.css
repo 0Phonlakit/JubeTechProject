@@ -2,6 +2,7 @@
     width: 100%;
     height: 100%;
     max-width: 1600px;
+    min-height: 100vh;
     box-sizing: border-box;
     overflow-y: scroll;
     background-color: #f9f9f9;
