@@ -1,0 +1,45 @@
+.code-editor-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #24292f;
+
+    * {
+        font-family: "Inter", sans-serif;
+    }
+
+    .code-editor-content {
+        width: 100%;
+        flex-grow: 1;
+        overflow-y: scroll;
+        font-size: 0.9rem;
+    }
+
+    .result-container {
+        height: 200px;
+        color: #FFFFFF;
+        min-height: 100px;
+        position: relative;
+        background-color: #1e1e1e;
+
+        .resize-handle {
+            position: absolute;
+            top: -3px;
+            left: 0;
+            height: 2px;
+            width: 100%;
+            cursor: row-resize;
+            background-color: #ffffff4e;
+        }
+    }
+}
+
+.main-code-editor {
+    display: flex;
+    .code-option {
+        width: 250px;
+        height: 100%;
+        background-color: #252525;
+    }
+}
