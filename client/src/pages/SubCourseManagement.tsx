@@ -385,7 +385,7 @@ export default function SubCourseManagement() {
                     }
                     <div className="sub-course-topbar">
                         <div className="back-course" onClick={reConfirmExit}>
-                            <button onClick={reConfirmExit}>
+                            <button>
                                 <i><BsChevronLeft size={18} /></i>
                             </button>
                             <span style={{ cursor: "pointer" }}>Back to main course</span>
