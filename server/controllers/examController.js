@@ -130,6 +130,27 @@ const updateExam = async(req, res) => {
     }
 }
 
+const searchExamForTest = async(req, res) => {
+    try {
+        // check request
+        const { _id } = req.verify_user;
+        const { title = "" } = req.query;
+        if (!_id) return res.status(400).json({ message: "The user was not found." });
+        // query exam
+        const exams = await Exams.find({
+            createdBy: new mongoose.Types.ObjectId(_id),
+            title: { $regex: title, $options: "i" }
+        })
+        .select("_id title")
+        .limit(20)
+        .lean();
+        return res.status(200).json({ data: exams });
+    } catch (err) {
+        console.error({ position: "Search exam for test", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
 const deleteExam = async(req, res) => {
     try {
         // check req
@@ -159,4 +180,5 @@ module.exports = {
     getExamById,
     updateExam,
     deleteExam,
+    searchExamForTest
 }
