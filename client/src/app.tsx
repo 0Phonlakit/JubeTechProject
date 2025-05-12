@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // Pages
 const UserTable = lazy(() => import("./pages/UserTable"));
 // const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
+// @ts-ignore
 const Landing = lazy(() => import("./pages/landing"));
 const CourseManagement = lazy(() => import("./pages/CourseManagement"));
 const RoleManagement = lazy(() => import("./pages/RoleTable"));
@@ -21,6 +22,7 @@ const ExamManagement = lazy(() => import("./pages/ExamManagement"));
 const QuestionManagement = lazy(() => import("./pages/QuestionManagement"));
 const SubCourseManagement = lazy(() => import("./pages/SubCourseManagement.tsx"));
 const CodeEditor = lazy(() => import("./pages/CodeEditor.tsx"));
+const LearnCourse = lazy(() => import("./pages/LearnCourse.tsx"));
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
@@ -53,6 +55,7 @@ function App() {
           <Route path="/dashboard/exam/:exam_id/questions" element={<QuestionManagement />}></Route>
           <Route path="/dashboard/course/sub/:course_id" element={<SubCourseManagement />}></Route>
           <Route path="/dashboard/jube-code-lab" element={<CodeEditor toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
+          <Route path="/course/learn/:course_id" element={<LearnCourse />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
