@@ -25,6 +25,8 @@
     "antd": "^5.24.1",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
+    "codemirror": "^5.65.19",
+    "codemirror-mode-elixir": "^1.1.2",
     "datatables.net": "^2.2.1",
     "datatables.net-dt": "^2.2.1",
     "datatables.net-react": "^1.0.0",
