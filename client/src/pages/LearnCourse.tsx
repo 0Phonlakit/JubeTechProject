@@ -371,7 +371,7 @@ export default function LearnCourse() {
                                         {course.section_ids.map((section, index) => (
                                             <Collapse
                                                 key={index}
-                                                defaultActiveKey={["0"]}
+                                                defaultActiveKey={[...index.toString()]}
                                                 collapsible="header"
                                                 style={{ width: "340px", overflow: "hidden", paddingRight: "10px", backgroundColor: "#b81ce8" }}
                                                 items={[
