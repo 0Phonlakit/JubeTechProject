@@ -331,6 +331,7 @@ export default function CourseModal({ showModal, setShowModal, editCourseId, set
                                 type="button"
                                 className="close-course-modal"
                                 onClick={() => {
+                                    clearForm();
                                     setEditCourseId("");
                                     dispatch({ type: "CLEAR_EDIT", message: "", status: 0 });
                                     setShowModal(!showModal);

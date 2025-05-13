@@ -104,18 +104,18 @@ const updateQuestion = async(req, res) => {
             return res.status(400).json({ message: modifyDetail });
         }
         // update questions
-        for (let index = 0; index < questions.length; index++) {
-            await Questions.findByIdAndUpdate(questions[index]._id, {
-                question: questions[index].question,
-                type: questions[index].type,
-                question_image: questions[index].question_image ?? "",
-                choices: questions[index].choices ?? [],
-                test_case: questions[index].test_case ?? [],
-                has_solution: questions[index].has_solution,
-                solution: questions[index].solution,
+        questions.map(async(question) => {
+            await Questions.findByIdAndUpdate(question._id, {
+                question: question.question,
+                type: question.type,
+                question_image: question.question_image ?? "",
+                choices: question.choices ?? [],
+                test_case: question.test_case ?? [],
+                has_solution: question.has_solution,
+                solution: question.solution,
                 updatedBy: new mongoose.Types.ObjectId(_id)
             });
-        }
+        })
         const exam = await Exams.findById(exam_id);
         const modifyQuestion = questions.map(question => new mongoose.Types.ObjectId(question._id));
         exam.question_ids = modifyQuestion;

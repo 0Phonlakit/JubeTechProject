@@ -327,6 +327,46 @@ const getSubCourseData = async(req, res) => {
     }
 }
 
+const getLearnCourse = async(req, res) => {
+    try {
+        // check request
+        const { course_id } = req.params;
+        if (!course_id) return res.status(400).json({ message: "The course was not found." });
+        // query course
+        const course = await Courses.findById(course_id)
+        .select("thumbnail title description objectives group_ids rating instructor pretest posttest useCertificate duration level section_ids")
+        .populate({
+            path: "group_ids",
+            select: "name -_id"
+        })
+        .populate({
+            path: "instructor",
+            select: "firstname lastname email -_id"
+        })
+        .populate({
+            path: "pretest",
+            select: "_id title description"
+        })
+        .populate({
+            path: "posttest",
+            select: "_id title description"
+        })
+        .populate({
+            path: "section_ids",
+            select: "title lesson_ids -_id",
+            populate: {
+                path: "lesson_ids",
+                select: "_id name type sub_file main_content"
+            }
+        })
+        .lean();
+        return res.status(200).json({ course });
+    } catch (err) {
+        console.error({ position: "Get course to learn", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
 module.exports = {
     createCourse,
     getCoursesByTutor,
@@ -336,5 +376,6 @@ module.exports = {
     getCourseById,
     updateCourse,
     deleteCourse,
-    getSubCourseData
+    getSubCourseData,
+    getLearnCourse
 }

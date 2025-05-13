@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node --max-old-space-size=4096 node_modules/vite/bin/vite.js build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -18,10 +18,16 @@
     "@tiptap/pm": "^2.11.5",
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
+    "@uiw/codemirror-theme-andromeda": "^4.23.12",
+    "@uiw/codemirror-theme-aura": "^4.23.12",
+    "@uiw/react-codemirror": "^4.23.12",
+    "@videojs/themes": "^1.0.1",
     "animate.css": "^4.1.1",
     "antd": "^5.24.1",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
+    "codemirror": "^5.65.19",
+    "codemirror-mode-elixir": "^1.1.2",
     "datatables.net": "^2.2.1",
     "datatables.net-dt": "^2.2.1",
     "datatables.net-react": "^1.0.0",
@@ -29,6 +35,8 @@
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "firebase": "^11.3.1",
+    "html-react-parser": "^5.2.5",
+    "html2pdf.js": "^0.10.3",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.8",
     "react-dom": "^18.3.1",
@@ -42,7 +50,8 @@
     "sortablejs": "^1.15.6",
     "sweetalert2": "^11.15.10",
     "swiper": "^11.2.1",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "video.js": "^8.22.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

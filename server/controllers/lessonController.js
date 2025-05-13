@@ -139,6 +139,27 @@ const updateLesson = async(req, res) => {
     }
 }
 
+const searchLessonForTest = async(req, res) => {
+    try {
+        // check request
+        const { _id } = req.verify_user;
+        const { name = "" } = req.query;
+        if (!_id) return res.status(400).json({ message: "The user was not found." });
+        // query exam
+        const lessons = await Lessons.find({
+            createdBy: new mongoose.Types.ObjectId(_id),
+            name: { $regex: name, $options: "i" }
+        })
+        .select("_id name")
+        .limit(20)
+        .lean();
+        return res.status(200).json({ data: lessons });
+    } catch (err) {
+        console.error({ position: "Search exam for test", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
 const deleteLesson = async(req, res) => {
     try {
         // check user id
@@ -184,5 +205,6 @@ module.exports = {
     getLessonById,
     updateLesson,
     deleteLesson,
-    getLessonByTutor
+    getLessonByTutor,
+    searchLessonForTest
 }

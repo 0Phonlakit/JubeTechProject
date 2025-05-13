@@ -11,7 +11,7 @@ export default function DashboardOverview({ toggleSidebar, setToggleSidebar }:IF
 
     return (
         <MainDashboard
-            title="Tutor Dashboard"
+            title=""
             toggleSidebar={toggleSidebar}
             setToggleSidebar={setToggleSidebar}
             title_sidebar="ภาพรวมแดชบอร์ด"

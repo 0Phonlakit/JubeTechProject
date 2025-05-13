@@ -180,6 +180,7 @@ span.course-title {
 span.course-description {
     font-family: "Mitr", sans-serif;
     max-width: 270px;
+    height: 65px;
     color: #737373;
     font-size: 0.85rem;
     text-align: left;

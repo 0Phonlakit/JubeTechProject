@@ -1,4 +1,5 @@
 import {
+    FaFileCode,
     FaHouse,
     FaBookOpenReader,
     FaUser,
@@ -18,23 +19,23 @@ export interface Menu {
 }
 
 export const menus:Menu[] = [
-    { 
-        title: "แผนภูมิภาพรวมติวเตอร์",
-        href: "/dashboard/tutor/statistic",
-        icon: FaHouse,
-        roles: ["Tutor"]
+    // { 
+    //     title: "แผนภูมิภาพรวมติวเตอร์",
+    //     href: "/dashboard/tutor/statistic",
+    //     icon: FaHouse,
+    //     roles: ["Tutor"]
+    // },
+    {
+        title: "ภาพรวม",
+        href: "/dashboard/admin/dashboard-overview",
+        icon: MdLeaderboard,
+        roles: ["Admin"]
     },
     {
         title: "จัดการคอร์สเรียน",
         href: "/dashboard/course-management",
         icon: FaBookOpenReader,
         roles: ["Tutor"]
-    },
-    {
-        title: "ภาพรวม",
-        href: "/dashboard/admin/dashboard-overview",
-        icon: MdLeaderboard,
-        roles: ["Admin"]
     },
     {
         title: "จัดการผู้ใช้งาน",
@@ -65,5 +66,11 @@ export const menus:Menu[] = [
         href: "/dashboard/exam-management",
         icon: FaFilePen,
         roles: ["Tutor"]
+    },
+    {
+        title: "JubeCodeLab",
+        href: "/dashboard/jube-code-lab/",
+        icon: FaFileCode,
+        roles: ["Student", "Admin", "Tutor"]
     }
 ]
