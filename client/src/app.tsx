@@ -55,7 +55,8 @@ function App() {
           <Route path="/dashboard/exam/:exam_id/questions" element={<QuestionManagement />}></Route>
           <Route path="/dashboard/course/sub/:course_id" element={<SubCourseManagement />}></Route>
           <Route path="/dashboard/jube-code-lab" element={<CodeEditor toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
-          <Route path="/course/learn/:course_id" element={<LearnCourse />}></Route>
+          <Route path="/course/learn/:course_id/" element={<LearnCourse />}></Route>
+          <Route path="/course/learn/:course_id/lesson/:lesson_id" element={<LearnCourse />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

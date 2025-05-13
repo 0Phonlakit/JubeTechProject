@@ -8,7 +8,8 @@ const {
     getCourseById,
     updateCourse,
     deleteCourse,
-    getSubCourseData
+    getSubCourseData,
+    getLearnCourse,
 } = require("../controllers/courseController");
 const { verifyToken, verifyRole } = require("../middlewares/auth");
 
@@ -19,11 +20,12 @@ router.get("/course/all", getAllCourses);
 router.get("/course/pagination", paginationCourse);
 router.get("/course/slug/:slug", getCourseBySlug);
 // private access
+router.get("/course/learn/:course_id", getLearnCourse);
 router.post("/course/create", verifyToken, verifyRole(["Tutor"]), createCourse);
 router.get("/course/tutor", verifyToken, verifyRole(["Tutor"]), getCoursesByTutor);
 router.get("/course/id/:course_id", verifyToken, verifyRole(["Tutor"]), getCourseById);
 router.put("/course/update/:course_id", verifyToken, verifyRole(["Tutor"]), updateCourse);
-router.get("/course/sub/id/:course_id", verifyToken, verifyRole(["Tutor"]), getSubCourseData);
 router.delete("/course/delete/:course_id", verifyToken, verifyRole(["Tutor"]), deleteCourse);
+router.get("/course/sub/id/:course_id", verifyToken, verifyRole(["Tutor"]), getSubCourseData);
 
 module.exports = router;

@@ -186,6 +186,7 @@ export default function CodeEditor({toggleSidebar, setToggleSidebar}:IFToggleSid
             setIsCompile(false);
         } catch (error) {
             message.error("Error from compile code.");
+            setIsCompile(false);
         }
     }
 
