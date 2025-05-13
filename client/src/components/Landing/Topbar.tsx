@@ -64,6 +64,7 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
         updatedAt: "",
     });
     const [roles, setRole] = useState<string[]>([]);
+    const [cartItemCount, setCartItemCount] = useState<number>(0);
 
     useEffect(() => {
         if (isRender === false) {
@@ -74,7 +75,29 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
             setRole(await checkRole());
         }
         if (checkUser()) prepareRole();
+        
+        // ดึงข้อมูลจำนวนสินค้าในตะกร้าจาก localStorage
+        updateCartCount();
+        
+        // เพิ่ม event listener สำหรับการอัพเดตตะกร้า
+        window.addEventListener('cartUpdated', updateCartCount);
+        
+        // ลบ event listener เมื่อ component unmount
+        return () => {
+            window.removeEventListener('cartUpdated', updateCartCount);
+        };
     }, []);
+    
+    // ฟังก์ชันอัพเดตจำนวนสินค้าในตะกร้า
+    const updateCartCount = () => {
+        const cartItemsStr = localStorage.getItem('cartItems');
+        if (cartItemsStr) {
+            const cartItems = JSON.parse(cartItemsStr);
+            setCartItemCount(cartItems.length);
+        } else {
+            setCartItemCount(0);
+        }
+    };
 
     // Render
     return (
@@ -141,7 +164,12 @@ export default function Topbar({ modalStatus, setShowModal, setTypeModal }:Topba
                     <a href="/my-courses">คอร์สเรียนของเรา</a>
                 )}
                 {/* Cart */}
-                <a href="/cart"><i><FaCartShopping /></i></a>
+                <a href="/cart" className="cart-icon-container">
+                    <i><FaCartShopping /></i>
+                    {cartItemCount > 0 && (
+                        <span className="cart-count">{cartItemCount}</span>
+                    )}
+                </a>
                 {/* Notification */}
                 <a href="#"><i><FaNewspaper /></i></a>
                 {checkUser()
