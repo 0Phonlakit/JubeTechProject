@@ -4,12 +4,12 @@ const Promotion = require('../models/Promotion');
 
 const getDashboardOverview = async (req, res) => {
   try {
-    // นับจำนวนผู้ใช้ทั้งหมด
+    // Count all users
     const totalUsers = await User.countDocuments();
     const activeUsers = await User.countDocuments({ status: true });
     const inactiveUsers = await User.countDocuments({ status: false });
 
-    // สรุปผู้ใช้ใหม่ในแต่ละเดือน แยกตาม role
+    // Summary of new users each month, separated by role
     const now = new Date();
     const year = now.getFullYear();
 
@@ -53,15 +53,14 @@ const getDashboardOverview = async (req, res) => {
         }
       }
     ]);
-    
 
-    // จัดรูปแบบข้อมูลใหม่ให้เรียงตามเดือน
+    // Reformat data to sort by month and role
     const monthlyData = Array.from({ length: 12 }, (_, i) => ({
       month: i + 1,
       tutor: 0,
       student: 0
     }));
-    
+
     monthlyNewUsers.forEach(({ _id, count }) => {
       const { month, role } = _id;
       if (role === "tutor") {
@@ -69,24 +68,27 @@ const getDashboardOverview = async (req, res) => {
       } else if (role === "student") {
         monthlyData[month - 1].student = count;
       }
-    });    
+    });
 
-    // debug
-    // console.log("monthlyNewUsers", monthlyNewUsers);
-
-    // คอร์สเรียน
+    // Course
     const totalCourses = await Course.countDocuments();
     const publishedCourses = await Course.countDocuments({ status: "published" });
     const draftCourses = await Course.countDocuments({ status: "draft" });
     const topCourses = await Course.find().sort({ student_enrolled: -1 }).limit(5);
 
-    // โปรโมชั่น
-    const activePromotions = await Promotion.countDocuments({ status: true });
-    const expiringPromotions = await Promotion.countDocuments({
-      end_date: { $lt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }
+    // Promotion
+    const today = new Date();
+    const activePromotions = await Promotion.countDocuments({
+      status: true,
+      end_date: { $gte: today }
     });
 
-    // รายได้รวม (รอเชื่อมกับ Transaction ในอนาคต)
+    const expiringPromotions = await Promotion.countDocuments({
+      end_date: { $lt: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) },
+      end_date: { $gte: today }
+    });
+
+    // Total income (waiting to connect with future transactions)
     const totalRevenue = 0;
 
     res.json({
