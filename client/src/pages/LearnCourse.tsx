@@ -317,7 +317,7 @@ export default function LearnCourse() {
                         :
                         <>
                             <div className="header-course-content">
-                                <button>
+                                <button onClick={() => location.href = "/"}>
                                     <i><BsChevronLeft size={15} /></i>
                                     <span>Back page</span>
                                 </button>
