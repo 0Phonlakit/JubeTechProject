@@ -29,6 +29,7 @@ export default function Certificate({
         else {
             fetchUser();
             fetchCourse();
+            window.print();
         }
     }, []);
 
