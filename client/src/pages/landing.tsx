@@ -44,7 +44,7 @@ export default function Landing() {
                         </div>
                         <div className="card-container">
                             <img src={Star} alt="star" />
-                            <p>แบบทดสอบ Coding ที่หลากหลายภาษา</p>
+                            <p>มี Compiler หลากหลายภาษาโดย JubeCodeLab</p>
                         </div>
                     </div>
                 </div>
