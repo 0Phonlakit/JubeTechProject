@@ -7,8 +7,8 @@ const Joi = require("joi");
 const CodeBlueprint = Joi.object({
     source_code: Joi.string().allow("").required(),
     language_id: Joi.number().integer().allow(0).required(),
-    stdin: Joi.string().allow("").optional(),
-    stdout: Joi.string().allow("").optional()
+    stdin: Joi.string().allow("", null).optional(),
+    stdout: Joi.string().allow("", null).optional()
 });
 
 const token = process.env.COMPILER_TOKEN;
@@ -47,7 +47,7 @@ const compileTestCode = async(req, res) => {
         // submission
         const { source_code = "", language_id = 0, stdin = null, stdout = null } = req.body;
         const response = await axios.post(`${process.env.COMPILER_PATH}/submissions/?base64_encoded=false&wait=true`, {
-            source_code, language_id, cpu_time_limit: 10, memory_limit: 512000
+            source_code, language_id, cpu_time_limit: 10, memory_limit: 512000, stdin, stdout
         }, {
             headers: {
                 "X-Auth-Token": token

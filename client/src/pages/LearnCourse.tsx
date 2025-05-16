@@ -1,7 +1,8 @@
 import {
     BsDownload,
     BsChevronLeft,
-    BsFillFolderFill
+    BsFillFolderFill,
+    BsFileEarmarkFontFill
 } from "react-icons/bs";
 
 import axios from "axios";
@@ -10,7 +11,9 @@ import { useParams } from "react-router-dom";
 import Spinner from 'react-bootstrap/Spinner';
 import { useEffect, useState, useRef } from "react";
 // @ts-ignore
-import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+// import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
 import { fetchFileFromStorage } from "../services/storage";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { HTMLsanitization } from "../services/sanitization";
@@ -110,25 +113,6 @@ const VideoComponent = ({ videoContent }:{ videoContent:string }) => {
 
     return (
         <div className="video-content">
-            {/* {initialVideo === false && (
-                <div
-                    className="preload-learn-course"
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "#00000020",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: "100000"
-                    }}
-                >
-                    <Spinner animation="border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </Spinner>
-                </div>
-            )} */}
-
             <video
                 ref={videoRef}
                 className="video-js vjs-theme-fantasy manual-video"
@@ -260,17 +244,66 @@ export default function LearnCourse() {
         }
     }
 
-    const handleDownloadPDF = () => {
-        const element = contentRef.current;
-        const option = {
-            margin: 0.5,
-            filename: `${currentLesson.name}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+    const handleDownloadPDF = async() => {
+        // const element = contentRef.current;
+        // if (!element) return;
+
+        // const canvas = await html2canvas(element, {
+        //     scale: 2,
+        //     scrollY: -window.scrollY,
+        //     useCORS: true,
+        // });
+
+        // const imgData = canvas.toDataURL("image/png");
+        // const pdf = new jsPDF("p", "mm", "a4");
+
+        // const pdfWidth = pdf.internal.pageSize.getWidth();
+        // const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        // pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        // pdf.save(`${currentLesson.name}.pdf`);
+        const original = contentRef.current;
+        if (!original) return;
+        let container = document.getElementById("pdf-clone-container");
+        if (!container) {
+            container = document.createElement("div");
+            container.id = "pdf-clone-container";
+            container.style.position = "fixed";
+            container.style.left = "-99999px";
+            container.style.top = "0";
+            document.body.appendChild(container);
+        }
+        const clone = original.cloneNode(true) as HTMLElement;
+        clone.style.width = original.scrollWidth + "px";
+        clone.style.height = original.scrollHeight + "px";
+        clone.style.maxHeight = "none";
+        clone.style.overflow = "visible";
+        clone.style.background = "#fff";
+        clone.style.visibility = "visible";
+        clone.style.display = "block";
+        container.appendChild(clone);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const canvas = await html2canvas(clone, {
+            scale: 2,
+            useCORS: true,
+            scrollY: 0,
+            windowWidth: clone.scrollWidth,
+            windowHeight: clone.scrollHeight,
+        });
+        container.removeChild(clone);
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        let position = 0;
+        while (position < pdfHeight) {
+            pdf.addImage(imgData, "PNG", 0, -position, pdfWidth, pdfHeight);
+            position += pdf.internal.pageSize.getHeight();
+            if (position < pdfHeight) pdf.addPage();
         }
 
-        html2pdf().set(option).from(element).save();
+        pdf.save(`${currentLesson.name}.pdf`);
     }
 
     const downloadSubFile = async (path: string) => {
@@ -368,6 +401,12 @@ export default function LearnCourse() {
                                 </div>
                                 <div className="side-section">
                                     <Space direction="vertical">
+                                        {course.pretest && (
+                                            <div className="pretest-container" onClick={() => location.href = "/quiz/test/" + course.pretest}>
+                                                <i><BsFileEarmarkFontFill size={18} /></i>
+                                                Pretest
+                                            </div>
+                                        )}
                                         {course.section_ids.map((section, index) => (
                                             <Collapse
                                                 key={index}
@@ -444,9 +483,16 @@ export default function LearnCourse() {
                                                 ]}
                                             />
                                         ))}
+                                        {course.posttest && (
+                                            <div className="posttest-container" onClick={() => location.href = "/quiz/test/" + course.posttest}>
+                                                <i><BsFileEarmarkFontFill size={18} /></i>
+                                                Posttest
+                                            </div>
+                                        )}
                                     </Space>
                                 </div>
                             </div>
+                            <div id="pdf-clone-container" style={{position:"fixed",left:"-99999px",top:0}}></div>
                         </>
                     }
                 </div>

@@ -304,6 +304,24 @@ export default function SubCourseManagement() {
                 title: section.title,
                 lesson_ids: section.lesson_ids.map(lesson => lesson._id)
             }));
+            if (courseData.pretest) {
+                await axios.post(`${import.meta.env.VITE_API_URL}/course/attach/exam/${course_id}`, {
+                    exam_id: courseData.pretest, type: "pretest"
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${getToken()}`
+                    }
+                });
+            }
+            if (courseData.posttest) {
+                await axios.post(`${import.meta.env.VITE_API_URL}/course/attach/exam/${course_id}`, {
+                    exam_id: courseData.posttest, type: "posttest"
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${getToken()}`
+                    }
+                });
+            }
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/section/update`, {
                 sections, course_id
             }, {

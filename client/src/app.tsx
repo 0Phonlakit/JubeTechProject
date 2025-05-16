@@ -23,6 +23,8 @@ const QuestionManagement = lazy(() => import("./pages/QuestionManagement"));
 const SubCourseManagement = lazy(() => import("./pages/SubCourseManagement.tsx"));
 const CodeEditor = lazy(() => import("./pages/CodeEditor.tsx"));
 const LearnCourse = lazy(() => import("./pages/LearnCourse.tsx"));
+const QuizTest = lazy(() => import("./pages/QuizTest.tsx"));
+const Certificate = lazy(() => import("./pages/Certificate.tsx"));
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
@@ -57,6 +59,8 @@ function App() {
           <Route path="/dashboard/jube-code-lab" element={<CodeEditor toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} />}></Route>
           <Route path="/course/learn/:course_id/" element={<LearnCourse />}></Route>
           <Route path="/course/learn/:course_id/lesson/:lesson_id" element={<LearnCourse />}></Route>
+          <Route path="/quiz/test/:exam_id" element={<QuizTest />}></Route>
+          <Route path="/certificate/:course_id" element={<Certificate />}></Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
