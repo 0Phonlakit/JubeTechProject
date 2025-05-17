@@ -166,6 +166,7 @@ export const verifyUser = async() => {
             const data = response.data.data;
             if (data.role_ids && data.role_ids.length > 0) {
                 const roles = data.role_ids.map((role:{_id:string, role_name:string}) => role.role_name);
+                console.log(roles,"get role")
                 const hasRole = ["Student", "Admin", "Tutor"].some(role => roles.includes(role));
                 if (hasRole) return true;
             }

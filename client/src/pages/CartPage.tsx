@@ -301,7 +301,9 @@ const CartPage = () => {
                       className="checkout-btn"
                       disabled={selectedItemsCount === 0}
                       component={Link}
-                      to="/login?redirect=cart"
+                      onClick={()=>{
+                        alert("กรุณาเข้าสู่ระบบเพื่อชำระเงิน");
+                      }}
                       sx={{
                         backgroundColor: "#a906f5",
                         '&:hover': {
