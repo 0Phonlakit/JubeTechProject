@@ -8,7 +8,6 @@ exports.getMyCourses = async (req, res) => {
 
     const enrollments = await Enrollment.find({ 
       user: _id,
-      status: 'active',
       paymentStatus: 'successful'
     })
     .populate({
@@ -61,12 +60,12 @@ exports.getMyCoursesByStatus = async (req, res) => {
     const { status } = req.query; // รับพารามิเตอร์ status จาก query string (active, completed)
 
     // ตรวจสอบว่า status ถูกต้องหรือไม่
-    if (status && !['active', 'completed'].includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'สถานะไม่ถูกต้อง ต้องเป็น active หรือ completed เท่านั้น'
-      });
-    }
+    // if (status && !['active', 'completed'].includes(status)) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: 'สถานะไม่ถูกต้อง ต้องเป็น active หรือ completed เท่านั้น'
+    //   });
+    // }
 
     // สร้างเงื่อนไขการค้นหา
     const query = { 
@@ -142,8 +141,7 @@ exports.updateCourseProgress = async (req, res) => {
     // ค้นหาการลงทะเบียน
     const enrollment = await Enrollment.findOne({
       user: userId,
-      course: courseId,
-      status: 'active'
+      course: courseId
     });
 
     if (!enrollment) {

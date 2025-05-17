@@ -197,7 +197,7 @@ const getCourseBySlug = async(req, res) => {
                 select: "_id title lesson_ids",
                 populate: {
                     path: "lesson_ids",
-                    select: "_id name type duration order isFreePreview"
+                    select: "_id name type duration order main_content isFreePreview"
                 }
             })
             .populate({ path: "pretest", select: "title -_id" })

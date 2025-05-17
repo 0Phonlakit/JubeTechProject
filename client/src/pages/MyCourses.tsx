@@ -183,7 +183,7 @@ const MyCourses = () => {
         const allCourses = response.data.data || [];
 
 
-        const active = allCourses.filter((course: Course) => course.status === 'active' && course.progress < 100);
+        const active = allCourses.filter((course: Course) => course.progress < 100);
 
 
         const activeCourses = await Promise.all(active.map(async (course: Course) => {

@@ -15,11 +15,64 @@ const previewBadgeStyle = `
     margin-left: 8px;
     font-weight: 500;
   }
+  .lock-badge {
+    background-color: #f44336;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
   .lecture-item {
     cursor: pointer;
   }
   .lecture-item:hover {
     background-color: rgba(165, 41, 210, 0.05);
+  }
+  .locked-content-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+  }
+  .locked-content-overlay svg {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #f44336;
+  }
+  .locked-content-overlay h3 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+  }
+  .locked-content-overlay p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    max-width: 80%;
+  }
+  .locked-content-overlay button {
+    margin-top: 1rem;
+    background-color: var(--purple-logo-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .locked-content-overlay button:hover {
+    background-color: #a529d2;
+    transform: translateY(-2px);
   }
 `;
 
@@ -45,6 +98,9 @@ const CourseDetailPage = () => {
   const [typeModal, setTypeModal] = useState<number>(0);
   const [previewVideo, setPreviewVideo] = useState<string>("");
   const [openPreviewModal, setOpenPreviewModal] = useState<boolean>(false);
+  const [openLockedModal, setOpenLockedModal] = useState<boolean>(false);
+  const [previewContent, setPreviewContent] = useState<string>("");
+  const [openContentPreviewModal, setOpenContentPreviewModal] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -131,6 +187,178 @@ const CourseDetailPage = () => {
       </div>
     );
   }
+
+  const ContentPreviewModal = () => {
+    return (
+      <Modal
+        open={openContentPreviewModal}
+        onClose={() => setOpenContentPreviewModal(false)}
+        aria-labelledby="content-preview-modal"
+        aria-describedby="preview content of the lesson"
+        sx={{
+          backdropFilter: 'blur(5px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)'
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '90%',
+          maxWidth: '800px',
+          bgcolor: 'white',
+          color: '#333',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+          p: 0,
+          borderRadius: '12px',
+          overflow: 'hidden',
+          animation: 'fadeIn 0.3s ease-out',
+          '@keyframes fadeIn': {
+            '0%': { opacity: 0, transform: 'translate(-50%, -48%)' },
+            '100%': { opacity: 1, transform: 'translate(-50%, -50%)' }
+          }
+        }}>
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 2,
+            borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+            background: 'linear-gradient(90deg, var(--purple-logo-primary) 0%, #7928ca 100%)'
+          }}>
+            <h2 id="content-preview-modal" style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600, color: 'white' }}>ตัวอย่างเนื้อหาบทเรียน</h2>
+            <IconButton 
+              onClick={() => setOpenContentPreviewModal(false)}
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.2)',
+                  transform: 'scale(1.1)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </IconButton>
+          </Box>
+          
+          <Box sx={{ p: 4, maxHeight: '70vh', overflowY: 'auto' }}>
+            {previewContent && parse(previewContent)}
+          </Box>
+          
+          <Box sx={{ p: 3, display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
+            <Button 
+              onClick={() => setOpenContentPreviewModal(false)}
+              variant="contained"
+              sx={{ 
+                bgcolor: 'var(--purple-logo-primary)',
+                fontWeight: 600,
+                px: 4,
+                py: 1,
+                borderRadius: '8px',
+                '&:hover': {
+                  bgcolor: '#a529d2',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 15px rgba(165, 41, 210, 0.4)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
+              ปิด
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+    );
+  };
+
+  const LockedContentModal = () => {
+    return (
+      <Modal
+        open={openLockedModal}
+        onClose={() => setOpenLockedModal(false)}
+        aria-labelledby="locked-content-modal"
+        aria-describedby="locked content information"
+        sx={{
+          backdropFilter: 'blur(5px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)'
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '90%',
+          maxWidth: '500px',
+          bgcolor: '#1a1a2e',
+          color: 'white',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+          p: 4,
+          borderRadius: '12px',
+          overflow: 'hidden',
+          animation: 'fadeIn 0.3s ease-out',
+          '@keyframes fadeIn': {
+            '0%': { opacity: 0, transform: 'translate(-50%, -48%)' },
+            '100%': { opacity: 1, transform: 'translate(-50%, -50%)' }
+          }
+        }}>
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <FaLock style={{ fontSize: '3rem', color: '#f44336', marginBottom: '1rem' }} />
+            <h2 id="locked-content-modal" style={{ margin: '0 0 1rem', fontSize: '1.8rem', fontWeight: 600 }}>เนื้อหานี้ถูกล็อค</h2>
+            <p style={{ fontSize: '1rem', color: '#ccc', marginBottom: '1.5rem' }}>คุณต้องซื้อคอร์สนี้เพื่อเข้าถึงเนื้อหาทั้งหมด</p>
+          </Box>
+          
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+            <Button 
+              onClick={() => {
+                setOpenLockedModal(false);
+                AddCourseToCart();
+              }}
+              variant="contained"
+              sx={{ 
+                bgcolor: 'var(--purple-logo-primary)',
+                fontWeight: 600,
+                px: 3,
+                py: 1,
+                borderRadius: '8px',
+                '&:hover': {
+                  bgcolor: '#a529d2',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 15px rgba(165, 41, 210, 0.4)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
+              เพิ่มลงตะกร้า
+            </Button>
+            <Button 
+              onClick={() => setOpenLockedModal(false)}
+              variant="outlined"
+              sx={{ 
+                borderColor: 'rgba(255,255,255,0.3)',
+                color: 'white',
+                fontWeight: 600,
+                px: 3,
+                py: 1,
+                borderRadius: '8px',
+                '&:hover': {
+                  borderColor: 'white',
+                  bgcolor: 'rgba(255,255,255,0.1)'
+                }
+              }}
+            >
+              ปิด
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+    );
+  };
 
   const VideoPreviewModal = () => {
     return (
@@ -274,7 +502,7 @@ const CourseDetailPage = () => {
 
                   <div className="course-instructor">
                     <span>สร้างโดย </span>
-                    <a href="#instructor">{course.instructor.name}</a>
+                    <a href="#instructor">{course?.instructor?.name}</a>
                   </div>
 
                   <div className="course-details-meta">
@@ -338,7 +566,9 @@ const CourseDetailPage = () => {
                           {section?.lesson_ids?.map((lesson: any, lesson_idIndex: number) => (
                             <div className="lecture-item" key={lesson_idIndex}>
                               <div className="lecture-icon">
-                                {lesson.isFreePreview ? (
+                                {lesson.isFreePreview && (lesson.main_content.endsWith(".mp4") || lesson.main_content.endsWith(".MP4")
+                                 || lesson.main_content.endsWith(".webm") || lesson.main_content.endsWith(".WEBM"))
+                                ? (
                                   <IconButton 
                                     size="small" 
                                     onClick={async () => {
@@ -362,15 +592,72 @@ const CourseDetailPage = () => {
                                   >
                                     <FaPlay />
                                   </IconButton>
+                                ) :  !lesson.isFreePreview  && (lesson.main_content.endsWith(".mp4") || lesson.main_content.endsWith(".MP4") || lesson.main_content.endsWith(".webm") || lesson.main_content.endsWith(".WEBM")) ? (
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => {
+                                      // Show purchase modal or auth modal if not logged in
+                                      const isLoggedIn = localStorage.getItem('token');
+                                      if (!isLoggedIn) {
+                                        setTypeModal(0); // Login modal
+                                        setShowModal(true);
+                                      } else {
+                                        // Show locked content modal
+                                        setOpenLockedModal(true);
+                                      }
+                                    }}
+                                    sx={{ 
+                                      color: '#f44336',
+                                      '&:hover': {
+                                        color: '#d32f2f',
+                                        transform: 'scale(1.1)'
+                                      },
+                                      transition: 'all 0.2s ease'
+                                    }}
+                                  >
+                                    <FaLock />
+                                  </IconButton>
+                                ) : lesson.isFreePreview && !lesson.main_content.endsWith(".mp4") && !lesson.main_content.endsWith(".MP4") && !lesson.main_content.endsWith(".webm") && !lesson.main_content.endsWith(".WEBM") ? (
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => {
+                                      if (lesson.main_content) {
+                                        setPreviewContent(lesson.main_content);
+                                        setOpenContentPreviewModal(true);
+                                      }
+                                    }}
+                                    sx={{ 
+                                      color: 'var(--purple-logo-primary)',
+                                      '&:hover': {
+                                        color: '#a529d2',
+                                        transform: 'scale(1.1)'
+                                      },
+                                      transition: 'all 0.2s ease'
+                                    }}
+                                  >
+                                    <FaRegFileAlt />
+                                  </IconButton>
                                 ) : (
-                                  <FaPlay />
+                                  <>
+                                    {parse(lesson.name)}
+                                   </>
                                 )}
                               </div>
                               <div className="lecture-title">
                                 {lesson.name}
                                 {lesson.isFreePreview && <span className="preview-badge">ตัวอย่าง</span>}
+                                {!lesson.isFreePreview && (lesson.main_content.endsWith(".mp4") || lesson.main_content.endsWith(".MP4") || lesson.main_content.endsWith(".webm") || lesson.main_content.endsWith(".WEBM")) && 
+                                  <span className="lock-badge" style={{
+                                    backgroundColor: '#f44336',
+                                    color: 'white',
+                                    fontSize: '0.7rem',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    marginLeft: '8px',
+                                    fontWeight: 500
+                                  }}>ล็อค</span>
+                                }
                               </div>
-                             
                             </div>
                           ))}
                         </div>
@@ -469,8 +756,9 @@ const CourseDetailPage = () => {
             </div>
           </div>
         </div>
-        <VideoPreviewModal
-        />
+        <VideoPreviewModal />
+        <LockedContentModal />
+        <ContentPreviewModal />
       </div>
     </CategoryProvider>
   );
