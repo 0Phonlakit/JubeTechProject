@@ -304,24 +304,25 @@ export default function SubCourseManagement() {
                 title: section.title,
                 lesson_ids: section.lesson_ids.map(lesson => lesson._id)
             }));
-            if (courseData.pretest) {
-                await axios.post(`${import.meta.env.VITE_API_URL}/course/attach/exam/${course_id}`, {
-                    exam_id: courseData.pretest, type: "pretest"
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${getToken()}`
-                    }
-                });
-            }
-            if (courseData.posttest) {
-                await axios.post(`${import.meta.env.VITE_API_URL}/course/attach/exam/${course_id}`, {
-                    exam_id: courseData.posttest, type: "posttest"
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${getToken()}`
-                    }
-                });
-            }
+            await updateCourse();
+            // if (courseData.pretest) {
+            //     await axios.post(`${import.meta.env.VITE_API_URL}/course/attach/exam/${course_id}`, {
+            //         exam_id: courseData.pretest, type: "pretest"
+            //     }, {
+            //         headers: {
+            //             Authorization: `Bearer ${getToken()}`
+            //         }
+            //     });
+            // }
+            // if (courseData.posttest) {
+            //     await axios.post(`${import.meta.env.VITE_API_URL}/course/attach/exam/${course_id}`, {
+            //         exam_id: courseData.posttest, type: "posttest"
+            //     }, {
+            //         headers: {
+            //             Authorization: `Bearer ${getToken()}`
+            //         }
+            //     });
+            // }
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/section/update`, {
                 sections, course_id
             }, {
@@ -386,6 +387,37 @@ export default function SubCourseManagement() {
                 location.href = "/dashboard/course-management";
             }
         });
+    }
+
+    const updateCourse = async() => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/course/id/${course_id}`, {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
+            if (response.data.data) {
+                const resCourse = response.data.data;
+                const course = {
+                    ...resCourse,
+                    objectives: courseData.objectives,
+                    status: courseData.status,
+                    pretest: courseData.pretest,
+                    posttest: courseData.posttest
+                }
+                delete course._id;
+                const response2 = await axios.put(`${import.meta.env.VITE_API_URL}/course/update/${course_id}`, {
+                    ...course
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${getToken()}`
+                    }
+                })
+                if (response2.data.message) message.success("The course was updated successfully.");
+            }
+        } catch (error) {
+            message.error("Error from update course");
+        }
     }
 
     const redirectErrorPage = () => {
