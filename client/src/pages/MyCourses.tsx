@@ -4,182 +4,75 @@ import { FaPlay, FaRegClock, FaRegStar, FaSearch, FaFilter, FaSort } from "react
 import { CategoryProvider } from "../contexts/CategoryContext";
 import Topbar from "../components/Landing/Topbar";
 import "../assets/css/pages/my-courses.css";
-import TestImage from "../assets/img/landing/course-test.png";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import NoImage from "../assets/img/no image.jpg";
+import AuthModal from "../components/Landing/AuthModal";
 
-interface BaseCourse {
-  id: number;
-  thumbnail: string;
+import { fetchFileFromStorageClient } from "../services/storage";
+
+interface Course {
+  _id: string;
   title: string;
-  instructor: string;
   slug: string;
-}
-
-interface EnrolledCourse extends BaseCourse {
+  thumbnail: string;
+  instructor?: {
+    firstname: string;
+    lastname: string;
+  };
   progress: number;
-  lastAccessed: string;
-  totalHours: number;
-  completedHours: number;
-}
-
-interface WishlistCourse extends BaseCourse {
+  enrolledAt: string;
+  completedAt?: string;
+  duration: number;
   price: number;
-  rating: number;
-  totalStudents: number;
+  status: string;
 }
-
-interface ArchivedCourse extends BaseCourse {
-  progress: number;
-  completedDate: string;
-  totalHours: number;
-  completedHours: number;
-}
-
-// Mock data - would be replaced with API calls
-const mockEnrolledCourses: EnrolledCourse[] = [
-  {
-    id: 1,
-    thumbnail: TestImage,
-    title: "Node.js 2025 - การพัฒนาเว็บแอปพลิเคชันด้วย Node.js แบบมืออาชีพ",
-    instructor: "อาจารย์ สมชาย ใจดี",
-    progress: 35,
-    lastAccessed: "2025-03-25T14:30:00",
-    totalHours: 42,
-    completedHours: 14.7,
-    slug: "nodejs-2025-professional-web-development"
-  },
-  {
-    id: 2,
-    thumbnail: TestImage,
-    title: "React & Redux - การพัฒนา Single Page Application แบบมืออาชีพ",
-    instructor: "อาจารย์ มานี มีเงิน",
-    progress: 68,
-    lastAccessed: "2025-03-28T09:15:00",
-    totalHours: 38,
-    completedHours: 25.8,
-    slug: "react-redux-professional-spa-development"
-  },
-  {
-    id: 3,
-    thumbnail: TestImage,
-    title: "การพัฒนาเว็บไซต์ด้วย HTML, CSS และ JavaScript สำหรับผู้เริ่มต้น",
-    instructor: "อาจารย์ สมศรี มีสุข",
-    progress: 100,
-    lastAccessed: "2025-03-10T16:45:00",
-    totalHours: 24,
-    completedHours: 24,
-    slug: "html-css-javascript-for-beginners"
-  },
-  {
-    id: 4,
-    thumbnail: TestImage,
-    title: "การพัฒนา Mobile Application ด้วย React Native",
-    instructor: "อาจารย์ สมหมาย ใจดี",
-    progress: 12,
-    lastAccessed: "2025-03-29T11:20:00",
-    totalHours: 36,
-    completedHours: 4.3,
-    slug: "react-native-mobile-application-development"
-  }
-];
-
-const mockWishlistCourses: WishlistCourse[] = [
-  {
-    id: 5,
-    thumbnail: TestImage,
-    title: "การพัฒนา Microservices ด้วย Node.js และ Docker",
-    instructor: "อาจารย์ สมชาย ใจดี",
-    price: 1999,
-    rating: 4.8,
-    totalStudents: 945,
-    slug: "microservices-nodejs-docker"
-  },
-  {
-    id: 6,
-    thumbnail: TestImage,
-    title: "การพัฒนาเว็บแอปพลิเคชันด้วย MERN Stack",
-    instructor: "อาจารย์ มานี มีเงิน",
-    price: 1699,
-    rating: 4.5,
-    totalStudents: 1545,
-    slug: "mern-stack-web-application-development"
-  }
-];
-
-const mockArchivedCourses: ArchivedCourse[] = [
-  {
-    id: 7,
-    thumbnail: TestImage,
-    title: "การพัฒนา Progressive Web Application (PWA)",
-    instructor: "อาจารย์ สมศรี มีสุข",
-    progress: 100,
-    completedDate: "2025-02-15T00:00:00",
-    totalHours: 32,
-    completedHours: 32,
-    slug: "progressive-web-application-development"
-  }
-];
-
-type CourseType = EnrolledCourse | WishlistCourse | ArchivedCourse;
 
 const MyCourses = () => {
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [filteredCourses, setFilteredCourses] = useState<CourseType[]>(mockEnrolledCourses);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [typeModal, setTypeModal] = useState<number>(0);
   const [sortOption, setSortOption] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      let coursesToFilter: CourseType[] = [];
-      
-      switch(tabValue) {
-        case 0:
-          coursesToFilter = [...mockEnrolledCourses];
-          break;
-        case 1:
-          coursesToFilter = [...mockWishlistCourses];
-          break;
-        case 2:
-          coursesToFilter = [...mockArchivedCourses];
-          break;
-        default:
-          coursesToFilter = [...mockEnrolledCourses];
-      }
-      
-      if (searchTerm) {
-        coursesToFilter = coursesToFilter.filter(course => 
-          course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          course.instructor.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      
-      // Sort courses
-      if (sortOption === "recent") {
-        if (tabValue === 0) {
-          // Only sort enrolled courses by lastAccessed
-          const enrolledCourses = coursesToFilter as EnrolledCourse[];
-          enrolledCourses.sort((a, b) => new Date(b.lastAccessed).getTime() - new Date(a.lastAccessed).getTime());
-        }
-      } else if (sortOption === "title") {
-        coursesToFilter.sort((a, b) => a.title.localeCompare(b.title));
-      } else if (sortOption === "progress") {
-        if (tabValue === 0 || tabValue === 2) {
-          // Only sort enrolled or archived courses by progress
-          const progressCourses = coursesToFilter as (EnrolledCourse | ArchivedCourse)[];
-          progressCourses.sort((a, b) => b.progress - a.progress);
-        }
-      }
-      
-      setFilteredCourses(coursesToFilter);
-      setLoading(false);
-    }, 300);
-  }, [tabValue, searchTerm, sortOption]);
+  const [activeCourses, setActiveCourses] = useState<Course[]>([]);
+  const [wishlistCourses, setWishlistCourses] = useState<Course[]>([]);
+  const [completedCourses, setCompletedCourses] = useState<Course[]>([]);
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
+  const navigate = useNavigate();
+
+  const filterCoursesBySearchTerm = (courses: Course[]) => {
+    if (!searchTerm) return courses;
+    
+    return courses.filter((course) => 
+      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (course.instructor?.firstname && course.instructor.firstname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (course.instructor?.lastname && course.instructor.lastname.toLowerCase().includes(searchTerm.toLowerCase())) 
+    );
+  };
+
+
+  const getCoursesByTab = () => {
+    let courses: Course[] = [];
+    
+    switch (tabValue) {
+      case 0:
+        courses = activeCourses;
+        break;
+      case 1:
+        courses = wishlistCourses;
+        break;
+      case 2:
+        courses = completedCourses;
+        break;
+      default:
+        courses = activeCourses;
+    }
+    
+    // กรองคอร์สตามคำค้นหา
+    return filterCoursesBySearchTerm(courses);
   };
 
   const formatDate = (dateString: string) => {
@@ -193,17 +86,147 @@ const MyCourses = () => {
     return `${h} ชั่วโมง ${m > 0 ? `${m} นาที` : ''}`;
   };
 
-  const isEnrolledCourse = (course: CourseType): course is EnrolledCourse => {
-    return 'lastAccessed' in course && 'progress' in course;
+  
+  const renderCoursesByTab = () => {
+    const courses = getCoursesByTab();
+
+    if (courses.length === 0) {
+      return (
+        <div className="no-courses">
+          <Typography variant="h6" sx={{ marginTop: '30px', color: '#555' }}>
+            {searchTerm 
+              ? `ไม่พบคอร์สเรียนที่ตรงกับคำค้นหา "${searchTerm}"`
+              : tabValue === 0 ? "คุณยังไม่มีคอร์สที่กำลังเรียนอยู่" 
+              : tabValue === 1 ? "คุณยังไม่มีคอร์สในรายการโปรด" 
+              : "คุณยังไม่มีคอร์สที่เรียนจบแล้ว"}
+          </Typography>
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${tabValue === 0 ? 'enrolled-courses' : tabValue === 1 ? 'wishlist-courses' : 'completed-courses'}`}>
+        {courses.map((course: Course) => (
+          <div className="course-card" key={course._id}>
+            <div className="course-image">
+              <img src={course.thumbnail || NoImage} alt={course.title} />
+              <div className="course-overlay">
+                <button className="play-button" onClick={() => navigate(`/course/learn/${course._id}`)}>
+                  <FaPlay />
+                  <span>{tabValue === 2 ? 'ดูอีกครั้ง' : 'เริ่มเรียนต่อ'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="course-details">
+              <h3 className="course-title">
+                <a href={`/courses/${course.slug}`}>{course.title}</a>
+              </h3>
+              <p className="course-instructor">{course.instructor?.firstname} {course.instructor?.lastname}</p>
+
+              {(tabValue === 0 || tabValue === 2) && (
+                <div className="course-progress">
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${course.progress}%` }}
+                    ></div>
+                  </div>
+                  <span className="progress-text">{course.progress}% เสร็จสิ้น</span>
+                </div>
+              )}
+
+              <div className="course-meta">
+                {tabValue === 0 && (
+                  <div className="last-accessed">
+                    <FaRegClock />
+                    <span>ลงทะเบียนเมื่อ: {formatDate(course.enrolledAt)}</span>
+                  </div>
+                )}
+
+                {tabValue === 1 && (
+                  <div className="wishlist-price">
+                    <span className="price">฿{course.price.toLocaleString()}</span>
+                  </div>
+                )}
+
+                {tabValue === 2 && (
+                  <div className="completed-date">
+                    <FaRegClock />
+                    <span>เรียนจบเมื่อ: {formatDate(course.enrolledAt)}</span>
+                  </div>
+                )}
+
+                <div className="course-duration">
+                  <FaRegClock />
+                  <span>{formatTime(course.duration)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
-  const isWishlistCourse = (course: CourseType): course is WishlistCourse => {
-    return 'price' in course && 'rating' in course;
+  useEffect(() => {
+    setLoading(true);
+    const fetchCourses = async () => {
+      try {
+        // ดึงข้อมูลคอร์สที่ลงทะเบียน
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/enrollments/my-courses`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')?.replace(/"/g, '')}`
+          }
+        });
+
+        const allCourses = response.data.data || [];
+
+
+        const active = allCourses.filter((course: Course) => course.status === 'active' && course.progress < 100);
+
+
+        const activeCourses = await Promise.all(active.map(async (course: Course) => {
+          const thumbnail = course.thumbnail;
+          console.log("thumbnail", thumbnail)
+          const thumbnailUrl = thumbnail.startsWith('http://') || thumbnail.startsWith('https://') ? thumbnail : await fetchFileFromStorageClient(thumbnail);
+          return {
+            ...course,
+            thumbnail: thumbnailUrl
+          };
+        }));
+        setActiveCourses(activeCourses);
+
+
+        const completed = allCourses.filter((course: Course) => course.status === 'completed' || course.progress === 100);
+        const completedCourses = completed.map((course: Course) => {
+          const thumbnail = course.thumbnail;
+          const thumbnailUrl = thumbnail.startsWith('http://') || thumbnail.startsWith('https://') ? thumbnail : fetchFileFromStorageClient(thumbnail);
+          return {
+            ...course,
+            thumbnail: thumbnailUrl
+          };
+        });
+        setCompletedCourses(completedCourses);
+
+        setWishlistCourses([]);
+
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการโหลดคอร์สเรียน:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
   };
 
-  const isArchivedCourse = (course: CourseType): course is ArchivedCourse => {
-    return 'completedDate' in course && 'progress' in course;
-  };
+
 
   return (
     <div className="my-courses-page">
@@ -211,17 +234,24 @@ const MyCourses = () => {
         <Topbar
           modalStatus={showModal}
           setShowModal={setShowModal}
-          setTypeModal={() => {}}
+          setTypeModal={setTypeModal}
+        />
+
+        <AuthModal
+          setShowModal={setShowModal}
+          typeModal={typeModal}
+          showModal={showModal}
+          setTypeModal={setTypeModal}
         />
       </CategoryProvider>
-      
+
       <div className="my-courses-header">
         <div className="container">
           <h1>คอร์สเรียนของฉัน</h1>
           <p>จัดการและติดตามความก้าวหน้าในการเรียนรู้ของคุณ</p>
         </div>
       </div>
-      
+
       <div className="container">
         <div className="my-courses-content">
           <div className="search-and-filter">
@@ -234,13 +264,13 @@ const MyCourses = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="filter-options">
               <div className="filter-button" onClick={() => setShowFilters(!showFilters)}>
                 <FaFilter />
                 <span>ตัวกรอง</span>
               </div>
-              
+
               <div className="sort-button">
                 <FaSort />
                 <select
@@ -254,15 +284,15 @@ const MyCourses = () => {
               </div>
             </div>
           </div>
-          
+
           <Box sx={{ width: '100%', marginTop: '20px' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs 
-                value={tabValue} 
-                onChange={handleTabChange} 
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
                 aria-label="my courses tabs"
                 sx={{
-                  '& .MuiTab-root': { 
+                  '& .MuiTab-root': {
                     fontWeight: 600,
                     fontSize: '16px',
                     textTransform: 'none',
@@ -276,208 +306,19 @@ const MyCourses = () => {
                   }
                 }}
               >
-                <Tab label={`กำลังเรียน (${mockEnrolledCourses.length})`} />
-                <Tab label={`รายการโปรด (${mockWishlistCourses.length})`} />
-                <Tab label={`คอร์สที่เรียนจบแล้ว (${mockArchivedCourses.length})`} />
+                <Tab label={`กำลังเรียน (${activeCourses.length})`} />
+                <Tab label={`รายการโปรด (${wishlistCourses.length})`} />
+                <Tab label={`คอร์สที่เรียนจบแล้ว (${completedCourses.length})`} />
               </Tabs>
             </Box>
-            
+
             {loading ? (
               <div className="loading-container">
                 <CircularProgress sx={{ color: 'var(--purple-logo-primary)' }} />
               </div>
-            ) : (
+            ) : ( 
               <div className="courses-grid">
-                {filteredCourses.length === 0 ? (
-                  <div className="no-courses">
-                    <Typography variant="h6" sx={{ marginTop: '30px', color: '#555' }}>
-                      ไม่พบคอร์สเรียนที่ตรงกับการค้นหาของคุณ
-                    </Typography>
-                  </div>
-                ) : (
-                  <>
-                    {tabValue === 0 && (
-                      <div className="enrolled-courses">
-                        {filteredCourses.map((course) => {
-                          if (isEnrolledCourse(course)) {
-                            return (
-                              <div className="course-card" key={course.id}>
-                                <div className="course-image">
-                                  <img src={course.thumbnail} alt={course.title} />
-                                  <div className="course-overlay">
-                                    <button className="play-button">
-                                      <FaPlay />
-                                      <span>เริ่มเรียนต่อ</span>
-                                    </button>
-                                  </div>
-                                </div>
-                                
-                                <div className="course-details">
-                                  <h3 className="course-title">
-                                    <a href={`/course/${course.slug}`}>{course.title}</a>
-                                  </h3>
-                                  <p className="course-instructor">{course.instructor}</p>
-                                  
-                                  <div className="course-progress">
-                                    <div className="progress-bar">
-                                      <div 
-                                        className="progress-fill" 
-                                        style={{ width: `${course.progress}%` }}
-                                      ></div>
-                                    </div>
-                                    <span className="progress-text">{course.progress}% เสร็จสิ้น</span>
-                                  </div>
-                                  
-                                  <div className="course-meta">
-                                    <div className="last-accessed">
-                                      <FaRegClock />
-                                      <span>เข้าชมล่าสุด: {formatDate(course.lastAccessed)}</span>
-                                    </div>
-                                    <div className="time-spent">
-                                      <span>{formatTime(course.completedHours)} / {formatTime(course.totalHours)}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    )}
-                    
-                    {tabValue === 1 && (
-                      <div className="wishlist-courses">
-                        {filteredCourses.map((course) => {
-                          if (isWishlistCourse(course)) {
-                            return (
-                              <div className="course-card" key={course.id}>
-                                <div className="course-image">
-                                  <img src={course.thumbnail} alt={course.title} />
-                                  <div className="course-overlay">
-                                    <a href={`/course/${course.slug}`} className="view-button">
-                                      ดูรายละเอียด
-                                    </a>
-                                  </div>
-                                </div>
-                                
-                                <div className="course-details">
-                                  <h3 className="course-title">
-                                    <a href={`/course/${course.slug}`}>{course.title}</a>
-                                  </h3>
-                                  <p className="course-instructor">{course.instructor}</p>
-                                  
-                                  <div className="course-meta">
-                                    <div className="course-rating">
-                                      <FaRegStar />
-                                      <span>{course.rating} ({course.totalStudents} คน)</span>
-                                    </div>
-                                    <div className="course-price">
-                                      <span>฿{course.price.toLocaleString()}</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="course-actions">
-                                    <Button 
-                                      variant="contained"
-                                      sx={{
-                                        backgroundColor: 'var(--purple-logo-primary)',
-                                        '&:hover': {
-                                          backgroundColor: '#a529d2',
-                                        }
-                                      }}
-                                    >
-                                      ซื้อคอร์สเรียน
-                                    </Button>
-                                    <Button 
-                                      variant="outlined"
-                                      sx={{
-                                        color: '#555',
-                                        borderColor: '#ccc',
-                                        '&:hover': {
-                                          borderColor: '#999',
-                                          backgroundColor: '#f5f5f5',
-                                        }
-                                      }}
-                                    >
-                                      ลบออกจากรายการโปรด
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    )}
-                    
-                    {tabValue === 2 && (
-                      <div className="archived-courses">
-                        {filteredCourses.map((course) => {
-                          if (isArchivedCourse(course)) {
-                            return (
-                              <div className="course-card" key={course.id}>
-                                <div className="course-image">
-                                  <img src={course.thumbnail} alt={course.title} />
-                                  <div className="course-overlay">
-                                    <button className="play-button">
-                                      <FaPlay />
-                                      <span>ทบทวนคอร์สเรียน</span>
-                                    </button>
-                                  </div>
-                                </div>
-                                
-                                <div className="course-details">
-                                  <h3 className="course-title">
-                                    <a href={`/course/${course.slug}`}>{course.title}</a>
-                                  </h3>
-                                  <p className="course-instructor">{course.instructor}</p>
-                                  
-                                  <div className="course-progress">
-                                    <div className="progress-bar">
-                                      <div 
-                                        className="progress-fill completed" 
-                                        style={{ width: '100%' }}
-                                      ></div>
-                                    </div>
-                                    <span className="progress-text">เรียนจบแล้ว</span>
-                                  </div>
-                                  
-                                  <div className="course-meta">
-                                    <div className="completion-date">
-                                      <span>เรียนจบเมื่อ: {formatDate(course.completedDate)}</span>
-                                    </div>
-                                    <div className="time-spent">
-                                      <span>{formatTime(course.totalHours)}</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="course-actions">
-                                    <Button 
-                                      variant="outlined"
-                                      sx={{
-                                        color: 'var(--purple-logo-primary)',
-                                        borderColor: 'var(--purple-logo-primary)',
-                                        '&:hover': {
-                                          borderColor: '#a529d2',
-                                          backgroundColor: 'rgba(165, 41, 210, 0.05)',
-                                        }
-                                      }}
-                                    >
-                                      ขอใบรับรอง
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    )}
-                  </>
-                )}
+                {renderCoursesByTab()}
               </div>
             )}
           </Box>
@@ -485,6 +326,8 @@ const MyCourses = () => {
       </div>
     </div>
   );
-};
+}
+
+
 
 export default MyCourses;
