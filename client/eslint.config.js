@@ -18,11 +18,14 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      // 'no-unused-vars': 'warn',
+      // ...reactHooks.configs.recommended.rules,
+      // 'react-refresh/only-export-components': [
+      //   'warn',
+      //   { allowConstantExport: true },
+      // ],
+      '@typescript-eslint/no-unused-vars': 'off', // ✅ ปิดเตือน unused variable
+      'no-unused-vars': 'off',                    // ✅ ปิดเตือน JS ทั่วไป
     },
   },
 )

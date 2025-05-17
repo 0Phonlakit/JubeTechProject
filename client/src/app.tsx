@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 const UserTable = lazy(() => import("./pages/UserTable"));
 // const TutorDashboard = lazy(() => import("./pages/TutorDashboard"));
 // @ts-ignore
-const Landing = lazy(() => import("./pages/landing"));
+const Landing = lazy(() => import("./pages/Landing"));
 const CourseManagement = lazy(() => import("./pages/CourseManagement"));
 const RoleManagement = lazy(() => import("./pages/RoleTable"));
 const PromotionManagement = lazy(() => import("./pages/PromotionTable"));
@@ -25,7 +25,6 @@ const CodeEditor = lazy(() => import("./pages/CodeEditor.tsx"));
 const LearnCourse = lazy(() => import("./pages/LearnCourse.tsx"));
 const QuizTest = lazy(() => import("./pages/QuizTest.tsx"));
 const Certificate = lazy(() => import("./pages/Certificate.tsx"));
-const storage = await import("./services/storage");
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
@@ -34,6 +33,13 @@ export interface IFToggleSidebar {
 
 function App() {
   const [toggleSidebar, setToggleSidebar] = useState<boolean>(true); // Toggle state
+  useEffect(() => {
+    const loadStorage = async () => {
+      const storage = await import("./services/storage");
+      console.log("Storage loaded:", storage);
+    };
+    loadStorage();
+  }, []);
   return (
     <BrowserRouter future={{
       v7_startTransition: true,
