@@ -2,6 +2,7 @@
     width: 100vw;
     height: 100vh;
     max-width: 1600px;
+    overflow-x: hidden;
 }
 
 .learn-course-container p {
@@ -48,7 +49,6 @@
     width: 100%;
     height: 100%;
     display: flex;
-    overflow: hidden;
 }
 
 .side-section {
@@ -104,7 +104,7 @@
 .main-lesson-content {
     padding: 20px;
     width: 100%;
-    height: 100%;
+    height: 85%;
 }
 
 .lecture-content {
@@ -145,6 +145,9 @@
     border: 1px solid #c4c4c4;
     background-color: #FFFFFF;
     gap: 5px;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
 }
 
 .side-section {
@@ -209,4 +212,28 @@
 .manual-video, .video-content {
     width: 100% !important;
     height: 500px !important;
+}
+
+.pretest-container, .posttest-container {
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    font-weight: 600;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 25px;
+    transition: 0.3s all;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+}
+
+.pretest-container:hover, .posttest-container:hover {
+    color:#b557eb;
+    background-color: #f7e8ff;
+}
+
+.course-lesson-info {
+    width: 100%;
+    padding: 20px;
 }

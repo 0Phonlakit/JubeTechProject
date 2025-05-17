@@ -95,6 +95,30 @@ const getExamById = async(req, res) => {
     }
 }
 
+const getExamForTest = async(req, res) => {
+    try {
+        // check req
+        const { exam_id } = req.params;
+        const { _id } = req.verify_user;
+        if (!_id) return res.status(404).json({ message: "The user was not found." });
+        if (!exam_id) return res.status(404).json({ message: "The exam was not found." });
+        // query
+        const exam = await Exams.find({
+            _id: new mongoose.Types.ObjectId(exam_id),
+            createdBy: new mongoose.Types.ObjectId(_id)
+        })
+        .populate({
+            path: "question_ids",
+            select: "_id question question_image type choices test_case solution"
+        })
+        .lean();
+        return res.status(200).json({ data: exam });
+    } catch (err) {
+        console.error({ position: "Get exam by id", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
 const updateExam = async(req, res) => {
     try {
         // check req
@@ -180,5 +204,6 @@ module.exports = {
     getExamById,
     updateExam,
     deleteExam,
+    getExamForTest,
     searchExamForTest
 }

@@ -230,6 +230,23 @@ const getCourseById = async(req, res) => {
     }
 }
 
+const getInfoCourse = async(req, res) => {
+    try {
+        // check req
+        const { course_id } = req.params;
+        if (!course_id) return res.status(400).json({ message: "The course was not found." });
+        // query course
+        const course = await Courses.findById(course_id)
+        .select("title instructor")
+        .populate({ path: "instructor", select: "firstname lastname" })
+        .lean();
+        return res.status(200).json({ data: course });
+    } catch (err) {
+        console.error({ position: "Get course info", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
 const updateCourse = async(req, res) => {
     try {
         // check user id
@@ -317,7 +334,6 @@ const getSubCourseData = async(req, res) => {
         const course = await Courses.findById(course_id)
             .select("thumbnail title description objectives group_ids status note pretest posttest section_ids")
             .populate({ path: "group_ids", select: "name -_id" })
-            .populate({ path: "pretest", select: "_id title description random_question" })
             .populate({ path: "section_ids", select: "_id title", populate: { path: "lesson_ids" } })
             .lean()
         return res.status(200).json({ data: course });
@@ -344,14 +360,6 @@ const getLearnCourse = async(req, res) => {
             select: "firstname lastname email -_id"
         })
         .populate({
-            path: "pretest",
-            select: "_id title description"
-        })
-        .populate({
-            path: "posttest",
-            select: "_id title description"
-        })
-        .populate({
             path: "section_ids",
             select: "title lesson_ids -_id",
             populate: {
@@ -361,6 +369,23 @@ const getLearnCourse = async(req, res) => {
         })
         .lean();
         return res.status(200).json({ course });
+    } catch (err) {
+        console.error({ position: "Get course to learn", error: err });
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+}
+
+const attachCourseTest = async(req, res) => {
+    try {
+        // check request
+        const { course_id } = req.params;
+        const { exam_id, type } = req.body;
+        if (!course_id || !type || !exam_id) return res.status(400).json({ message: "The data was not found." });
+        const course = await Courses.findById(course_id);
+        if (type === "posttest") course.posttest = new mongoose.Types.ObjectId(exam_id);
+        if (type === "pretest") course.pretest = new mongoose.Types.ObjectId(exam_id);
+        course.save();
+        return res.status(200).json({ message: "The exam was attached successfully." });
     } catch (err) {
         console.error({ position: "Get course to learn", error: err });
         return res.status(500).json({ message: "Something went wrong." });
@@ -377,5 +402,7 @@ module.exports = {
     updateCourse,
     deleteCourse,
     getSubCourseData,
-    getLearnCourse
+    getLearnCourse,
+    getInfoCourse,
+    attachCourseTest
 }
