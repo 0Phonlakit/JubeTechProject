@@ -25,6 +25,7 @@ const CodeEditor = lazy(() => import("./pages/CodeEditor.tsx"));
 const LearnCourse = lazy(() => import("./pages/LearnCourse.tsx"));
 const QuizTest = lazy(() => import("./pages/QuizTest.tsx"));
 const Certificate = lazy(() => import("./pages/Certificate.tsx"));
+const storage = await import("./services/storage");
 
 export interface IFToggleSidebar {
   toggleSidebar: boolean,
