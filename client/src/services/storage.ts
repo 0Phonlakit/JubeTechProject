@@ -81,12 +81,11 @@ export const fetchFileFromStorage = async(path:string) => {
 
 export const fetchFileFromStorageClient = async(path:string) => {
     try {
-
-            const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}`);
-            console.log("fileRef", fileRef)
-            const url = await getDownloadURL(fileRef);
-            console.log("urlFirebase", url)
-            return url;
+        const fileRef = ref(storage, `${import.meta.env.VITE_FIREBASE_PATH}${path}`);
+        console.log("fileRef", fileRef)
+        const url = await getDownloadURL(fileRef);
+        console.log("urlFirebase", url)
+        return url;
     
     } catch (error) {
         console.log("Error fetching file from storage:", error);

@@ -325,15 +325,9 @@ export default function LearnCourse() {
         }
     };
 
-    const ChangeLesson = (section_title:string, lesson_id:string) => {
-        const currentSection = course.section_ids.filter(section => section.title === section_title)[0];
-        if (currentSection) {
-            const lesson = currentSection.lesson_ids.filter(lesson => lesson._id === lesson_id);
-            if (lesson.length > 0) location.href = `/course/learn/${course_id}/lesson/${lesson[0]._id}`;
-            else message.error("The lesson was not found.");
-        } else {
-            message.error("Error from change lesson.");
-        }
+    const ChangeLesson = (lesson_id:string) => {
+        if (lesson_id) location.href = `/course/learn/${course_id}/lesson/${lesson_id}`;
+        else message.error("The lesson was not found.");
     }
 
     // render
@@ -440,7 +434,7 @@ export default function LearnCourse() {
                                                                     >
                                                                         <span
                                                                             className="lesson-name"
-                                                                            onClick={() => ChangeLesson(section.title, lesson._id)}
+                                                                            onClick={() => ChangeLesson(lesson._id)}
                                                                         >
                                                                             {lesson.name.length > 40 ?
                                                                                 lesson.name.slice(0, 40)
