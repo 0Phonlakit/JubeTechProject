@@ -9,7 +9,7 @@ const {
   getRoleByUserId,
   getPersonalInfo
 } = require("../controllers/userManagement"); 
-const { verifyToken } = require("../middlewares/auth"); 
+const { verifyToken, verifyRole } = require("../middlewares/auth"); 
 
 const router = express.Router();
 
