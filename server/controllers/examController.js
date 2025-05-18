@@ -103,10 +103,7 @@ const getExamForTest = async(req, res) => {
         if (!_id) return res.status(404).json({ message: "The user was not found." });
         if (!exam_id) return res.status(404).json({ message: "The exam was not found." });
         // query
-        const exam = await Exams.find({
-            _id: new mongoose.Types.ObjectId(exam_id),
-            createdBy: new mongoose.Types.ObjectId(_id)
-        })
+        const exam = await Exams.find({ _id: new mongoose.Types.ObjectId(exam_id) })
         .populate({
             path: "question_ids",
             select: "_id question question_image type choices test_case solution"

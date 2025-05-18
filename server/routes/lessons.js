@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/lesson/create", verifyToken, verifyRole(["Tutor"]), createLesson);
 router.get("/lesson/filter", verifyToken, verifyRole(["Tutor"]), getLessonByTutor);
 router.get("/lesson/search", verifyToken, verifyRole(["Tutor"]), searchLessonForTest);
-router.get("/lesson/id/:lesson_id", verifyToken, verifyRole(["Tutor"]), getLessonById);
+router.get("/lesson/id/:lesson_id", verifyToken, getLessonById);
 router.put("/lesson/update/:lesson_id", verifyToken, verifyRole(["Tutor"]), updateLesson);
 router.delete("/lesson/delete/:lesson_id", verifyToken, verifyRole(["Tutor"]), deleteLesson);
 
