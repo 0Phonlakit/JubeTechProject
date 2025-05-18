@@ -4,7 +4,7 @@ const paymentController = require('../controllers/paymentController');
 const { verifyToken } = require('../middlewares/auth');
 
 
- router.post('/payment/charge', verifyToken, paymentController.createCharge);
+router.post('/payment/charge', verifyToken, paymentController.createCharge);
 
 
 router.post('/payment/checkout', verifyToken, paymentController.createCheckoutSession);
