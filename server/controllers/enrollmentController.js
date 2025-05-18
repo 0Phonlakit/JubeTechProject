@@ -127,8 +127,9 @@ exports.getMyCoursesByStatus = async (req, res) => {
 // อัปเดตความคืบหน้าของคอร์สเรียน
 exports.updateCourseProgress = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const { _id } = req.verify_user;
     const { courseId, progress } = req.body;
+
 
     // ตรวจสอบว่า progress เป็นตัวเลขระหว่าง 0-100
     if (progress < 0 || progress > 100) {
@@ -140,7 +141,7 @@ exports.updateCourseProgress = async (req, res) => {
 
     // ค้นหาการลงทะเบียน
     const enrollment = await Enrollment.findOne({
-      user: userId,
+      user: _id,
       course: courseId
     });
 
@@ -166,11 +167,10 @@ exports.updateCourseProgress = async (req, res) => {
       data: enrollment
     });
   } catch (error) {
-    console.error('เกิดข้อผิดพลาดในการอัปเดตความคืบหน้า:', error);
     return res.status(500).json({
       success: false,
       message: 'เกิดข้อผิดพลาดในการอัปเดตความคืบหน้า',
-      error: error.message
+      error: ""
     });
   }
 };
