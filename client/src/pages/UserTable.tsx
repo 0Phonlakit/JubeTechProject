@@ -42,25 +42,11 @@ export default function UserTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
 
   // Fetch data from API
   useEffect(() => {
-  const token = localStorage.getItem("token"); // ดึง token ที่เก็บไว้ตอน login
-
-  fetch(`${import.meta.env.VITE_API_URL}/getAllUsers`, {
-    headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Unauthorized");
-          }
-          return response.json();
-        })
-        .then((data) => setUsers(data))
-        .catch((error) => {
-          console.error('Error fetching user data:', error);
-        });
-    }, []);
+    fetch(`${import.meta.env.VITE_API_URL}/getAllUsers`)
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error('Error fetching user data:', error));
+  }, []);
 
   // Handle Modal Toggle
   const handleCreateUser = () => setShowCreateModal(true);

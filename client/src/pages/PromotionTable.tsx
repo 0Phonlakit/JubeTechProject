@@ -44,20 +44,10 @@ export default function PromotionTable({ toggleSidebar, setToggleSidebar }:IFTog
     
     // Fetch data from API
     useEffect(() => {
-  const token = localStorage.getItem("token");
-
-  fetch(`${import.meta.env.VITE_API_URL}/getAllPromotions`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Unauthorized");
-        return response.json();
-      })
-      .then((data) => setPromotions(data))
-      .catch((error) => console.error('Error fetching promotion data:', error));
+        fetch(`${import.meta.env.VITE_API_URL}/getAllPromotions`)
+        .then((response) => response.json())
+        .then((data) => setPromotions(data))
+        .catch((error) => console.error('Error fetching promotion data:', error));
     }, []);
 
     // Handle Modal Toggle
