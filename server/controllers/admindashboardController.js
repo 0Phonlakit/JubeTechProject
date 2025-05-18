@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Promotion = require('../models/Promotion');
+const Enrollment = require('../models/Enrollment');
 
 const getDashboardOverview = async (req, res) => {
   try {
