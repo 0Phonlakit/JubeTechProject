@@ -38,11 +38,30 @@ export default function RoleTable({ toggleSidebar, setToggleSidebar }:IFToggleSi
 
   // Fetch data from API
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/getAllRoles`)
-      .then((response) => response.json())
-      .then((data) => setRoles(data))
+  const token = localStorage.getItem("token");
+
+  fetch(`${import.meta.env.VITE_API_URL}/getAllRoles`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unauthorized");
+        }
+        return response.json();
+      })
+      .then((data) =>
+        setRoles(
+          data.map((role: { _id: string; role_name: string }) => ({
+            value: role._id,
+            label: role.role_name,
+          }))
+        )
+      )
       .catch((error) => console.error('Error fetching role data:', error));
-  }, []);
+    }, []);
 
   // Handle Modal Toggle
   const handleCreateRole = () => setShowCreateModal(true);
