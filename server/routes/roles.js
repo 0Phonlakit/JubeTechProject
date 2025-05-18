@@ -10,10 +10,10 @@ const { verifyToken } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/getAllRoles", verifyToken, verifyRole(["Admin"]), getAllRoles);
-router.get("/getRole/:id", verifyToken, verifyRole(["Admin"]), getRoleById);
-router.post("/createRole", verifyToken, verifyRole(["Admin"]), createRole);
-router.put("/updateRole/:id", verifyToken, verifyRole(["Admin"]), updateRole);  
-router.delete("/deleteRole/:id", verifyToken, verifyRole(["Admin"]), deleteRole);
+router.get("/getAllRoles", verifyToken, getAllRoles);
+router.get("/getRole/:id", verifyToken, getRoleById);
+router.post("/createRole", verifyToken, createRole);
+router.put("/updateRole/:id", verifyToken, updateRole);  
+router.delete("/deleteRole/:id", verifyToken, deleteRole);
 
 module.exports = router;
