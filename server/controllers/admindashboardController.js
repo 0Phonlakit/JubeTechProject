@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Promotion = require('../models/Promotion');
+const Enrollment = require('../models/Enrollment');
 
 const getDashboardOverview = async (req, res) => {
   try {
@@ -88,8 +89,21 @@ const getDashboardOverview = async (req, res) => {
       end_date: { $gte: today }
     });
 
-    // Total income (waiting to connect with future transactions)
-    const totalRevenue = 0;
+    const revenueData = await Enrollment.aggregate([
+      {
+        $match: {
+          paymentStatus: 'successful'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$paymentAmount' }
+        }
+      }
+    ]);
+
+    const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
 
     res.json({
       users: {
