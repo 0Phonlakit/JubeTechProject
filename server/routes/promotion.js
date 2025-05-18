@@ -6,13 +6,14 @@ const {
     updatePromotion,
     deletePromotion,
 } = require("../controllers/promotionManagement");
+const { verifyToken } = require("../middlewares/auth"); 
 
 const router = express.Router();
 
-router.get("/getAllPromotions", getAllPromotions);
-router.post("/createPromotion", createPromotion);
-router.get("/getPromotion/:id", getPromotionById);
-router.put("/updatePromotion/:id", updatePromotion);
-router.delete("/deletePromotion/:id", deletePromotion);
+router.get("/getAllPromotions", verifyToken, verifyRole(["Admin"]), getAllPromotions);
+router.post("/createPromotion", verifyToken, verifyRole(["Admin"]), createPromotion);
+router.get("/getPromotion/:id", verifyToken, verifyRole(["Admin"]), getPromotionById);
+router.put("/updatePromotion/:id", verifyToken, verifyRole(["Admin"]), updatePromotion);
+router.delete("/deletePromotion/:id", verifyToken, verifyRole(["Admin"]), deletePromotion);
 
 module.exports = router;
