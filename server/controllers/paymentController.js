@@ -28,6 +28,10 @@ exports.createCharge = async (req, res) => {
 
     // ตรวจสอบคอร์สทั้งหมดที่ต้องการซื้อ
     const courses = await Course.find({ _id: { $in: courseIds } });
+    courses.map(async(course) => {
+      course.student_enrolled = course.student_enrolled + 1;
+      await course.save();
+    });
     
     if (courses.length !== courseIds.length) {
       return res.status(404).json({
